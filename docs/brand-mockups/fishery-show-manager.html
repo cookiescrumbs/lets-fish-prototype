@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Let's Fish — Durness and Kinlochbervie Angling Club</title>
+<title>Let's Fish — Durness and Kinlochbervie AC (manager)</title>
 
 <link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,9 +29,9 @@
    INVENTED CONTENT, pending real data from the club: prices, offers,
    boats, season dates, fishery/boat rules, and the placeholder crest.
    Real content: description, species, contact, outlet address, waters.
-   ANGLER (signed-in, non-manager) STATE: no owner Edit/Add actions and no
-   "Is this your fishery?" claim card — a fishery selling tickets always has
-   a manager. The owner/admin view lives in edit-fishery.html + add-water.html.
+   MANAGER (owner, signed-in) STATE: shows the Edit fishery / Add water owner
+   actions in the hero and the "Your Fishery" account link. No claim card — the
+   owner already manages it. The angler (buyer) view is fishery-show.html.
    ========================================================================== */
 
 /* ── Sticky section tabs ── */
@@ -159,6 +159,7 @@
         <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
       </button>
       <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="#">Your Fishery</a>
         <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
         <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
         <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
@@ -179,7 +180,7 @@
       <span class="lf-breadcrumb__sep">/</span>
       <span class="lf-breadcrumb__current">Durness and Kinlochbervie Angling Club</span>
     </nav>
-    <!-- angler (signed-in, non-manager) state: no owner Edit/Add actions -->
+    <!-- manager (owner) state: Edit fishery / Add water owner actions -->
     <div class="lf-explore-banner__row">
       <div class="fs-banner-id">
         <!-- club crest — the fishery's uploaded logo; a fishery without one renders no badge -->
@@ -189,6 +190,10 @@
           <h1 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h1>
           <p class="lf-explore-banner__count"><i class="fa fa-map-signs"></i> North West Sutherland, Scotland</p>
         </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a class="btn btn--secondary" href="edit-fishery.html"><i class="fa-solid fa-pen-to-square"></i> Edit fishery</a>
+        <a class="btn btn--accent" href="add-water.html"><i class="fa-solid fa-plus"></i> Add water</a>
       </div>
     </div>
   </div>
