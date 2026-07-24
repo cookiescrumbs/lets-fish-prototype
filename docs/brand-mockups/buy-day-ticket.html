@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Buy day ticket (wizard)</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<!-- Buy-day-ticket mockup — the "1a Guided wizard" direction for the Adult
+     Day Ticket purchase flow. In the app Callum (signed in) taps "Buy day
+     ticket" in the fishery's Tickets & Membership section and a dismissible
+     modal opens over the dimmed fishery page, running three steps under the
+     house wizard shell (progress bar, one column, "Step N of 3"): Configure,
+     Payment, Confirmation. This static page stacks all three modal states as
+     labelled panels — same convention as add-water.html — each panel a scrim
+     with the modal centred, so a reviewer reads the whole flow at once.
+
+     Shared chrome: .lf-wizard__progress + bar, .lf-modal__close, .field
+     inputs, .btn family, .lf-modal__divider, .lf-info-card. Page-local .tk-*
+     only covers the bits with no component yet — the qty stepper, the Apple/
+     Google Pay + Wallet buttons, the "You" pill, the price line rows and the
+     secure-payments note. Details are prefilled from the account.
+
+     Faithful omissions (transient/JS/backend states): live per-field
+     validation, the real card widget (Stripe Elements), Apple/Google Pay
+     sheets, actual PDF/wallet passes, and the dim-and-focus animation of the
+     modal opening over the fishery page (shown here as a static scrim). -->
+
+<style>
+/* Mockup chrome — labelled panel per modal state (matches add-water.html) */
+.tk-page  { padding: 2rem 0 4rem; }
+.tk-intro { max-width: 72ch; font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+.tk-spec  { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg); margin-top: 2rem; box-shadow: var(--shadow-sm); }
+.tk-spec__label { font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+/* Modal over the dimmed fishery page — scrim + centred wizard card */
+.tk-scrim { background: rgba(34,69,63,.55); padding: 44px 24px; display: flex; justify-content: center; }
+.tk-modal { width: 460px; max-width: 100%; background: var(--bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); position: relative; overflow: hidden; }
+.tk-body  { padding: 1.6rem 1.7rem 1.7rem; }
+
+/* Price line rows (config total + confirmation summary) */
+.tk-line { display: flex; justify-content: space-between; align-items: baseline; font-size: .85rem; }
+.tk-line + .tk-line { margin-top: .5rem; }
+
+/* Quantity stepper */
+.tk-stepbtn { width: 2rem; height: 2rem; border-radius: 50%; border: 1.5px solid var(--border); background: var(--bg); color: var(--forest); font-size: .8rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.tk-stepbtn:hover { border-color: var(--forest); background: var(--forest-tint); }
+
+/* "You" pill on the signed-in angler's row */
+.tk-you { font-size: .66rem; font-weight: 700; color: var(--forest); background: var(--forest-tint); padding: .1rem .45rem; border-radius: var(--radius-pill); }
+
+/* Wallet-style payment buttons */
+.tk-pay { border: none; border-radius: var(--radius-pill); padding: .72rem; font-family: var(--font-ui); font-weight: 700; font-size: .92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .35rem; }
+.tk-pay--apple  { background: #000; color: #fff; }
+.tk-pay--google { background: #fff; color: var(--charcoal); border: 1.5px solid var(--border); }
+.tk-secure { display: flex; align-items: center; gap: .4rem; font-size: .74rem; color: var(--muted); margin-top: .9rem; }
+.tk-wallet { border-radius: var(--radius-md); padding: .7rem; font-family: var(--font-ui); font-weight: 700; font-size: .82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .45rem; border: 1.5px solid transparent; }
+.tk-wallet--apple  { background: #000; color: #fff; }
+.tk-wallet--google { background: #000; color: #fff; }
+/* Faithful recreation of the vendor "Add to … Wallet" badge marks — swap for
+   Apple's / Google's official downloadable badge artwork at build time. */
+.tk-wallet svg { height: 17px; width: auto; flex-shrink: 0; }
+.tk-fullbtn { width: 100%; justify-content: center; }
+
+/* Narrow screens: the modal squeezes the wizard footer (Total + Cancel +
+   Continue) onto one row — stack the total above the buttons so it fits.
+   Scoped to the modal; the full-page wizard has room and is untouched. */
+@media (max-width: 430px) {
+  /* Only the Configure footer (Total + button group) needs stacking; the
+     Back/Pay rows have no nav-right and already fit — leave them on one row. */
+  .tk-modal .lf-wizard__nav:has(.lf-wizard__nav-right) { flex-direction: column; align-items: stretch; gap: 0.9rem; }
+  .tk-modal .lf-wizard__nav-right { justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (signed in) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <button class="lf-nav__avatar-btn" popovertarget="account-menu" aria-label="Account menu">
+        <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+        <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+      </button>
+      <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="#">Your Fishery</a>
+        <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
+        <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
+        <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+        <div class="lf-nav__menu-divider"></div>
+        <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container tk-page">
+  <p class="tk-intro">Mockup note: in the app this is a dismissible modal that opens over the dimmed fishery page when Callum taps <b>Buy day ticket</b>. It runs three steps under the house wizard shell — Configure, Payment, Confirmation. The panels below are those three states in order; details are prefilled from his account.</p>
+
+  <!-- ════════════════ Step 1 — Configure ════════════════ -->
+  <div class="tk-spec">
+    <div class="tk-spec__label">Step 1 of 3 — Configure · progress 33% · edit date, angler, address and vehicle reg</div>
+    <div class="tk-scrim"><div class="tk-modal">
+      <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width:33%"></div></div>
+      <button class="lf-modal__close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <div class="tk-body">
+        <p class="lf-wizard__surtitle"><i class="fa-solid fa-ticket"></i> Adult Day Ticket · Durness &amp; KLB AC</p>
+        <div class="lf-wizard__title-row"><h2 class="lf-wizard__title">Ticket details</h2><span class="lf-wizard__counter" style="font-size:.95rem">Step 1 of 3</span></div>
+        <div style="display:flex;flex-direction:column;gap:1.05rem;margin-top:1.4rem">
+          <label class="field"><span class="field__label">Date of fishing</span>
+            <span style="position:relative;display:block"><input class="field__input" value="Saturday 15 August 2026" style="padding-left:2.3rem;width:100%;box-sizing:border-box"><i class="fa-solid fa-calendar" style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--water)"></i></span>
+          </label>
+          <div class="field"><span class="field__label">Angler</span>
+            <span style="position:relative;display:block"><input class="field__input" value="Callum Reid" style="width:100%;padding-right:3rem;box-sizing:border-box"><span class="tk-you" style="position:absolute;right:.65rem;top:50%;transform:translateY(-50%)">You</span></span>
+          </div>
+          <label class="field"><span class="field__label">Address</span><input class="field__input" value="14 Shore Road, Kinlochbervie, IV27 4RG"></label>
+          <label class="field"><span class="field__label">Vehicle registration <span style="font-weight:600;color:var(--muted)">— for the car park</span></span><input class="field__input" value="SA68 KLB"></label>
+        </div>
+        <div class="lf-wizard__nav" style="margin-top:1.5rem;padding-top:1.25rem">
+          <div><span style="color:var(--muted);font-size:.78rem;font-weight:600">Total</span><div style="font-size:1.35rem;font-weight:800;color:var(--heading);line-height:1.1">£15.90</div></div>
+          <div class="lf-wizard__nav-right">
+            <button class="btn btn--ghost">Cancel</button>
+            <button class="btn btn--accent">Continue <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ════════════════ Step 2 — Payment ════════════════ -->
+  <div class="tk-spec">
+    <div class="tk-spec__label">Step 2 of 3 — Payment · progress 66% · Apple / Google Pay or card. Skipped: real Stripe Elements widget and wallet sheets</div>
+    <div class="tk-scrim"><div class="tk-modal">
+      <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width:66%"></div></div>
+      <button class="lf-modal__close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <div class="tk-body">
+        <p class="lf-wizard__surtitle"><i class="fa-solid fa-ticket"></i> Adult Day Ticket · 15 Aug</p>
+        <div class="lf-wizard__title-row"><h2 class="lf-wizard__title">Payment</h2><span class="lf-wizard__counter" style="font-size:.95rem">Step 2 of 3</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1.4rem">
+          <!-- Mockup stand-ins. At build, use the vendors' system-rendered buttons (not static images):
+               Apple Pay  → <apple-pay-button> web component / -apple-pay-button CSS
+                            developer.apple.com/documentation/apple_pay_on_the_web/displaying_apple_pay_buttons_using_javascript
+               Google Pay → Google Pay API PaymentsClient.createButton()
+                            developers.google.com/pay/api/web/guides/resources/customize -->
+          <button class="tk-pay tk-pay--apple">Apple Pay</button>
+          <button class="tk-pay tk-pay--google">Google Pay</button>
+        </div>
+        <div class="lf-modal__divider"><span>or pay by card</span></div>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <label class="field"><span class="field__label">Cardholder name</span><input class="field__input" value="Callum Reid"></label>
+          <label class="field"><span class="field__label">Card number</span>
+            <span style="position:relative;display:block"><input class="field__input" value="4242 4242 4242 4242" style="width:100%;padding-left:2.3rem;box-sizing:border-box"><i class="fa-solid fa-lock" style="position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:var(--muted)"></i></span>
+          </label>
+          <div class="field-row">
+            <label class="field"><span class="field__label">Expiry</span><input class="field__input" value="08 / 27"></label>
+            <label class="field"><span class="field__label">CVC</span><input class="field__input" value="•••"></label>
+          </div>
+        </div>
+        <p class="tk-secure"><i class="fa-solid fa-shield-halved"></i> Payments are secure and encrypted.</p>
+        <div class="lf-wizard__nav" style="margin-top:1.3rem;padding-top:1.25rem">
+          <button class="btn btn--ghost"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <button class="btn btn--accent"><i class="fa-solid fa-lock"></i> Pay £15.90</button>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ════════════════ Step 3 — Confirmation ════════════════ -->
+  <div class="tk-spec">
+    <div class="tk-spec__label">Step 3 of 3 — Confirmation · progress 100% (success green) · permit emailed, add to wallet, download PDF</div>
+    <!-- single ticket / single angler throughout — see Step 1 -->
+    <div class="tk-scrim"><div class="tk-modal">
+      <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width:100%;background:var(--success)"></div></div>
+      <button class="lf-modal__close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <div class="tk-body">
+        <div style="text-align:center">
+          <div style="width:3.4rem;height:3.4rem;border-radius:50%;background:var(--success-bg);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto .9rem"><i class="fa-solid fa-circle-check"></i></div>
+          <h2 style="font-size:1.3rem;font-weight:800;color:var(--heading)">You're all set</h2>
+          <p style="color:var(--muted);font-size:.88rem;margin-top:.35rem"><i class="fa-solid fa-envelope"></i> Permit sent to callum.reid@mail.com</p>
+        </div>
+        <div class="lf-info-card" style="margin-top:1.3rem">
+          <div class="lf-info-card__header"><span class="lf-info-card__title">Adult Day Ticket</span><i class="fa-solid fa-ticket lf-info-card__icon"></i></div>
+          <div class="lf-info-card__body" style="font-size:.85rem">
+            <div class="tk-line"><span style="color:var(--muted)"><i class="fa-solid fa-calendar" style="color:var(--forest-60);margin-right:.4rem"></i>Date</span><span style="font-weight:700">Sat 15 Aug 2026</span></div>
+            <div class="tk-line"><span style="color:var(--muted)"><i class="fa-solid fa-user" style="color:var(--forest-60);margin-right:.4rem"></i>Angler</span><span style="font-weight:700">C. Reid</span></div>
+            <div class="tk-line"><span style="color:var(--muted)"><i class="fa-solid fa-car" style="color:var(--forest-60);margin-right:.4rem"></i>Vehicle</span><span style="font-weight:700">SA68 KLB</span></div>
+            <div class="tk-line"><span style="color:var(--muted)">Reference</span><span style="font-weight:700">CR-20260815-0427</span></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem">
+          <!-- Marks below are faithful recreations. At build, swap for the vendors' official badge artwork:
+               Add to Apple Wallet  → developer.apple.com/wallet ("Add to Apple Wallet Guidelines", localised badge)
+               Add to Google Wallet → developers.google.com/wallet ("Brand guidelines", official SVG button) -->
+          <button class="tk-wallet tk-wallet--apple"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#fff"/></svg>Add to Apple Wallet</button>
+          <button class="tk-wallet tk-wallet--google"><svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/><path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/></svg>Add to Google Wallet</button>
+        </div>
+        <button class="btn btn--secondary tk-fullbtn" style="margin-top:.6rem"><i class="fa-solid fa-download"></i> Download PDF permit</button>
+        <button class="btn btn--accent tk-fullbtn" style="margin-top:.6rem">Done</button>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

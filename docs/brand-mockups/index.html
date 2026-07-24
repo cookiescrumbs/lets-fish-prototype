@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let's Fish — Mockup Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+<style>
+/* Mockup index — same masthead family as components.html; body is a grid of
+   .lf-info-card groups with chip links. All colour/type from tokens.css. */
+
+/* ── Header (components.html's cs-header pattern) ── */
+.mx-header { background: var(--footer-bg); padding: 1.4rem 0; }
+.mx-header__inner { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; }
+.mx-header__brand { display: flex; align-items: center; gap: 0.6rem; }
+.mx-header__brand .roundel  { height: 2.4rem; }
+.mx-header__brand .wordmark { height: 1.2rem; }
+.mx-header__title { margin-left: auto; color: color-mix(in srgb, var(--bg) 80%, transparent); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.02em; }
+
+/* ── Body ── */
+.mx-container { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+.mx-intro { font-size: 0.9rem; color: var(--muted); max-width: 60ch; margin-bottom: 2rem; }
+.mx-intro code { font-size: 0.85em; }
+
+.mx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; align-items: start; }
+
+.mx-group { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem 1.4rem 1.4rem; box-shadow: var(--shadow-sm); }
+.mx-group--system { background: var(--forest-tint); border-color: color-mix(in srgb, var(--forest) 25%, #fff); }
+.mx-group__title { display: flex; align-items: center; gap: 0.55rem; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--forest); margin-bottom: 0.9rem; }
+.mx-group__title i { font-size: 0.95rem; color: var(--forest-60); }
+.mx-group ul { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.mx-chip { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.9rem;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+  font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.mx-chip:hover { border-color: var(--forest); color: var(--forest); }
+.mx-chip--doc { background: var(--bg-alt); font-family: ui-monospace, monospace; font-size: 0.8rem; }
+.mx-chip--star { background: var(--forest); border-color: var(--forest); color: #fff; }
+.mx-chip--star:hover { background: var(--forest-60); border-color: var(--forest-60); color: #fff; }
+</style>
+</head>
+<body>
+
+<header class="mx-header">
+  <div class="mx-header__inner">
+    <span class="mx-header__brand">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </span>
+    <span class="mx-header__title">Mockup Index</span>
+  </div>
+</header>
+
+<div class="mx-container">
+  <p class="mx-intro">The web design system and its page mockups. Styles are linked straight from the
+     app's <code>tokens.css</code> / <code>components.css</code> — what renders here is what ships.</p>
+
+  <div class="mx-grid">
+
+    <div class="mx-group mx-group--system">
+      <div class="mx-group__title"><i class="fa-solid fa-swatchbook"></i> The system</div>
+      <ul>
+        <li><a class="mx-chip mx-chip--star" href="components.html"><i class="fa-solid fa-shapes"></i> Components &amp; states</a></li>
+        <li><a class="mx-chip mx-chip--doc" href="design-system.md">design-system.md</a></li>
+        <li><a class="mx-chip mx-chip--doc" href="palette.md">palette.md</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group mx-group--system">
+      <div class="mx-group__title"><i class="fa-solid fa-ticket"></i> Day-ticket flow · Durness &amp; KLB AC</div>
+      <ul>
+        <li><a class="mx-chip mx-chip--star" href="fishery-show.html"><i class="fa-solid fa-store"></i> Fishery page</a></li>
+        <li><a class="mx-chip" href="buy-day-ticket.html">Buy day ticket</a></li>
+        <li><a class="mx-chip" href="day-permit.html">Wallet + PDF permit</a></li>
+        <li><a class="mx-chip" href="permit-email.html">Confirmation email</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-water"></i> Public pages</div>
+      <ul>
+        <li><a class="mx-chip" href="homepage.html">Homepage</a></li>
+        <li><a class="mx-chip" href="destinations.html">Destinations</a></li>
+        <li><a class="mx-chip" href="nearby-waters.html">Nearby waters</a></li>
+        <li><a class="mx-chip" href="fisheries.html">Fisheries</a></li>
+        <li><a class="mx-chip" href="fishery-show.html">Fishery show</a></li>
+        <li><a class="mx-chip" href="waters-show.html">Water show</a></li>
+        <li><a class="mx-chip" href="fishlists.html">Fishlists</a></li>
+        <li><a class="mx-chip" href="fishlist-show.html">Fishlist show</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-cloud-sun"></i> Conditions overlay</div>
+      <ul>
+        <li><a class="mx-chip" href="conditions.html">Overlay — all states</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-user"></i> Auth + account</div>
+      <ul>
+        <li><a class="mx-chip" href="sign-in.html">Sign in</a></li>
+        <li><a class="mx-chip" href="sign-up.html">Sign up</a></li>
+        <li><a class="mx-chip" href="forgot-password.html">Forgot password</a></li>
+        <li><a class="mx-chip" href="manage-account.html">Manage account</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-pen-to-square"></i> Editors + wizards</div>
+      <ul>
+        <li><a class="mx-chip" href="add-water.html">Add water</a></li>
+        <li><a class="mx-chip" href="add-fishery.html">Add fishery</a></li>
+        <li><a class="mx-chip" href="edit-water.html">Edit water</a></li>
+        <li><a class="mx-chip" href="edit-fishery.html">Edit fishery</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-file-lines"></i> Static + legal</div>
+      <ul>
+        <li><a class="mx-chip" href="contact.html">Contact</a></li>
+        <li><a class="mx-chip" href="credits.html">Credits</a></li>
+        <li><a class="mx-chip" href="terms.html">Terms</a></li>
+        <li><a class="mx-chip" href="privacy.html">Privacy</a></li>
+      </ul>
+    </div>
+
+    <div class="mx-group">
+      <div class="mx-group__title"><i class="fa-solid fa-triangle-exclamation"></i> Errors</div>
+      <ul>
+        <li><a class="mx-chip" href="error-404.html">404</a></li>
+        <li><a class="mx-chip" href="error-500.html">500</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

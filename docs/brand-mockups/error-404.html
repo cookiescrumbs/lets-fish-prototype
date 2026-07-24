@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Page not found</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   404 mockup — replaces Rails' default public/404.html. Layout is duplicated
+   in error-500.html ON PURPOSE: Rails serves public/*.html standalone (no
+   layout, no asset pipeline), so on port each error page gets tokens +
+   these few rules INLINED into one self-contained file — a shared component
+   would not survive the port. Solid nav (brand only — links may be what
+   just broke) + centred message; no footer.
+   ========================================================================== */
+.er-main { min-height: calc(100vh - var(--nav-h)); display: flex; align-items: center; justify-content: center; text-align: center; padding: 3rem 1.25rem; }
+.er-code { font-size: 6.5rem; font-weight: 800; line-height: 1; color: var(--stone); letter-spacing: -0.03em; }
+.er-title { font-size: 1.5rem; font-weight: 800; color: var(--heading); margin-top: 0.75rem; }
+.er-text { font-size: 0.95rem; color: var(--muted); margin: 0.6rem 0 1.75rem; }
+</style>
+</head>
+<body>
+
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+  </div>
+</nav>
+
+<main class="er-main">
+  <div>
+    <p class="er-code">404</p>
+    <h1 class="er-title">The page you were looking for doesn't exist.</h1>
+    <p class="er-text">You may have mistyped the address, or the page may have moved.</p>
+    <a class="btn btn--primary" href="homepage.html">Back to the homepage</a>
+  </div>
+</main>
+
+</body>
+</html>

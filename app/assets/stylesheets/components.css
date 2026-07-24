@@ -1,0 +1,934 @@
+/* ==========================================================================
+   Let's Fish — component library (web design system)
+   Shared, reusable chrome. Pages <link> tokens.css then components.css, and
+   add only their page-specific CSS on top.
+
+   SCOPE: seeded with the pieces that already repeat across pages — the site
+   header (two variants) and the footer. Grow this file as patterns recur
+   while building out the page mockups (Rule of Three). Buttons, form fields,
+   alerts and badges are catalogued in components.html and move here when a
+   real page uses them.
+
+   PORTING: this file + tokens.css are the durable deliverable. Both drop into
+   the Rails asset pipeline (CSS custom properties work natively, or translate
+   to SCSS); the class names below get applied to the matching ERB partials
+   (shared/_navigation, shared/_footer, …) during the reskin.
+   ========================================================================== */
+
+/* ── Reset ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+img { display: block; }
+a { color: var(--primary); text-decoration: none; transition: color 0.15s ease; }
+a:hover { color: var(--primary-hover); }  /* colour-darken only — structural/card/button links must not underline; body copy opts in below */
+ul { list-style: none; }
+
+/* ── Text links ──
+   Links inside body copy. Forest-on-charcoal is a hue-only difference, so the
+   underline is the cue that doesn't depend on colour vision. Scoped to prose
+   contexts — card bodies only through their <p>s, which keeps the legal
+   Contents list and any .btn in a card body undecorated. */
+.prose a,
+.lf-info-card__body p a,
+.lf-legal__body a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.prose a:hover,
+.lf-info-card__body p a:hover,
+.lf-legal__body a:hover { text-decoration-thickness: 2px; }
+
+/* ── Layout ── */
+.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--space-5); }
+
+/* ==========================================================================
+   Site header — two variants:
+     .lf-nav--transparent  floats over a hero photo (white logo + links)
+     .lf-nav--solid        forest bar for pages WITHOUT a hero (the standard)
+   ========================================================================== */
+.lf-nav { position: relative; z-index: 50; height: var(--nav-h); }
+.lf-nav--transparent { background: transparent; }
+.lf-nav--solid       { background: var(--footer-bg); }
+
+.lf-nav__inner {
+  max-width: var(--container); height: 100%; margin: 0 auto; padding: 0 var(--space-5);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.lf-nav__brand { display: flex; align-items: center; gap: 0.6rem; }
+.lf-nav__brand .roundel  { height: 2.6rem; width: auto; }
+.lf-nav__brand .wordmark { height: 1.3rem;  width: auto; }
+/* over a photo the lockup needs separation from bright areas */
+.lf-nav--transparent .lf-nav__brand .roundel  { filter: drop-shadow(0 1px 5px rgba(0,0,0,0.35)); }
+.lf-nav--transparent .lf-nav__brand .wordmark { filter: drop-shadow(0 1px 6px rgba(0,0,0,0.45)); }
+
+.lf-nav__actions { display: flex; align-items: center; gap: 0.9rem; }
+.lf-nav__link { font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.lf-nav__link:hover { color: #fff; }
+.lf-nav--transparent .lf-nav__link { color: rgba(255,255,255,0.92); text-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+.lf-nav--solid       .lf-nav__link { color: rgba(255,255,255,0.85); }
+
+.lf-nav__btn {
+  font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1.3rem; white-space: nowrap;
+  border-radius: var(--radius-pill); transition: background 0.15s ease, color 0.15s ease;
+}
+/* small screens: drop the Add-your-fishery link (still in the CTA panel +
+   footer) and tighten the buttons — logo + Sign in/Sign up fit a phone */
+@media (max-width: 560px) {
+  .lf-nav__link { display: none; }
+  .lf-nav__actions { gap: 0.6rem; }
+  .lf-nav__btn { padding: 0.45rem 1rem; }
+}
+.lf-nav__btn--outline { color: #fff; border: 1.5px solid rgba(255,255,255,0.6); }
+.lf-nav__btn--outline:hover { border-color: #fff; background: rgba(255,255,255,0.12); }
+/* primary CTA: forest over a photo (reads on the dark scrim), sunset on the forest bar */
+.lf-nav--transparent .lf-nav__btn--primary { background: var(--primary); color: #fff; }
+.lf-nav--transparent .lf-nav__btn--primary:hover { background: var(--primary-hover); }
+.lf-nav--solid       .lf-nav__btn--primary { background: var(--sunset); color: var(--charcoal); }
+.lf-nav--solid       .lf-nav__btn--primary:hover { background: var(--burnt); }
+
+/* ── Signed-in state — avatar pill replacing the Sign in/Sign up buttons.
+   Hamburger + avatar (image, or the default circle-user glyph) opening the
+   account menu. Menu uses the native Popover API (light-dismiss + Escape,
+   no JS); placement via CSS anchor positioning — thinner support, add a
+   fallback when porting if needed (same caveat as the waters-show overflow). */
+.lf-nav__avatar-btn {
+  anchor-name: --lf-nav-account;
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.3rem 0.35rem 0.3rem 0.85rem;
+  border-radius: var(--radius-pill); border: 1.5px solid rgba(255,255,255,0.35);
+  background: transparent; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease;
+}
+.lf-nav__avatar-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.6); }
+.lf-nav__hamburger { color: rgba(255,255,255,0.85); font-size: 0.85rem; }
+.lf-nav__avatar { width: 1.9rem; height: 1.9rem; border-radius: 50%; object-fit: cover; }
+.lf-nav__avatar--default { color: rgba(255,255,255,0.85); font-size: 1.9rem; }
+
+.lf-nav__menu { margin: 0; inset: auto; border: none; padding: 0.4rem; min-width: 220px;
+  background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+  position: absolute; position-anchor: --lf-nav-account; top: calc(anchor(bottom) + 0.5rem); right: anchor(right); }
+.lf-nav__menu:popover-open { display: flex; flex-direction: column; }
+.lf-nav__menu-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600; color: var(--forest); }
+.lf-nav__menu-item:hover { background: var(--forest-tint); }
+.lf-nav__menu-item i { color: var(--muted); }
+.lf-nav__menu-divider { height: 1px; background: var(--border); margin: 0.35rem 0.5rem; }
+
+/* ==========================================================================
+   Buttons — the standard action button. Variants: primary (forest),
+   accent (sunset CTA), secondary (forest outline), danger-outline
+   (destructive actions — Clear route on edit-water), ghost (quiet text).
+   States: :hover / .is-pressed / :disabled (or .is-disabled). Catalogued
+   in components.html; lifted here once a real page (waters#show) used them.
+   ========================================================================== */
+.btn { font-family: var(--font-ui); font-size: 0.85rem; font-weight: 600; padding: 0.6rem 1.4rem; border-radius: var(--radius-pill);
+  border: 1.5px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease; }
+.btn--primary { background: var(--primary); color: var(--bg); }
+.btn--primary:hover, .btn--primary.is-hover { background: var(--primary-hover); }
+.btn--primary.is-pressed { background: color-mix(in srgb, var(--forest) 70%, #000); transform: translateY(1px); }
+.btn--accent { background: var(--sunset); color: var(--charcoal); }
+.btn--accent:hover, .btn--accent.is-hover { background: var(--burnt); }
+.btn--accent.is-pressed { background: color-mix(in srgb, var(--burnt) 82%, #000); color: var(--bg); transform: translateY(1px); }
+.btn--secondary { background: var(--bg); border-color: var(--primary); color: var(--primary); }
+.btn--secondary:hover, .btn--secondary.is-hover { background: var(--primary); color: var(--bg); }
+.btn--secondary.is-pressed { background: var(--primary-hover); color: var(--bg); transform: translateY(1px); }
+.btn--danger-outline { background: transparent; border-color: var(--error); color: color-mix(in srgb, var(--error) 78%, #000); }
+.btn--danger-outline:hover, .btn--danger-outline.is-hover { background: var(--error); color: #fff; }
+.btn--danger-outline.is-pressed { background: color-mix(in srgb, var(--error) 80%, #000); color: #fff; transform: translateY(1px); }
+.btn--ghost { background: transparent; color: var(--primary); }
+.btn--ghost:hover, .btn--ghost.is-hover { color: var(--primary-hover); background: var(--forest-tint); }
+.btn--ghost.is-pressed { color: color-mix(in srgb, var(--forest) 70%, #000); }
+.btn.is-disabled, .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.btn--lg { padding: 0.8rem 2rem; font-size: 0.95rem; }  /* wizard CTAs: Get started / final submit */
+
+/* ==========================================================================
+   Form fields — label-above pattern (chosen over the app's current floating
+   labels: no JS, label stays visible, plays well with autofill). States:
+   focus / error / success / disabled, plus a native-checkbox row. Catalogued
+   in components.html; lifted here when the auth pages used them.
+   ========================================================================== */
+.field { display: flex; flex-direction: column; gap: 0.35rem; }
+.field__label { font-size: 0.78rem; font-weight: 700; color: var(--heading); }
+.field__input { font-family: var(--font-ui); font-size: 0.9rem; padding: 0.6rem 0.85rem; border-radius: 0.6rem; max-width: 100%;
+  border: 1.5px solid var(--border); background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+.field__input::placeholder { color: var(--muted); }
+textarea.field__input { resize: vertical; }
+.field__input:focus, .field__input.is-focus { border-color: var(--water); box-shadow: 0 0 0 3px color-mix(in srgb, var(--water) 25%, transparent); }
+.field--error .field__input  { border-color: var(--error);   background: var(--error-bg); }
+.field--success .field__input{ border-color: var(--success); background: var(--success-bg); }
+.field__input:disabled, .field--disabled .field__input { background: var(--bg-alt); color: var(--muted); cursor: not-allowed; }
+.field__msg { font-size: 0.74rem; display: flex; align-items: center; gap: 0.35rem; }
+.field--error .field__msg   { color: color-mix(in srgb, var(--error) 78%, #000); }
+.field--success .field__msg { color: color-mix(in srgb, var(--success) 72%, #000); }
+/* checkbox row — native control, brand-tinted via accent-color */
+.field--checkbox { flex-direction: row; align-items: center; gap: 0.55rem; }
+.field__checkbox { width: 1rem; height: 1rem; accent-color: var(--forest); }
+.field__checkbox-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+/* short field-tied note under a control (single-phrase hints go in the label;
+   how-to guidance gets an .alert--info banner instead) */
+.field__hint { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+/* two-up row of fields — collapses on small screens */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   Auth pages — devise sign in / sign up. Full-viewport two-photo background
+   with the forest hero scrim (the transparent nav's second legitimate home),
+   a centred card of label-above fields, sunset submit, OAuth buttons
+   (Google/Apple keep their own brand colours), cross-link footer. No site
+   footer on auth pages, matching the Rails views.
+   ========================================================================== */
+.lf-auth { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+.lf-auth__bg { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+.lf-auth__bg img { width: 100%; height: 100%; object-fit: cover; }
+.lf-auth__bg::after { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, var(--hero-overlay-top), var(--hero-overlay-bottom)); }
+@media (max-width: 640px) {
+  .lf-auth__bg { grid-template-columns: 1fr; }
+  .lf-auth__bg img + img { display: none; }
+}
+.lf-auth__main { position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; padding: 2.5rem 1.25rem 4rem; }
+
+.lf-auth-card { width: 100%; max-width: 420px; background: var(--bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 2.25rem 2rem; }
+.lf-auth-card__title { font-size: 1.45rem; font-weight: 800; color: var(--heading); line-height: 1.25; margin-bottom: 1.5rem; }
+/* subtitle sits between title and form (forgot password) — pull back up under the title */
+.lf-auth-card__subtitle { font-size: 0.9rem; color: var(--muted); margin: -1.1rem 0 1.5rem; }
+.lf-auth-card__note { font-size: 0.76rem; line-height: 1.55; color: var(--muted); margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
+.lf-auth-card__form { display: flex; flex-direction: column; gap: 1rem; }
+.lf-auth-card__submit { justify-content: center; width: 100%; margin-top: 0.25rem; padding-top: 0.75rem; padding-bottom: 0.75rem; font-size: 0.95rem; }
+.lf-auth-card__forgot { display: block; text-align: center; font-size: 0.82rem; font-weight: 600; margin-top: 1rem; }
+.lf-auth-card__oauth { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
+.lf-auth-card__footer { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 1.4rem; }
+.lf-auth-card__footer a { font-weight: 700; }
+
+/* OAuth buttons — provider brand colours, not ours */
+.lf-oauth-btn { display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  font-family: var(--font-ui); font-size: 0.88rem; font-weight: 600;
+  padding: 0.7rem 1rem; border-radius: var(--radius-pill); border: 1.5px solid var(--border);
+  cursor: pointer; transition: background 0.15s ease; }
+.lf-oauth-btn--google { background: #fff; color: var(--charcoal); }
+.lf-oauth-btn--google:hover { background: color-mix(in srgb, var(--charcoal) 5%, #fff); }
+.lf-oauth-btn--apple { background: #000; color: #fff; border-color: #000; }
+.lf-oauth-btn--apple:hover { background: #1a1a1a; }
+/* "Continue with email" — not a provider, so it takes OUR colours (forest
+   outline) while keeping the OAuth stack's shape and width */
+.lf-oauth-btn--email { background: transparent; color: var(--forest); border-color: var(--forest); }
+.lf-oauth-btn--email:hover { background: var(--forest-tint); }
+/* Rails: button_to wraps each button in a <form class="button_to">, making
+   the FORM the stretching flex child instead of the button. display:contents
+   hides the wrapper from layout so the buttons fill the stack like the bare
+   ones above. Inert in the mockups; load-bearing on the port. */
+.lf-auth-card__oauth form.button_to { display: contents; }
+
+/* ==========================================================================
+   Modal — native <dialog>. The replacement for the old modal library, retired
+   in reskin phase 10 (the JS bundle now leaves both layouts). Straight into
+   components.css (the map-markers / conditions-kit precedent) — the Rails
+   partials exist, there is no page to mock. Two states, both live specimens
+   in components.html:
+
+     • default    — dismissible (shared/_sign_in_modal): × close, backdrop
+                    click, Escape. showModal() gives backdrop + focus trap.
+     • --gated    — inescapable (shared/_sign_in_gate_modal, the usage wall):
+                    no close button, no light-dismiss. A <dialog>'s backdrop is
+                    inert, so Escape is the only exit to block — and since
+                    preventDefault on the `cancel` event does NOT reliably hold
+                    a modal open under Chromium's close-watcher, the usage-wall
+                    controller swallows the Escape keydown at capture instead.
+
+   COMPOSES .lf-auth-card — the markup is <dialog class="lf-auth-card
+   lf-modal">, so the box (width, padding, radius, shadow, background) has
+   ONE definition and the body is the auth card's own furniture reused
+   (.lf-oauth-btn, __oauth, __footer, __submit). This class adds only what a
+   <dialog> needs: UA resets, phone side-margin, backdrop, close button,
+   "or" divider. (No logo — the app's logo-trout header is
+   dropped on port.) Both Rails modals render one shared partial
+   (shared/_sign_in_modal_body), so the body ports once. Catalogued as
+   variants in the Auth card section of components.html.
+   ========================================================================== */
+.lf-modal {
+  /* Don't touch `position` — dialog:modal's UA rule sets fixed + inset:0
+     to center it. But the global `* { margin: 0 }` reset (line 19) wipes
+     the UA's `margin: auto` that inset:0 centering depends on, so it must
+     be restored explicitly here.
+     width overrides the card's 100% so phones keep a side margin. */
+  width: calc(100% - 2rem); margin: auto;
+  border: none; color: var(--text);
+}
+/* forest scrim, matching the hero overlays (::backdrop sits in the top layer —
+   a literal rgba, not a var(), so it can't depend on custom-property inheritance) */
+.lf-modal::backdrop { background: rgba(34, 69, 63, 0.55); }
+.lf-modal__close {
+  position: absolute; top: 1rem; right: 1rem;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg); border: 1.5px solid var(--border); color: var(--muted);
+  font-size: 0.9rem; cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+}
+.lf-modal__close:hover { background: var(--cta-bg); color: var(--forest); }
+/* "or" rule — the one genuinely new bit of chrome; separates the primary
+   Sign-up CTA from the alternatives below it */
+.lf-modal__divider { display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0; }
+.lf-modal__divider::before, .lf-modal__divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.lf-modal__divider span { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+/* the divider already separates this stack — drop the auth card's own rule */
+.lf-modal .lf-auth-card__oauth { margin-top: 0; padding-top: 0; border-top: none; }
+
+/* ==========================================================================
+   Search bar — pill input with a leading icon. Shared chrome: destinations
+   index, nearby-waters toolbar, and other browse/search surfaces. The page
+   sets the WIDTH (e.g. max-width on a wrapper); the component is the chrome.
+   ========================================================================== */
+.lf-search-bar {
+  display: flex; align-items: center; width: 100%;
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+  padding: 0.65rem 1.1rem; transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.lf-search-bar:focus-within { border-color: var(--water); box-shadow: 0 0 0 3px color-mix(in srgb, var(--water) 22%, transparent); }
+.lf-search-bar__icon { color: var(--water); margin-right: 0.6rem; }
+.lf-search-bar__input {
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+  font-family: var(--font-ui); font-size: 0.9rem; color: var(--text);
+}
+.lf-search-bar__input::placeholder { color: var(--muted); }
+
+/* ==========================================================================
+   List/Map toggle — segmented pill pairing a List and a Map view button.
+   Shared by browse/search surfaces (nearby-waters toolbar, the water-show
+   "Explore nearby" section). The page owns the toolbar layout around it.
+   ========================================================================== */
+.lf-toggle { display: inline-flex; background: var(--chip-bg); border: 1px solid var(--cta-border); border-radius: var(--radius-pill); padding: 0.25rem; }
+.lf-toggle__btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-ui); font-size: 0.85rem; font-weight: 600; color: var(--text);
+  background: transparent; border: none; cursor: pointer;
+  padding: 0.45rem 1.1rem; border-radius: var(--radius-pill);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.lf-toggle__btn--active { background: var(--forest); color: #fff; box-shadow: var(--shadow-sm); }
+
+/* ==========================================================================
+   Explore banner — contour-wave header band pairing a heading + result count
+   with the List/Map search toolbar. The standard page-head band on every
+   hero-less content page (nearby#waters, fisheries, fishlists, contact,
+   legal, manage-account, the edit pages); also the embedded onward-journey
+   section on waters#show. The contour texture (same motif as
+   the homepage features section) is baked in as a ::before data-URI
+   background — pages add NO markup for it.
+   ========================================================================== */
+.lf-explore-banner { position: relative; overflow: hidden; background: var(--bg-alt); border-bottom: 1px solid var(--border); padding: 2.5rem 0; }
+.lf-explore-banner::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.55;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 500'><g fill='none' stroke='%2322453F' stroke-opacity='0.08' stroke-width='1.5'><path d='M-50 80 C200 20 380 140 620 90 C860 40 1020 150 1250 100'/><path d='M-50 130 C200 70 380 190 620 140 C860 90 1020 200 1250 150'/><path d='M-50 180 C200 120 380 240 620 190 C860 140 1020 250 1250 200'/><path d='M-50 230 C200 170 380 290 620 240 C860 190 1020 300 1250 250'/><path d='M-50 280 C200 220 380 340 620 290 C860 240 1020 350 1250 300'/><path d='M-50 330 C200 270 380 390 620 340 C860 290 1020 400 1250 350'/><path d='M-50 380 C200 320 380 440 620 390 C860 340 1020 450 1250 400'/><path d='M-50 430 C200 370 380 490 620 440 C860 390 1020 500 1250 450'/></g></svg>") center / cover no-repeat; }
+.lf-explore-banner .container { position: relative; z-index: 1; }
+.lf-explore-banner__title { font-size: clamp(1.35rem, 1rem + 2vw, 2rem); font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
+.lf-explore-banner__count { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; color: var(--muted); margin-top: 0.5rem; }
+.lf-explore-banner__count i { color: var(--sunset); }
+.lf-explore-banner__toolbar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+/* title-row with a right-aligned action — edit pages' View water / View fishery */
+.lf-explore-banner__row { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
+.lf-explore-banner__search { flex: 1; min-width: 240px; max-width: 480px; }
+.lf-explore-banner .lf-breadcrumb { margin-bottom: 0.6rem; }
+
+/* Breadcrumb — Home / … / current. Shared trail; sits inside the explore banner. */
+.lf-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; font-size: 0.8rem; color: var(--muted); }
+.lf-breadcrumb a { color: var(--muted); }
+.lf-breadcrumb a:hover { color: var(--forest); }
+.lf-breadcrumb__sep { color: var(--border); }
+.lf-breadcrumb__current { color: var(--forest); font-weight: 600; }
+
+/* ==========================================================================
+   Card grid — the browse-surface grid wrapping .lf-water-card (nearby,
+   waters#show explore-nearby, fishlists, fisheries#show). 4-up by default;
+   --cols-3 for fisheries#index (Rails col-lg-4).
+   ========================================================================== */
+.lf-card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; padding: 2rem 0 4rem; }
+.lf-card-grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 980px) { .lf-card-grid, .lf-card-grid--cols-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .lf-card-grid, .lf-card-grid--cols-3 { grid-template-columns: 1fr; } }
+
+/* Map placeholder — the List/Map toggle's alternate view. Live Leaflet can't
+   be mocked statically; hidden by default like Rails' d-none. */
+.lf-map-placeholder { display: none; height: 460px; margin: 2rem 0 4rem; border-radius: var(--radius-lg); border: 1px solid var(--border); background:
+  repeating-linear-gradient(45deg, var(--bg-alt), var(--bg-alt) 18px, var(--bg) 18px, var(--bg) 36px);
+  align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; gap: 0.5rem; }
+/* --inline — visible embedded-map panel (waters-show route map; edit-water's
+   lake-search / annotations / boats / parking / route maps). --sm is shorter. */
+.lf-map-placeholder--inline { display: flex; height: 400px; margin: 0; }
+.lf-map-placeholder--sm { height: 300px; }
+
+/* ==========================================================================
+   Water card — the app's most-reused card (shared/_waters partial: nearby,
+   fisheries#show, fishlists, trips). Image with a numbered index + heart
+   overlay, then title, location, description, and water-type / species tags.
+   ========================================================================== */
+.lf-water-card {
+  position: relative;  /* anchor for the stretched title link below */
+  display: flex; flex-direction: column; height: 100%;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.lf-water-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.lf-water-card__image-wrap { position: relative; aspect-ratio: 65 / 38; overflow: hidden; }
+.lf-water-card__img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.lf-water-card:hover .lf-water-card__img { transform: scale(1.04); }
+
+/* numbered index badge — ties each card to its map marker */
+.lf-water-card__index {
+  position: absolute; top: 0.7rem; left: 0.7rem;
+  min-width: 1.7rem; height: 1.7rem; padding: 0 0.45rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-pill); background: var(--forest); color: #fff;
+  font-size: 0.85rem; font-weight: 700; box-shadow: var(--shadow-sm);
+}
+
+/* heart / add-to-fishlist button — raised above the stretched title link so it stays clickable */
+.lf-water-card__hearts { position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2; }
+.lf-water-card__heart {
+  border: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.1rem; height: 2.1rem; border-radius: 50%;
+  background: rgba(255,255,255,0.92); color: var(--forest); font-size: 0.95rem;
+  box-shadow: var(--shadow-sm); transition: background 0.15s ease, color 0.15s ease;
+}
+.lf-water-card__heart:hover { background: #fff; color: var(--sunset); }
+/* added — water is in a fishlist (Rails: the remove-from-fishlist heart) */
+.lf-water-card__heart--active { background: var(--sunset); color: #fff; }
+.lf-water-card__heart--active:hover { background: var(--burnt); color: #fff; }
+
+.lf-water-card__body { display: flex; flex-direction: column; flex: 1; padding: 1rem 1.1rem 1.15rem; }
+.lf-water-card__title { font-size: 1.15rem; font-weight: 700; color: var(--heading); letter-spacing: -0.01em; }
+/* no title hover colour — the whole-card lift + image zoom is the hover affordance */
+/* stretched link: the title anchor covers the whole card, making it all clickable
+   (the heart sits above via z-index). No nested-anchor problem, no markup change. */
+.lf-water-card__title-link::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.lf-water-card__location { font-size: 0.82rem; color: var(--muted); margin-top: 0.15rem; }
+.lf-water-card__desc { font-size: 0.86rem; line-height: 1.5; color: var(--text); margin-top: 0.6rem; }
+
+.lf-water-card__meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; padding-top: 0.85rem; }
+.lf-water-card__tag {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-pill); background: var(--chip-bg); color: var(--chip-fg);
+}
+.lf-water-card__tag i { font-size: 0.75rem; }  /* icon inherits the chip text colour (forest), matching the label */
+
+/* ==========================================================================
+   Map markers — pins + cluster bubbles dropped on the Leaflet nearby map.
+   The app currently hardcodes off-brand hexes in JS (mapIconHtml: water
+   #3b82f6, location/selected #22c55e; clusterIconHtml: #3b82f6). These
+   brand-tokened classes are the replacement to apply on port. White ring
+   keeps a pin legible over busy satellite/hybrid tiles.
+   ========================================================================== */
+.lf-map-pin {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--water); color: #fff; font-size: 16px;
+  border: 2px solid #fff; box-shadow: var(--shadow-sm);
+}
+.lf-map-pin--location { background: var(--sunset); color: var(--charcoal); }  /* page focal point: fishery / water / fishlist centre */
+.lf-map-pin--selected { background: var(--forest); }                          /* active water */
+/* Conditions-overlay pins (coastal): tide station (fa-anchor) and salmon
+   farm (fa-bug) — replace the JS-hardcoded #1e3a8a navy / #f59e0b amber.
+   Farm takes the light-fill/charcoal-glyph convention (white fails on
+   amber). Sized under the water pins so the centroid stays the loudest
+   thing on the map; the farm popup carries the sea-lice count. */
+.lf-map-pin--station { width: 32px; height: 32px; font-size: 14px; background: var(--deep-water); }
+.lf-map-pin--farm    { width: 28px; height: 28px; font-size: 13px; background: var(--warning); color: var(--charcoal); }
+
+.lf-map-cluster {
+  width: 36px; height: 36px; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--forest); border: 3px solid #fff;
+  color: #fff; font-weight: 700; box-shadow: var(--shadow-sm);
+}
+.lf-map-cluster--md { width: 44px; height: 44px; font-size: 15px; }   /* 10–49 waters */
+.lf-map-cluster--lg { width: 52px; height: 52px; font-size: 15px; }   /* 50+ waters */
+
+/* ==========================================================================
+   Water-selection card — compact popup shown when a map marker is clicked
+   (JS: water_card_template / .water-selection-card). Thumb + name + water-
+   type + species, with a close button.
+   ========================================================================== */
+.lf-water-selection-card {
+  position: relative; display: flex; width: 280px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-md); overflow: hidden;
+}
+.lf-water-selection-card__link { display: flex; align-items: center; gap: 0.7rem; flex: 1; min-width: 0; padding: 0.6rem; }
+.lf-water-selection-card__img { flex-shrink: 0; width: 56px; height: 56px; border-radius: var(--radius-sm); object-fit: cover; }
+.lf-water-selection-card__info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.lf-water-selection-card__name { font-size: 0.92rem; font-weight: 700; color: var(--heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lf-water-selection-card__type,
+.lf-water-selection-card__species { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: var(--muted); }
+.lf-water-selection-card__type i,
+.lf-water-selection-card__species i { color: inherit; }  /* icon matches its muted label text */
+.lf-water-selection-card__close {
+  position: absolute; top: 0.35rem; right: 0.35rem;
+  width: 1.5rem; height: 1.5rem; border: none; border-radius: 50%;
+  background: rgba(255,255,255,0.85); color: var(--muted); font-size: 0.75rem;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.lf-water-selection-card__close:hover { background: #fff; color: var(--forest); }
+
+/* ==========================================================================
+   Info card — titled panel with a trailing icon in a soft header band, then
+   prose. The Rails "water-card", now the general card workhorse: waters#show
+   sidebar, fisheries#show (Rules & Info, Contact), the contact form, credits
+   attribution cards, the legal Contents box, and every form-page card
+   (manage-account, edit-fishery, edit-water — see Form page below).
+   The page owns the layout around it (sidebar stack, grid, max-width).
+   ========================================================================== */
+.lf-info-card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: #fff; overflow: hidden; box-shadow: var(--shadow-sm); }
+.lf-info-card__header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.9rem 1.1rem; background: var(--cta-bg); border-bottom: 1px solid var(--border); }
+.lf-info-card__title { font-size: 0.95rem; font-weight: 800; color: var(--heading); }
+.lf-info-card__icon { color: var(--forest-60); font-size: 1rem; }
+.lf-info-card__body { padding: 1.1rem; color: var(--text); font-size: 0.9rem; line-height: 1.6; }
+.lf-info-card__body p + p { margin-top: 0.7rem; }
+
+/* ==========================================================================
+   Form page — single centred column of .lf-info-cards, each body a stack of
+   .fields, closed by a right-aligned actions row (ghost Cancel + accent
+   submit). manage-account, edit-water, edit-fishery — promoted on third use.
+   --wide widens the column for forms whose cards hold maps (edit-water).
+   ========================================================================== */
+.lf-form-col { max-width: 46rem; margin: 0 auto; padding: 2.5rem 0 4rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.lf-form-col--wide { max-width: 52rem; }
+.lf-form-col .lf-info-card__body { display: flex; flex-direction: column; gap: 1rem; }
+.lf-form-col .lf-info-card__body > .btn { align-self: flex-start; }
+.lf-form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
+
+/* ==========================================================================
+   Alerts — inline banners. error/success/warning give system feedback;
+   --info doubles as the form GUIDANCE banner (the app's blue
+   .wizard__ai-hint, brand-toned): lead a form card/field with it when
+   explaining how to use the thing — map instructions, season-override
+   semantics. Short field-tied notes stay .field__hint. Lifted here on
+   first real-page use (edit-water / edit-fishery guidance).
+   ========================================================================== */
+.alert { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.85rem 1.1rem; border-radius: 0.7rem; border-left: 4px solid; font-size: 0.85rem; line-height: 1.5; }
+.alert i { margin-top: 0.15rem; }
+.alert__title { font-weight: 700; }
+.alert--error   { background: var(--error-bg);   border-color: var(--error);   color: color-mix(in srgb, var(--error) 80%, #000); }
+.alert--success { background: var(--success-bg); border-color: var(--success); color: color-mix(in srgb, var(--success) 70%, #000); }
+.alert--warning { background: var(--warning-bg); border-color: var(--warning); color: color-mix(in srgb, var(--warning) 72%, #000); }
+.alert--info    { background: color-mix(in srgb, var(--water) 14%, #fff); border-color: var(--water); color: var(--deep-water); }
+
+/* ==========================================================================
+   Tooltip — ONE bubble for everything Bootstrap tooltips did (Bootstrap is
+   dropped on port): the conditions ⓘ cue explainers, the one-time nudge,
+   the slider hint. Tap-to-reveal via the native Popover API (light-dismiss
+   + Escape, no JS — the nav-menu precedent), NOT hover: the copy is
+   load-bearing on mobile where hover doesn't exist. Plain title attributes
+   remain the free desktop nicety. Placement: lf-popover-anchor.js (pages
+   <script src> it next to this file; once in the layout on port) positions
+   every .lf-tooltip popover — clamped inside the viewport (a bubble centred
+   on an edge-hugging ⓘ would hang off-screen on phones, which CSS anchor
+   positioning can't simply prevent) with the arrow offset to keep pointing
+   at the trigger. No per-instance wiring beyond popovertarget. The nav menu
+   still uses CSS anchor positioning, with the same script as its
+   Safari/Firefox fallback. Product nudges reuse this bubble; their
+   show/dismiss timing stays app JS. overflow: visible beats the UA popover
+   default (overflow: auto), which otherwise clips the arrow; white-space:
+   normal beats nowrap inherited from hosts like the conditions readouts row.
+   ========================================================================== */
+.lf-tooltip { margin: 0; inset: auto; border: none; position: absolute; overflow: visible; white-space: normal;
+  width: max-content; max-width: min(30ch, calc(100vw - 1rem));
+  background: var(--footer-bg); color: color-mix(in srgb, var(--bg) 92%, transparent);
+  padding: 0.5rem 0.8rem; border-radius: var(--radius-sm);
+  font-size: 0.8rem; font-weight: 500; line-height: 1.5; box-shadow: var(--shadow-md); }
+/* arrow — --lf-tooltip-arrow-x (set by the script) keeps it over the trigger
+   when the bubble has been clamped away from centre; 50% otherwise */
+.lf-tooltip::after { content: ''; position: absolute; top: 100%; left: var(--lf-tooltip-arrow-x, 50%);
+  transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--footer-bg); }
+
+/* ==========================================================================
+   Legal page — the pages# template (terms, privacy — credits turned out NOT
+   to be this template; it's banner + attribution info-cards): sticky
+   Contents .lf-info-card beside a prose body. Body covers every element the
+   legal prose uses: h2 sections, h3 sub-sections, lists, links, data tables.
+   ========================================================================== */
+.lf-legal { display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: start; padding: 2.5rem 0 4rem; }
+@media (max-width: 880px) { .lf-legal { grid-template-columns: 1fr; gap: 2rem; } }
+.lf-legal__toc { position: sticky; top: 1.5rem; }
+@media (max-width: 880px) { .lf-legal__toc { position: static; } }
+.lf-legal__toc-list { list-style: decimal inside; display: flex; flex-direction: column; gap: 0.35rem; }
+.lf-legal__toc-list li { font-size: 0.82rem; color: var(--muted); }
+.lf-legal__toc-list a { font-weight: 600; }
+.lf-legal__body { max-width: 72ch; font-size: 0.95rem; line-height: 1.7; color: var(--text); }
+/* body used without the Contents column (pages with no TOC — the bylaws
+   pages on the Rails port); carries the grid's vertical padding itself */
+.lf-legal__body--standalone { padding: 2.5rem 0 4rem; }
+.lf-legal__body h2 { font-size: 1.2rem; font-weight: 800; color: var(--heading); margin: 2rem 0 0.75rem; scroll-margin-top: 1.5rem; }
+.lf-legal__body h2:first-child { margin-top: 0; }
+.lf-legal__body h3 { font-size: 1rem; font-weight: 800; color: var(--heading); margin: 1.4rem 0 0.5rem; }
+.lf-legal__body p + p { margin-top: 0.8rem; }
+.lf-legal__body ul { list-style: disc; padding-left: 1.4rem; margin: 0.8rem 0; }
+.lf-legal__body li + li { margin-top: 0.35rem; }
+.lf-legal__body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.88rem; }
+.lf-legal__body th, .lf-legal__body td { border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+.lf-legal__body th { background: var(--cta-bg); color: var(--heading); font-weight: 800; }
+
+/* ==========================================================================
+   Add-fishery CTA — forest panel with contour texture, icon roundel, title +
+   text and a sunset button. Rails renders the same section on the homepage
+   and fisheries#index (hp-cta partial); lifted here on its second mockup use.
+   The stone-stroke contour texture is a ::before data-URI background — pages
+   add no markup for it.
+   ========================================================================== */
+.lf-cta { padding: 3rem 0 4rem; background: var(--bg-alt); }
+.lf-cta__panel {
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; gap: 2rem;
+  background: var(--primary);
+  border-radius: 1.25rem;
+  padding: 2.5rem 3rem;
+}
+@media (max-width: 640px) { .lf-cta__panel { flex-direction: column; text-align: center; padding: 2rem 1.5rem; } }
+.lf-cta__panel::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300'><g fill='none' stroke='%23D0C7B5' stroke-opacity='0.08' stroke-width='1.5'><path d='M-50 60 C200 10 380 110 620 70 C860 30 1020 120 1250 80'/><path d='M-50 120 C200 70 380 170 620 130 C860 90 1020 180 1250 140'/><path d='M-50 180 C200 130 380 230 620 190 C860 150 1020 240 1250 200'/><path d='M-50 240 C200 190 380 290 620 250 C860 210 1020 300 1250 260'/></g></svg>") center / cover no-repeat; }
+.lf-cta__mark { position: relative; z-index: 1; flex-shrink: 0; display: flex; }
+/* "Put your waters on the map" — map/marker motif, outlined so it reads as
+   decoration rather than a clickable button */
+.lf-cta__plus {
+  width: 4.5rem; height: 4.5rem; border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--bg) 50%, transparent);
+  color: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.lf-cta__content { position: relative; z-index: 1; flex: 1; }
+.lf-cta__title {
+  font-family: var(--display-font);
+  font-size: 1.5rem; font-weight: 700; color: #fff;
+  letter-spacing: -0.015em; line-height: 1.15; margin-bottom: 0.4rem;
+}
+.lf-cta__title em { font-style: italic; color: var(--accent); }
+.lf-cta__text { font-size: 0.875rem; color: rgba(255,255,255,0.78); max-width: 64ch; }
+.lf-cta__btn {
+  position: relative; z-index: 1; flex-shrink: 0;
+  padding: 0.7rem 1.75rem; border-radius: 2rem;
+  background: var(--sunset); color: var(--charcoal);
+  font-size: 0.875rem; font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+.lf-cta__btn:hover { background: var(--burnt); transform: translateY(-1px); }
+
+/* ==========================================================================
+   Form map panels — the interaction layouts shared by edit-water and the
+   add-water wizard (promoted on second use). These layouts are design
+   decisions from the Rails partials + Stimulus controllers and must survive
+   the port: lake-search results LEFT / map RIGHT (result rows and map pins
+   highlight/select each other), Geograph gallery LEFT / photo-pin map RIGHT
+   (photos pinned where they were taken), annotations drawing map 58% /
+   saved-entries panel. The page sets map heights (450 search / 500 route…).
+   ========================================================================== */
+.lf-lake-search { display: flex; gap: 1.5rem; }
+.lf-lake-search__panel { flex: 0 0 40%; min-width: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.lf-lake-search__map { flex: 1; min-width: 0; }
+.lf-search-group { display: flex; }
+.lf-search-group .field__input { flex: 1; border-radius: 0.6rem 0 0 0.6rem; }
+.lf-search-group .btn { border-radius: 0 0.6rem 0.6rem 0; }
+/* result states: hover/map-highlight = tint (hovering a map pin highlights its
+   row and vice versa); selected = SOLID forest */
+.lf-lake-result { display: block; width: 100%; text-align: left; padding: 0.65rem 1rem;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md); background: var(--bg);
+  font-size: 0.85rem; font-weight: 600; color: var(--text); cursor: pointer; }
+.lf-lake-result + .lf-lake-result { margin-top: 0.45rem; }
+.lf-lake-result:hover, .lf-lake-result--map-highlight { border-color: var(--forest); background: var(--forest-tint); }
+.lf-lake-result--selected { border-color: var(--forest); background: var(--forest); color: #fff; }
+
+/* Geograph photo picker — two states: BROWSING (thumbnail grid, add-water) and
+   SELECTED (preview + attribution + change button, edit-water) in the left
+   panel; the photo-location map is always on the right */
+.lf-photo-layout { display: flex; gap: 1.5rem; }
+.lf-photo-layout__gallery { flex: 0 0 40%; min-width: 0; }
+.lf-photo-layout__gallery img { width: 100%; border-radius: var(--radius-md); }
+.lf-photo-layout__map { flex: 1; min-width: 0; }
+.lf-geograph-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.lf-geograph-thumb { border: 2px solid var(--border); border-radius: var(--radius-md); overflow: hidden; cursor: pointer; background: var(--bg); }
+.lf-geograph-thumb:hover { border-color: var(--forest); }
+.lf-geograph-thumb--selected { border-color: var(--forest); box-shadow: 0 0 0 3px var(--forest-tint); }
+.lf-geograph-thumb__img { width: 100%; height: 110px; object-fit: cover; border-radius: 0; }
+.lf-geograph-thumb__caption { padding: 0.4rem 0.6rem; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lf-upload-link { font-size: 0.88rem; font-weight: 600; color: var(--forest); }
+.lf-dropzone { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 1.5rem;
+  border: 2px dashed var(--border); border-radius: var(--radius-md); background: var(--bg-alt); cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; color: var(--muted); text-align: center; max-width: 20rem; }
+.lf-dropzone:hover { border-color: var(--forest); background: var(--forest-tint); }
+.lf-dropzone i { font-size: 1.5rem; }
+.lf-dropzone input { display: none; }
+
+/* Map + side panel — drawing map LEFT (58%), entries panel RIGHT (annotations on both pages; the wizard's Boats step) */
+.lf-map-split { display: flex; gap: 1.5rem; align-items: start; }
+.lf-map-split__map { flex: 0 0 58%; min-width: 0; }
+.lf-map-split__panel { flex: 1; min-width: 0; }
+.lf-annotation-entry { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 0.75rem 0.6rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  font-size: 0.85rem; font-weight: 600; color: var(--heading); }
+.lf-annotation-entry + .lf-annotation-entry { margin-top: 0.5rem; }
+
+/* × button — instant JS removal (annotations, JS-added boats), not a
+   deferred remove-on-save checkbox */
+.lf-x-btn { flex-shrink: 0; width: 1.75rem; height: 1.75rem; display: inline-flex; align-items: center;
+  justify-content: center; background: var(--bg); border: 1.5px solid var(--border); border-radius: 50%;
+  color: var(--muted); font-size: 1rem; line-height: 1; cursor: pointer; }
+.lf-x-btn:hover { border-color: var(--error); color: var(--error); background: var(--error-bg); }
+
+/* under-map drawing controls row (Undo / Clear / Finish) */
+.lf-map-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* Boat entry — recessed sub-panel (persisted boats on edit-water; JS-added
+   boats on both pages, with an .lf-x-btn in the header) */
+.lf-boat { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem 1.25rem; background: var(--bg-alt);
+  display: flex; flex-direction: column; gap: 1rem; }
+.lf-boat__header { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  font-size: 0.88rem; font-weight: 700; color: var(--heading); }
+
+/* Side-by-side panels stack on small screens */
+@media (max-width: 720px) { .lf-lake-search, .lf-photo-layout, .lf-map-split { flex-direction: column; } }
+
+/* ==========================================================================
+   Choice pills — multi/single-select grids of native controls inside
+   bordered pills (species checkboxes, water-type radios). Option cards —
+   the bigger radio-as-card treatment for the important either/or choices
+   (publish status). Both promoted on second use (edit-water → add-water).
+   ========================================================================== */
+.lf-choice-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.lf-choice { display: flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.8rem; border: 1.5px solid var(--border);
+  border-radius: 2rem; font-size: 0.85rem; font-weight: 600; color: var(--text); cursor: pointer; }
+.lf-choice:has(:checked) { border-color: var(--forest); background: var(--forest-tint); }
+.lf-choice input { accent-color: var(--forest); }
+
+.lf-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 640px) { .lf-option-grid { grid-template-columns: 1fr; } }
+.lf-option { cursor: pointer; }
+.lf-option input { position: absolute; opacity: 0; }
+.lf-option__card { display: flex; align-items: center; gap: 0.85rem; padding: 0.9rem 1rem;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md); }
+.lf-option:has(:checked) .lf-option__card { border-color: var(--forest); background: var(--forest-tint); }
+.lf-option__card i { font-size: 1.1rem; color: var(--forest-60); }
+.lf-option__card strong { display: block; font-size: 0.88rem; color: var(--heading); }
+.lf-option__card small { font-size: 0.78rem; color: var(--muted); }
+
+/* ==========================================================================
+   Conditions overlay — the fishing-forecast overlay on waters#show: live map
+   on top, controls sheet at the bottom (verdict pill + hour readouts, 7-day
+   strip, hour slider over colour-banded strips; tide pill + tide band for
+   coastal). Entirely JS-rendered in Rails (conditions.css/tide.css carry
+   hardcoded off-brand hexes) — these brand-tokened classes are the port
+   replacement, same deal as the map markers. Colour decisions: the verdict
+   traffic light maps to the approved Layer-2 semantics (good=success,
+   fair=warning, poor=error); tide signalling maps to the water tokens
+   (prime=water, outside=taupe/stone). The fair pill and the tide pills take
+   dark text — white fails contrast on the amber/water fills (the accent
+   button sets the convention: light fill, charcoal text).
+   ========================================================================== */
+.lf-conditions-sheet { position: absolute; bottom: 0; left: 0; right: 0; height: 260px;
+  background: var(--bg); display: flex; flex-direction: column; justify-content: space-between;
+  padding: 1rem 1.25rem 1.5rem; box-shadow: 0 -2px 8px rgba(34, 69, 63, 0.10); }
+.lf-conditions-sheet--no-tide { height: 220px; }
+.lf-conditions-sheet .lf-pill-row { align-self: center; }
+
+/* pill + its standalone info cue, side by side. The cue is a BUTTON opening
+   an .lf-tooltip via popovertarget (tap-friendly), not a hover title */
+.lf-pill-row { display: inline-flex; align-items: center; gap: 0.4rem; }
+.lf-pill-cue { background: none; border: none; padding: 0; font-size: 0.95rem; color: var(--muted); cursor: help; }
+.lf-pill-cue:hover { color: var(--forest); }
+
+/* hour readouts row — verdict pill, temp / cloud / wind / precip */
+.lf-conditions-readouts { display: flex; align-items: center; justify-content: center; gap: 1rem;
+  font-size: 0.95rem; white-space: nowrap; color: var(--text); }
+
+.lf-verdict-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill); font-weight: 700; text-transform: capitalize;
+  background: var(--muted); color: #fff; }
+.lf-verdict-pill::before { content: '\f578'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.9em; }
+.lf-verdict-pill--good { background: var(--success); }
+.lf-verdict-pill--fair { background: var(--warning); color: var(--charcoal); }
+.lf-verdict-pill--poor { background: var(--error); }
+
+/* 7-day strip */
+.lf-day-strip { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.lf-day-btn { min-width: 64px; padding: 0.4rem 0.75rem; background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text);
+  font-family: var(--font-ui); font-size: 0.9rem; font-weight: 600; line-height: 1.2; cursor: pointer; }
+.lf-day-btn small { display: block; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.lf-day-btn:hover { border-color: var(--forest); color: var(--forest); }
+.lf-day-btn--active, .lf-day-btn--active:hover { background: var(--forest); border-color: var(--forest); color: #fff; }
+.lf-day-btn--active small { color: rgba(255, 255, 255, 0.85); }
+
+/* hour slider over the banded strips */
+.lf-hour-row { display: flex; align-items: flex-end; gap: 1rem; width: 100%; max-width: 480px; margin: 0.75rem auto 0; }
+.lf-hour-label { min-width: 56px; padding-bottom: 2px; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--heading); }
+.lf-hour-slider-wrap { flex: 1; display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+
+.lf-hour-strip { display: flex; height: 8px; width: 100%; border-radius: 999px; overflow: hidden; background: var(--border); }
+.lf-hour-strip__band { flex: 1 1 0; min-width: 0; }
+.lf-hour-strip__band--good { background: var(--success); }
+.lf-hour-strip__band--fair { background: var(--warning); }
+.lf-hour-strip__band--poor { background: var(--error); }
+.lf-hour-strip__band--tide-prime { background: var(--water); }
+.lf-hour-strip__band--tide-outside { background: var(--taupe); }
+.lf-hour-strip__band--tide-unknown { background: var(--bg-alt); }
+
+.lf-hour-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; margin-top: 8px;
+  border-radius: 999px; background: var(--border); outline: none; accent-color: var(--forest); }
+.lf-hour-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px;
+  border-radius: 50%; background: #fff; border: 2px solid var(--forest); box-shadow: var(--shadow-sm); cursor: grab; }
+.lf-hour-slider::-webkit-slider-thumb:active { cursor: grabbing; }
+.lf-hour-slider::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff;
+  border: 2px solid var(--forest); box-shadow: var(--shadow-sm); cursor: grab; }
+
+/* tide pill — status colours mirror the tide strip bands so pill and band
+   agree as the user scrubs */
+.lf-tide-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.7rem;
+  border-radius: 999px; font-size: 0.85rem; font-weight: 600; background: var(--bg-alt); color: var(--muted); }
+.lf-tide-pill::before { content: '\f13d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+.lf-tide-pill--prime { background: var(--water-60); color: color-mix(in srgb, var(--deep-water) 80%, #000); }
+.lf-tide-pill--outside { background: var(--stone-60); color: var(--charcoal); }
+.lf-tide-pill--loading, .lf-tide-pill--unknown { background: var(--bg-alt); color: var(--muted); }
+
+/* wind marker — white circle with mph + perimeter arrow, charcoal-ringed so
+   it reads over busy tiles (replaces the JS #1a1a1a) */
+.lf-wind-icon { position: relative; width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95); border: 1.5px solid var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: var(--charcoal); box-shadow: var(--shadow-sm); }
+.lf-wind-icon__arrow-wrap { position: absolute; inset: 0; pointer-events: none; }
+.lf-wind-icon__arrow-tip { position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 14px; display: block; overflow: visible; }
+
+/* loading skeleton — stone-tinted shimmer while the forecast loads */
+.lf-conditions-skeleton { display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+  width: 100%; max-width: 480px; margin: 0 auto; padding-top: 0.25rem; }
+.lf-conditions-skeleton__pill { display: block; width: 180px; height: 26px; border-radius: 999px; }
+.lf-conditions-skeleton__row { display: flex; gap: 0.85rem; justify-content: center; }
+.lf-conditions-skeleton__row > span { display: block; width: 52px; height: 20px; }
+.lf-conditions-skeleton__days { display: flex; gap: 0.5rem; }
+.lf-conditions-skeleton__days > span { display: block; width: 64px; height: 46px; }
+.lf-conditions-skeleton__slider { width: 100%; height: 24px; margin-top: 0.25rem; }
+.lf-conditions-skeleton__pill, .lf-conditions-skeleton__row > span,
+.lf-conditions-skeleton__days > span, .lf-conditions-skeleton__slider {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--stone) 28%, #fff) 0%,
+    color-mix(in srgb, var(--stone) 12%, #fff) 50%,
+    color-mix(in srgb, var(--stone) 28%, #fff) 100%);
+  background-size: 200% 100%; animation: lf-skeleton-shimmer 1.4s linear infinite; border-radius: 6px; }
+@keyframes lf-skeleton-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lf-conditions-skeleton__pill, .lf-conditions-skeleton__row > span,
+  .lf-conditions-skeleton__days > span, .lf-conditions-skeleton__slider { animation: none; }
+}
+
+@media (max-width: 480px) {
+  .lf-conditions-sheet { padding: 0.75rem 0.875rem 1.25rem; }
+  .lf-conditions-readouts { gap: 0.55rem; font-size: 0.82rem; }
+  .lf-day-strip { gap: 0.35rem; flex-wrap: nowrap; }
+  .lf-day-btn { flex: 1 1 0; min-width: 0; padding: 0.45rem 0.25rem; font-size: 0.85rem; }
+  .lf-day-btn small { font-size: 0.7rem; }
+}
+
+/* ==========================================================================
+   Wizard chrome — the stepped-flow shell shared by the add-water and
+   add-fishery wizards (promoted on second use): 4px progress bar (sticky in
+   Rails), header (surtitle / title + step counter / optional description +
+   status line), stacked-fields body, and the nav row (Back left, Skip/Next
+   right). One header pattern for both wizards — the counter sits right of
+   the title ("Step 2" / "Step 2 of 4"). The info-left/fields-right band
+   (.lf-wizard__band) is the wizard's grouping device for related fields.
+   Wizard pages render no footer (focused flow).
+   ========================================================================== */
+.lf-wizard__progress { height: 4px; background: var(--border); }
+.lf-wizard__progress-bar { height: 100%; background: var(--water); }
+
+.lf-wizard__header { margin-bottom: 2rem; }
+.lf-wizard__surtitle { font-size: 0.8rem; font-weight: 700; color: var(--forest); margin-bottom: 0.15rem; }
+.lf-wizard__title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.lf-wizard__title { font-size: 1.6rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
+.lf-wizard__counter { font-size: 1.3rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.lf-wizard__desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-top: 0.35rem; max-width: 62ch; }
+.lf-wizard__status { font-size: 0.85rem; font-weight: 600; color: var(--forest); margin-top: 0.5rem; }
+
+.lf-wizard__fields { display: flex; flex-direction: column; gap: 1rem; }
+.lf-wizard__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-top: 1.5rem; margin-top: 1.75rem; border-top: 1px solid var(--border); }
+.lf-wizard__nav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+/* Landing step — lead + icon feature list above the Get-started CTA */
+.lf-wizard-landing__lead { font-size: 1rem; color: var(--text); line-height: 1.65; max-width: 54ch; margin-bottom: 2rem; }
+.lf-wizard-landing__features { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2.25rem; }
+.lf-wizard-landing__feature { display: flex; gap: 1rem; align-items: flex-start; }
+.lf-wizard-landing__icon { width: 2.5rem; height: 2.5rem; border-radius: 0.7rem; background: var(--forest-tint); color: var(--forest);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.lf-wizard-landing__feature strong { display: block; font-size: 0.9rem; color: var(--heading); margin-bottom: 0.15rem; }
+.lf-wizard-landing__feature p { font-size: 0.84rem; color: var(--muted); line-height: 1.5; }
+
+/* Info-left / fields-right band — groups related fields with their blurb */
+.lf-wizard__band { display: flex; gap: 3rem; padding: 1.75rem 0; border-bottom: 1px solid var(--border); }
+/* The band before the nav drops its divider — the nav's own border-top is the
+   line above Back/Next. (:last-of-type can't be used: .lf-wizard__nav is the
+   last <div> sibling, so the band is never last-of-type.) */
+.lf-wizard__band:has(+ .lf-wizard__nav) { border-bottom: none; padding-bottom: 0; }
+.lf-wizard__band-info { flex: 0 0 240px; }
+.lf-wizard__band-info h3 { font-size: 1rem; font-weight: 800; color: var(--heading); margin-bottom: 0.5rem; }
+.lf-wizard__band-info p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+.lf-wizard__band-fields { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+@media (max-width: 767px) { .lf-wizard__band { flex-direction: column; gap: 1.25rem; } .lf-wizard__band-info { flex: none; } }
+
+/* ==========================================================================
+   Photo credit — the © caption for CC-licensed imagery, rendered by Rails'
+   shared/_photo_credit partial (water hero, homepage hero, destination
+   cards). Typography ONLY: each context positions it itself (a scoped
+   absolute + offsets, or in-flow inside a positioned container) — an
+   unscoped `position` here breaks containers that shrink-wrap.
+   ========================================================================== */
+.photo-credit { font-size: 0.7rem; color: rgba(255,255,255,0.7); }
+.photo-credit a { color: rgba(255,255,255,0.85); text-decoration: underline; text-underline-offset: 2px; }
+.photo-credit a:hover { color: #fff; }
+
+/* ==========================================================================
+   Mailer band — newsletter signup rendered inside the footer, site-wide.
+   Forest band (one step lighter than --footer-bg so it reads as its own
+   strip), centred copy, pill input group with a sunset submit — the .lf-cta
+   button family. Rails renders three states from shared/_mailer: signed-out
+   (email form → signup funnel), signed-in unsubscribed (Subscribe button),
+   subscribed (confirmation line).
+   ========================================================================== */
+.lf-mailer { background: var(--primary); padding: 3.5rem 0; }
+.lf-mailer__inner { max-width: 560px; margin: 0 auto; text-align: center; }
+.lf-mailer__title { font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+.lf-mailer__text { font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 1.25rem; line-height: 1.6; }
+.lf-mailer__form { max-width: 420px; margin: 0 auto; }
+.lf-mailer__input-group { display: flex; border-radius: var(--radius-pill); overflow: hidden; box-shadow: var(--shadow-sm); }
+.lf-mailer__input { flex: 1; min-width: 0; padding: 0.75rem 1.25rem; border: none; outline: none;
+  font-family: var(--font-ui); font-size: 0.875rem; background: var(--bg); color: var(--text); }
+.lf-mailer__input::placeholder { color: var(--muted); }
+.lf-mailer__submit { flex-shrink: 0; padding: 0.75rem 1.5rem; border: none; cursor: pointer;
+  background: var(--sunset); color: var(--charcoal);
+  font-family: var(--font-ui); font-size: 0.85rem; font-weight: 600; white-space: nowrap;
+  transition: background 0.15s ease; }
+.lf-mailer__submit:hover { background: var(--burnt); }
+.lf-mailer__subscribe-btn { display: inline-flex; align-items: center; padding: 0.65rem 1.75rem;
+  border: none; border-radius: var(--radius-pill); cursor: pointer;
+  background: var(--sunset); color: var(--charcoal);
+  font-family: var(--font-ui); font-size: 0.875rem; font-weight: 600;
+  transition: background 0.15s ease; }
+.lf-mailer__subscribe-btn:hover { background: var(--burnt); }
+.lf-mailer__disclaimer { font-size: 0.75rem; font-style: italic; color: rgba(255,255,255,0.5); margin-top: 0.75rem; }
+
+/* ==========================================================================
+   Footer — forest, used site-wide
+   ========================================================================== */
+.lf-footer { background: var(--footer-bg); color: rgba(255,255,255,0.75); }
+.lf-footer__main { padding: var(--space-7) 0 var(--space-6); }
+.lf-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-6); }
+@media (max-width: 640px) { .lf-footer__grid { grid-template-columns: 1fr; } }
+.lf-footer__brand { display: inline-flex; align-items: center; gap: 0.6rem; }
+.lf-footer__brand .roundel  { height: 2.6rem; width: auto; }
+.lf-footer__brand .wordmark { height: 1.3rem;  width: auto; }
+.lf-footer__tagline { font-size: 0.82rem; margin-top: 0.6rem; color: rgba(255,255,255,0.55); }
+.lf-footer__heading { font-size: 0.8rem; font-weight: 600; color: #fff; margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.lf-footer__links li { margin-bottom: 0.45rem; }
+.lf-footer__links a { font-size: 0.82rem; color: rgba(255,255,255,0.65); }
+.lf-footer__links a:hover { color: #fff; }
+.lf-footer__bottom { border-top: 1px solid rgba(255,255,255,0.12); padding: 1.1rem 0; font-size: 0.75rem; color: rgba(255,255,255,0.45); }

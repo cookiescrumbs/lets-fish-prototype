@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Durness and Kinlochbervie Angling Club</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Fishery show mockup — fisheries#show as the visiting angler's JUMP-OFF
+   page (the AllTrails trail-page model: one section per decision, sticky
+   anchor tabs), populated with the real Durness and Kinlochbervie Angling
+   Club listing (lets.fish). D&KLB is the FIRST PAID-FEATURES FISHERY —
+   tickets, memberships and boats are bought natively on Let's Fish, so
+   those CTAs are sunset Buy/Book buttons, with the in-person outlet kept
+   as fine print.
+   No hero photo BY DESIGN (not an omission): photo hero = a water,
+   banner head = an organisation page. Solid forest header + explore
+   banner, plus a club-crest badge left of the title (renders nothing when
+   a fishery has no logo) and an AllTrails-style stats row atop Overview.
+   INVENTED CONTENT, pending real data from the club: prices, offers,
+   boats, season dates, fishery/boat rules, and the placeholder crest.
+   Real content: description, species, contact, outlet address, waters.
+   TWO STATES SHOWN TOGETHER (the edit-water boats precedent): OWNER
+   banner actions (Edit fishery / Add water) + the claim card Rails shows
+   only to visitors and signed-in non-owners. Admin-only buttons skipped
+   as elsewhere.
+   ========================================================================== */
+
+/* ── Sticky section tabs ── */
+.fs-tabs-bar { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.fs-tabs { display: flex; gap: 0.25rem; overflow-x: auto; }
+.fs-tab {
+  padding: 0.95rem 1.1rem; white-space: nowrap;
+  font-size: 0.88rem; font-weight: 700; color: var(--muted);
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.fs-tab:hover { color: var(--forest); }
+.fs-tab--active { color: var(--forest); border-bottom-color: var(--sunset); }
+
+/* ── Stacked sections ── */
+.fs-section { padding: 2.75rem 0; scroll-margin-top: 3.5rem; }
+.fs-section--shaded { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.fs-section__heading { font-size: 1.15rem; font-weight: 800; color: var(--heading); margin-bottom: 1.25rem; }
+
+/* ── Banner: club crest badge (absent → renders nothing, title sits flush) ── */
+.fs-banner-id { display: flex; align-items: center; gap: 1.25rem; }
+.fs-crest {
+  width: 76px; height: 76px; flex-shrink: 0;
+  border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); object-fit: contain;
+}
+
+/* ── Stats row (the AllTrails glance row: decide before you read) ── */
+.fs-stats { display: flex; flex-wrap: wrap; gap: 0.75rem 2.25rem; margin-bottom: 2.25rem; }
+.fs-stats li + li { border-left: 1px solid var(--border); padding-left: 2.25rem; }
+.fs-stats__num { display: block; font-size: 1.35rem; font-weight: 800; color: var(--heading); }
+.fs-stats__label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+
+/* ── Overview: prose + attributes left, claim card right ── */
+.fs-overview { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: start; }
+@media (max-width: 880px) { .fs-overview { grid-template-columns: 1fr; gap: 2rem; } }
+.fs-prose { color: var(--text); line-height: 1.65; max-width: 70ch; }
+.fs-prose p + p { margin-top: 0.9rem; }
+.fs-attrs { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; margin-top: 1.5rem; }
+.fs-attrs li { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.9rem; font-weight: 600; color: var(--heading); }
+.fs-attrs li i { color: inherit; }  /* leading label icon inherits its label colour */
+
+/* Claim card — "Is this your fishery?" conversion panel (fishery owners) */
+.fs-claim-card {
+  border: 1px solid var(--cta-border); border-radius: var(--radius-lg);
+  background: var(--cta-bg); box-shadow: var(--shadow-sm);
+  padding: 1.75rem 1.5rem; text-align: center;
+}
+.fs-claim-card__icon {
+  width: 3.2rem; height: 3.2rem; margin: 0 auto 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--forest-tint); color: var(--forest); font-size: 1.2rem;
+}
+.fs-claim-card__title { font-size: 1.05rem; font-weight: 800; color: var(--heading); margin-bottom: 0.4rem; }
+.fs-claim-card__text { font-size: 0.85rem; line-height: 1.55; color: var(--muted); margin-bottom: 1.1rem; }
+
+/* ── Offer cards — tickets, memberships AND boats (one card, two uses) ── */
+.fs-offer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; align-items: stretch; }
+.fs-offer-grid--boats { grid-template-columns: repeat(3, 1fr); }  /* 2 boats + boat-rules card */
+@media (max-width: 1000px) { .fs-offer-grid, .fs-offer-grid--boats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px)  { .fs-offer-grid, .fs-offer-grid--boats { grid-template-columns: 1fr; } }
+.fs-offer {
+  display: flex; flex-direction: column;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.fs-offer__img { width: 100%; aspect-ratio: 650 / 380; object-fit: cover; }
+.fs-offer__body { display: flex; flex-direction: column; flex: 1; padding: 1.5rem; }
+.fs-offer__name { font-size: 1rem; font-weight: 800; color: var(--heading); }
+.fs-offer__price { font-size: 1.6rem; font-weight: 800; color: var(--heading); margin: 0.35rem 0 0.75rem; }
+.fs-offer__price small { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+.fs-offer__meta { font-size: 0.85rem; line-height: 1.55; color: var(--muted); margin-bottom: 1.1rem; }
+.fs-offer__meta li { display: flex; align-items: baseline; gap: 0.55rem; }
+.fs-offer__meta li + li { margin-top: 0.35rem; }
+.fs-offer__meta i { width: 1rem; text-align: center; color: var(--forest-60); }
+.fs-offer .btn { margin-top: auto; justify-content: center; }
+
+/* Section fine print (in-person outlet, Sunday rule) */
+.fs-note { font-size: 0.85rem; line-height: 1.6; color: var(--muted); margin-top: 1.25rem; max-width: 70ch; }
+.fs-note i { margin-right: 0.4rem; }
+
+/* ── Season strips — open month = solid forest (dark), closed = pale track.
+      Lightness carries the meaning, not hue (colour-blind-safe). ── */
+.fs-season { max-width: 46rem; }
+.fs-season + .fs-season { margin-top: 1.75rem; }
+.fs-season__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+.fs-season__species { font-size: 0.95rem; font-weight: 800; color: var(--heading); }
+.fs-season__species i { margin-right: 0.45rem; }
+.fs-season__dates { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.fs-season__track { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.fs-season__month {
+  height: 1.9rem; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--muted); background: var(--bg);
+  border: 1px solid var(--border);
+}
+.fs-season__month:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.fs-season__month:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.fs-season__month--open { background: var(--forest); border-color: var(--forest); color: #fff; }
+
+/* ── Fishery rules — one stack of native <details>, collapsed; any length, no JS ── */
+.fs-rule-list { padding-left: 1.1rem; }
+.fs-rule-list li + li { margin-top: 0.45rem; }
+.fs-disclosures { max-width: 46rem; }
+.fs-disclosure { border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; }
+.fs-disclosure + .fs-disclosure { margin-top: 0.75rem; }
+.fs-disclosure summary {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.9rem 1.1rem; cursor: pointer; list-style: none;
+  font-size: 0.92rem; font-weight: 700; color: var(--heading);
+}
+.fs-disclosure summary::-webkit-details-marker { display: none; }
+.fs-disclosure__chev { margin-left: auto; color: var(--muted); transition: transform 0.15s ease; }
+.fs-disclosure[open] .fs-disclosure__chev { transform: rotate(180deg); }
+.fs-disclosure__body { padding: 0 1.1rem 1.1rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); max-width: 70ch; }
+.fs-disclosure__body p + p { margin-top: 0.75rem; }
+
+/* ── Getting there: contact + outlet cards left, map right ── */
+.fs-getting { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.25rem; align-items: start; }
+@media (max-width: 880px) { .fs-getting { grid-template-columns: 1fr; } }
+.fs-getting__cards { display: grid; gap: 1.25rem; }
+.fs-contact-list li { display: flex; align-items: baseline; gap: 0.7rem; }
+.fs-contact-list li + li { margin-top: 0.6rem; }
+.fs-contact-list i { width: 1rem; text-align: center; color: var(--forest-60); }
+
+/* ── Waters — embedded explore banner + shared .lf-card-grid ── */
+.fs-waters { border-top: 1px solid var(--border); scroll-margin-top: 3.5rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (signed in — the owner) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <button class="lf-nav__avatar-btn" popovertarget="account-menu" aria-label="Account menu">
+        <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+        <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+      </button>
+      <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="#">Your Fishery</a>
+        <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
+        <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
+        <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+        <div class="lf-nav__menu-divider"></div>
+        <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Page head banner ════════════════════════ -->
+<div class="lf-explore-banner">
+  <div class="container">
+    <nav class="lf-breadcrumb">
+      <a href="homepage.html">Home</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <a href="fisheries.html">Fisheries</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <span class="lf-breadcrumb__current">Durness and Kinlochbervie Angling Club</span>
+    </nav>
+    <!-- owner state: Edit fishery / Add water actions right of the title
+         (Rails fishery-header__admin-actions; hidden for non-owners) -->
+    <div class="lf-explore-banner__row">
+      <div class="fs-banner-id">
+        <!-- club crest — the fishery's uploaded logo; a fishery without one renders no badge -->
+        <img class="fs-crest" src="durness-klb-logo.jpg" alt="Durness and Kinlochbervie Angling Club crest">
+
+        <div>
+          <h1 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h1>
+          <p class="lf-explore-banner__count"><i class="fa fa-map-signs"></i> North West Sutherland, Scotland</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a class="btn btn--secondary" href="edit-fishery.html"><i class="fa-solid fa-pen-to-square"></i> Edit fishery</a>
+        <a class="btn btn--accent" href="add-water.html"><i class="fa-solid fa-plus"></i> Add water</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ Sticky section tabs ════════════════════════ -->
+<div class="fs-tabs-bar">
+  <div class="container">
+    <nav class="fs-tabs">
+      <a class="fs-tab fs-tab--active" href="#overview">Overview</a>
+      <a class="fs-tab" href="#tickets">Tickets</a>
+      <a class="fs-tab" href="#boats">Boats</a>
+      <a class="fs-tab" href="#seasons">Seasons</a>
+      <a class="fs-tab" href="#rules">Rules</a>
+      <a class="fs-tab" href="#getting-there">Getting there</a>
+      <a class="fs-tab" href="#waters">Waters</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ════════════════════════ Overview ════════════════════════ -->
+<section class="fs-section" id="overview">
+  <div class="container">
+    <!-- glance row: the four numbers a visiting angler decides on -->
+    <ul class="fs-stats">
+      <li><span class="fs-stats__num">27</span><span class="fs-stats__label">Waters</span></li>
+      <li><span class="fs-stats__num">3</span><span class="fs-stats__label">Species</span></li>
+      <li><span class="fs-stats__num">2</span><span class="fs-stats__label">Boats for hire</span></li>
+      <li><span class="fs-stats__num">£15</span><span class="fs-stats__label">Day tickets from</span></li>
+    </ul>
+    <div class="fs-overview">
+      <div>
+        <div class="fs-prose">
+          <p>The club holds fishing rights on a number of lochs in the North West of Sutherland, from the Cape Wrath Parph, down past Oldshoremore and out to Rhiconich. Club permits also extend to unnamed hill lochs beyond those listed.</p>
+        </div>
+        <ul class="fs-attrs">
+          <li><i class="fa fa-water"></i> Lake</li>
+          <li><i class="fa fa-fish"></i> Brown trout, Salmon &amp; Sea trout</li>
+        </ul>
+      </div>
+      <aside>
+        <!-- PUBLIC/non-owner state — Rails hides this for the owner/admin
+             (the banner's Edit/Add actions above are the owner's view) -->
+        <div class="fs-claim-card">
+          <div class="fs-claim-card__icon"><i class="fa-solid fa-store"></i></div>
+          <h4 class="fs-claim-card__title">Is this your fishery?</h4>
+          <p class="fs-claim-card__text">Claim this listing to update details, add waters, and reach more anglers.</p>
+          <a class="btn btn--accent" href="#">Manage this fishery</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Tickets & Membership (native purchase — invented offers) ════════════════════════ -->
+<section class="fs-section fs-section--shaded" id="tickets">
+  <div class="container">
+    <h2 class="fs-section__heading">Tickets &amp; Membership</h2>
+    <div class="fs-offer-grid">
+
+      <article class="fs-offer">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Adult Day Ticket</h3>
+          <p class="fs-offer__price">£15 <small>/ day</small></p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-fish"></i> All club waters, one rod</li>
+            <li><i class="fa fa-clock"></i> Sunrise to sunset</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy day ticket</a>
+        </div>
+      </article>
+
+      <article class="fs-offer">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Junior Day Ticket</h3>
+          <p class="fs-offer__price">Free</p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-child"></i> Under 16s</li>
+            <li><i class="fa fa-user-group"></i> Fishing with a permit-holding adult</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Get junior ticket</a>
+        </div>
+      </article>
+
+      <article class="fs-offer">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Week Permit</h3>
+          <p class="fs-offer__price">£50 <small>/ 7 days</small></p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-fish"></i> All club waters, one rod</li>
+            <li><i class="fa fa-calendar-days"></i> Seven consecutive days</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy week permit</a>
+        </div>
+      </article>
+
+      <article class="fs-offer">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Season Membership</h3>
+          <p class="fs-offer__price">£90 <small>/ season</small></p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-fish"></i> Full season, all club waters</li>
+            <li><i class="fa fa-sailboat"></i> Priority boat booking</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-id-card"></i> Join the club</a>
+        </div>
+      </article>
+
+    </div>
+    <!-- permission info lives with the tickets it explains, not in a far-away rules section -->
+    <p class="fs-note">Visitor permits are available for anglers who wish to fish the club's waters without full membership. Day tickets can be purchased online here on Let's Fish, or in person at Oldshoremore Retreats &amp; Crafts, 152 Oldshoremore, IV27 4RS.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════ Boat hire (native booking — invented boats) ════════════════════════ -->
+<section class="fs-section" id="boats">
+  <div class="container">
+    <h2 class="fs-section__heading">Boat hire</h2>
+    <div class="fs-offer-grid fs-offer-grid--boats">
+
+      <article class="fs-offer">
+        <img class="fs-offer__img" alt="Loch Aisir Mór"
+             src="https://letsfish.imgix.net/images/images/000/001/170/original/geograph-821567.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Boat on Loch Aisir Mór</h3>
+          <p class="fs-offer__price">£25 <small>/ day</small></p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-sailboat"></i> Rowing boat — oars and lifejackets included</li>
+            <li><i class="fa fa-ticket"></i> Requires a valid day ticket or membership</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-calendar-check"></i> Book this boat</a>
+        </div>
+      </article>
+
+      <article class="fs-offer">
+        <img class="fs-offer__img" alt="Loch Aisir"
+             src="https://letsfish.imgix.net/images/images/000/001/169/original/geograph-3601551.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+        <div class="fs-offer__body">
+          <h3 class="fs-offer__name">Boat on Loch Aisir</h3>
+          <p class="fs-offer__price">£25 <small>/ day</small></p>
+          <ul class="fs-offer__meta">
+            <li><i class="fa fa-sailboat"></i> Rowing boat — oars and lifejackets included</li>
+            <li><i class="fa fa-ticket"></i> Requires a valid day ticket or membership</li>
+          </ul>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-calendar-check"></i> Book this boat</a>
+        </div>
+      </article>
+
+      <!-- boat rules live beside the boats they govern (invented, pending the club's) -->
+      <div class="lf-info-card" style="align-self: start;">
+        <div class="lf-info-card__header">
+          <span class="lf-info-card__title">Boat rules</span>
+          <i class="fa-solid fa-sailboat lf-info-card__icon"></i>
+        </div>
+        <div class="lf-info-card__body">
+          <p>Lifejackets must be worn at all times on the water. Outboard motors are not permitted.</p>
+          <p>Boats must be returned to their mooring, bailed and tied off, by 6pm.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Seasons (invented dates, pending the club's) ════════════════════════ -->
+<section class="fs-section fs-section--shaded" id="seasons">
+  <div class="container">
+    <h2 class="fs-section__heading">Seasons</h2>
+
+    <div class="fs-season">
+      <div class="fs-season__head">
+        <span class="fs-season__species"><i class="fa fa-fish"></i> Brown trout</span>
+        <span class="fs-season__dates">15 Mar – 6 Oct</span>
+      </div>
+      <div class="fs-season__track">
+        <span class="fs-season__month">J</span>
+        <span class="fs-season__month">F</span>
+        <span class="fs-season__month fs-season__month--open">M</span>
+        <span class="fs-season__month fs-season__month--open">A</span>
+        <span class="fs-season__month fs-season__month--open">M</span>
+        <span class="fs-season__month fs-season__month--open">J</span>
+        <span class="fs-season__month fs-season__month--open">J</span>
+        <span class="fs-season__month fs-season__month--open">A</span>
+        <span class="fs-season__month fs-season__month--open">S</span>
+        <span class="fs-season__month fs-season__month--open">O</span>
+        <span class="fs-season__month">N</span>
+        <span class="fs-season__month">D</span>
+      </div>
+    </div>
+
+    <div class="fs-season">
+      <div class="fs-season__head">
+        <span class="fs-season__species"><i class="fa fa-fish"></i> Salmon &amp; Sea trout</span>
+        <span class="fs-season__dates">11 Feb – 31 Oct</span>
+      </div>
+      <div class="fs-season__track">
+        <span class="fs-season__month">J</span>
+        <span class="fs-season__month fs-season__month--open">F</span>
+        <span class="fs-season__month fs-season__month--open">M</span>
+        <span class="fs-season__month fs-season__month--open">A</span>
+        <span class="fs-season__month fs-season__month--open">M</span>
+        <span class="fs-season__month fs-season__month--open">J</span>
+        <span class="fs-season__month fs-season__month--open">J</span>
+        <span class="fs-season__month fs-season__month--open">A</span>
+        <span class="fs-season__month fs-season__month--open">S</span>
+        <span class="fs-season__month fs-season__month--open">O</span>
+        <span class="fs-season__month">N</span>
+        <span class="fs-season__month">D</span>
+      </div>
+    </div>
+
+    <p class="fs-note"><i class="fa-solid fa-circle-info"></i> Fishing for salmon and sea trout is not permitted on Sundays in Scotland.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════ Fishery rules (invented, Shetland AA's categories as the model:
+     byelaws / limits & sizes / methods. Ticket and boat rules live in their own sections.) ════════════════════════ -->
+<section class="fs-section" id="rules">
+  <div class="container">
+    <h2 class="fs-section__heading">Fishery rules</h2>
+    <!-- one stacked list of collapsed disclosures — short categories are bullet
+         lists, long ones prose; the closed stack is the whole rulebook at a glance -->
+    <div class="fs-disclosures">
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <ul class="fs-rule-list">
+            <li>Only one rod may be used at a time per angler</li>
+            <li>No Sunday fishing for salmon and sea trout — Scots law, all waters</li>
+            <li>Follow the Scottish Outdoor Access Code</li>
+            <li>Do not disturb ground-nesting birds</li>
+          </ul>
+        </div>
+      </details>
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-ruler-horizontal"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <ul class="fs-rule-list">
+            <li>Brown trout minimum size 10 inches (25 cm)</li>
+            <li>Bag limit of four brown trout per angler per day</li>
+            <li>All salmon and sea trout must be returned alive</li>
+            <li>Record your catch with the club after each visit</li>
+          </ul>
+        </div>
+      </details>
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-wand-magic"></i> Permitted methods <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <ul class="fs-rule-list">
+            <li>Fly fishing only on lochs holding salmon and sea trout</li>
+            <li>Fly and spinning permitted on brown trout lochs</li>
+            <li>Worm fishing discouraged — deep-hooked fish rarely survive release</li>
+            <li>Single barbless hooks encouraged when releasing fish</li>
+          </ul>
+        </div>
+      </details>
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-crow"></i> Protected wildlife <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <p>North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</p>
+          <p>You may come across red-throated divers on some of the smaller hill lochs. If so, simply move on to another loch: an adult bird kept off the nest leaves its eggs and young exposed to predators.</p>
+        </div>
+      </details>
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-hand-sparkles"></i> Biosecurity <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <p>Check, clean and dry waders, nets and boats before moving between waters, especially if you have fished outside the area recently. Invasive weeds can spread from the smallest fragment of stem.</p>
+        </div>
+      </details>
+      <details class="fs-disclosure">
+        <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
+        <div class="fs-disclosure__body">
+          <p>July 2026 — divers are nesting on the small islands of Loch na Claise Càrnaich. Please avoid the loch until the young have fledged.</p>
+        </div>
+      </details>
+    </div>
+
+    <p class="fs-note"><i class="fa-solid fa-circle-info"></i> Rules for individual lochs — boat limits, fly-only restrictions, access conditions — appear on each water's own page.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════ Getting there ════════════════════════ -->
+<section class="fs-section fs-section--shaded" id="getting-there">
+  <div class="container">
+    <h2 class="fs-section__heading">Getting there</h2>
+    <div class="fs-getting">
+      <div class="fs-getting__cards">
+        <div class="lf-info-card">
+          <div class="lf-info-card__header">
+            <span class="lf-info-card__title">Tickets &amp; enquiries</span>
+            <i class="fa-solid fa-address-book lf-info-card__icon"></i>
+          </div>
+          <div class="lf-info-card__body">
+            <ul class="fs-contact-list">
+              <li><i class="fa fa-user"></i> Andy Johnson</li>
+              <li><i class="fa fa-mobile"></i> 07887 510305</li>
+              <li><i class="fa fa-envelope"></i> D-KLB-Angling@mail.com</li>
+              <li><a href="#"><i class="fa fa-globe"></i> kinlochbervie.info/durness-and-klb-angling-club</a></li>
+              <li><i class="fa fa-shop"></i> Oldshoremore Retreats &amp; Crafts, 152 Oldshoremore, Kinlochbervie, IV27 4RS</li>
+            </ul>
+          </div>
+        </div>
+        <a class="btn btn--secondary" href="#" style="justify-content: center;"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+      </div>
+      <div class="lf-map-placeholder lf-map-placeholder--inline">
+        <i class="fa-solid fa-map-location-dot"></i>
+        <span>Map — club waters &amp; ticket outlet</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Waters ════════════════════════ -->
+<section class="fs-waters" id="waters">
+  <div class="lf-explore-banner">
+    <div class="container">
+      <h2 class="lf-explore-banner__title">Waters</h2>
+      <p class="lf-explore-banner__count"><i class="fa-solid fa-map-pin"></i> 27 waters listed</p>
+      <div class="lf-explore-banner__toolbar">
+        <div class="lf-explore-banner__search">
+          <div class="lf-search-bar">
+            <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+            <input type="text" class="lf-search-bar__input" placeholder="Search by name, location or species...">
+          </div>
+        </div>
+        <div class="lf-toggle">
+          <button type="button" class="lf-toggle__btn lf-toggle__btn--active"><i class="fa-solid fa-list"></i> List</button>
+          <button type="button" class="lf-toggle__btn"><i class="fa-solid fa-map"></i> Map</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 8 of the 27 club waters, real data from lets.fish -->
+    <div class="lf-card-grid">
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch A' Chaoruinn"
+                 src="https://letsfish.imgix.net/images/images/000/001/214/original/geograph-997068.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">1</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch A' Chaoruinn</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch A' Chaoruinn is a very small loch of roughly 6 hectares, lying in the low ground of Highland Scotland&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Lochain nan Sac"
+                 src="https://letsfish.imgix.net/images/images/000/001/163/original/geograph-7876468-by-Richard-Webb.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">2</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Lochain nan Sac</h3></a>
+          <p class="lf-water-card__location">West Sutherland, Scotland</p>
+          <p class="lf-water-card__desc">Lochain nan Sac lies close to the coast at low elevation, set a little over a kilometre inland from the sea&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Airigh an t-Slaith"
+                 src="https://letsfish.imgix.net/images/images/000/001/216/original/geograph-2238102.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">3</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Airigh an t-Slaith</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">This unnamed loch lies in the low ground of Highland Scotland, just over a kilometre from the coast&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Airigh na Beinne"
+                 src="https://letsfish.imgix.net/images/images/000/001/213/original/geograph-5647673.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">4</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Airigh na Beinne</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch Airigh na Beinne lies on the Cape Wrath peninsula, set among open moorland close to the north coast&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout, Salmon &amp; Sea trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Aisir"
+                 src="https://letsfish.imgix.net/images/images/000/001/169/original/geograph-3601551.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">5</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Aisir</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch Aisir lies on low ground little more than a kilometre from the sea in Highland&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Aisir Mór"
+                 src="https://letsfish.imgix.net/images/images/000/001/170/original/geograph-821567.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">6</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Aisir Mór</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch Aisir Mór lies in wild hill country, a water of roughly 40 hectares that can be exposed to fierce winds&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch a Mhuilinn"
+                 src="https://letsfish.imgix.net/images/images/000/001/168/original/geograph-3601640.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">7</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch a Mhuilinn</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch a Mhuilinn lies in Highland, set among low moorland close to the sea. It is a very small, shallow loch&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch a' Mhuilinn Loisgte"
+                 src="https://letsfish.imgix.net/images/images/000/001/215/original/geograph-5782691.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
+          </a>
+          <span class="lf-water-card__index">8</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch a' Mhuilinn Loisgte</h3></a>
+          <p class="lf-water-card__location">Highland, Scotland</p>
+          <p class="lf-water-card__desc">Loch a' Mhuilinn Loisgte is a very small loch of just over 3 hectares, lying less than a kilometre from the sea&hellip;</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Lake</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

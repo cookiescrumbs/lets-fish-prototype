@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Homepage Mockup</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+
+<!-- UI font: Nunito Sans (the logo's Gelica face is baked into the SVGs). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Design system: tokens (palette/type/spacing) + shared components (header/footer) -->
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Homepage — page-specific layout only.
+   Reset, header (.lf-nav) and footer (.lf-footer) live in components.css;
+   palette/type/spacing tokens in tokens.css.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+.hp-hero {
+  position: relative;
+  margin-top: calc(-1 * var(--nav-h));   /* hero slides up behind the transparent nav */
+  height: 78vh;
+  min-height: 480px;
+  max-height: 720px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;              /* content vertically centred in the image */
+  justify-content: center;
+}
+/* Phones: 78vh + centred content strands the quicklinks card below the
+   fold — svh respects the iOS URL bar where vh overshoots. */
+@media (max-width: 640px) { .hp-hero { height: 66svh; min-height: 420px; padding-top: var(--nav-h); } }
+.hp-hero__img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 1s ease;
+}
+.hp-hero__img.is-active { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .hp-hero__img { transition: none; } }
+/* Per-photo attribution — sits above the overlay, lifted clear of the floating card */
+.hp-hero__credit {
+  position: absolute; right: 1.5rem; bottom: 5.5rem; z-index: 10;
+  max-width: 60%; text-align: right;
+  font-size: 0.68rem; line-height: 1.3; letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.72);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+}
+.hp-hero__credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.hp-hero__credit a:hover { color: #fff; }
+@media (max-width: 640px) { .hp-hero__credit { bottom: 6.5rem; font-size: 0.62rem; } }
+.hp-hero__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, var(--hero-overlay-top) 0%, var(--hero-overlay-bottom) 100%);
+}
+.hp-hero__content {
+  position: relative; z-index: 10;
+  text-align: left;                 /* left-aligned column */
+  width: 100%;
+  max-width: var(--container);      /* match the site container so the search aligns with header + cards */
+  margin: 0 auto;
+  padding: 0 var(--space-5) 5rem;   /* bottom pad lifts the title/search above centre, clear of the card */
+}
+.hp-hero__title {
+  font-family: var(--display-font);
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1.9rem;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  line-height: 1.12;
+}
+body.concept .hp-hero__title {
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+/* Rotating place name — two-tone accent half of the heading */
+.hp-hero__rotator {
+  display: inline-block;
+  color: var(--accent);
+  /* Pure crossfade — no transform, so thin curved glyphs (the "J" in Jura)
+     don't shimmer from sub-pixel re-rasterisation during motion. */
+  transition: opacity 0.4s ease;
+  backface-visibility: hidden;
+}
+.hp-hero__rotator.is-out { opacity: 0; }
+.hp-hero__subtitle { font-size: 1rem; color: rgba(255,255,255,0.9); margin-bottom: 1.6rem; }
+.hp-hero__search-bar {
+  display: flex; align-items: center;
+  max-width: 520px;                 /* narrow, left-aligned — not full container width */
+  background: var(--bg);
+  border-radius: 3rem;
+  padding: 0.9rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.hp-hero__search-icon { color: var(--water); margin-right: 0.75rem; }
+.hp-hero__search-input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.hp-hero__search-input::placeholder { color: var(--muted); }
+
+/* --------------------------------------------------------------------------
+   Floating category card — overlaps the bottom edge of the hero
+   -------------------------------------------------------------------------- */
+.hp-quicklinks {
+  position: relative;
+  z-index: 20;
+  background: transparent;          /* override the global section bg so the hero shows behind the straddle */
+  margin-top: -4rem;                /* pull up so the card straddles the hero's lower edge */
+}
+.hp-quicklinks__card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+  padding: 1rem 1.15rem;
+}
+@media (max-width: 767px) { .hp-quicklinks__card { grid-template-columns: repeat(2, 1fr); } }
+.hp-quicklink {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  transition: background 0.15s ease;
+}
+.hp-quicklink:hover { background: var(--bg-alt); }
+.hp-quicklink__icon {
+  width: 2.6rem; height: 2.6rem; border-radius: 0.8rem;   /* rounded square (squircle) */
+  background: var(--chip-bg); color: var(--chip-fg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+/* tinted tile per category — each a light tint of one palette colour over its own deep shade */
+body.concept .hp-quicklink:nth-child(1) .hp-quicklink__icon { background: color-mix(in srgb, var(--water)  22%, #fff); color: var(--deep-water); } /* water  */
+body.concept .hp-quicklink:nth-child(2) .hp-quicklink__icon { background: color-mix(in srgb, var(--forest) 16%, #fff); color: var(--forest);     } /* forest */
+body.concept .hp-quicklink:nth-child(3) .hp-quicklink__icon { background: color-mix(in srgb, var(--sunset) 26%, #fff); color: var(--burnt);      } /* sunset */
+body.concept .hp-quicklink:nth-child(4) .hp-quicklink__icon { background: color-mix(in srgb, var(--stone)  45%, #fff); color: var(--charcoal);   } /* stone  */
+.hp-quicklink__body { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
+.hp-quicklink__label {
+  font-family: var(--heading-font);
+  font-size: 0.9rem; font-weight: 600; color: var(--heading);
+}
+.hp-quicklink__link {
+  font-size: 0.72rem; font-weight: 600; color: var(--muted);
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.hp-quicklink__link i { font-size: 0.6rem; transition: transform 0.15s ease; }
+.hp-quicklink:hover .hp-quicklink__link { color: var(--primary); }
+.hp-quicklink:hover .hp-quicklink__link i { transform: translateX(2px); }
+
+/* --------------------------------------------------------------------------
+   Sections shared
+   -------------------------------------------------------------------------- */
+section { background: var(--bg); }
+.hp-section-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 1.75rem; flex-wrap: wrap; gap: 0.5rem;
+}
+.hp-section-header__title {
+  font-family: var(--display-font);
+  font-size: 1.6rem; font-weight: 600; color: var(--heading);
+  margin-bottom: 0.15rem;
+}
+body.concept .hp-section-header__title { font-weight: 700; }
+.hp-section-header__subtitle { font-size: 0.85rem; color: var(--muted); }
+.hp-section-header__link {
+  font-size: 0.85rem; font-weight: 600; color: var(--primary);
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.55rem 1.35rem;
+  border: 1.5px solid var(--primary);
+  border-radius: 2rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.hp-section-header__link:hover { background: var(--primary); color: #fff; }
+.hp-section-header__link i { transition: transform 0.15s ease; }
+.hp-section-header__link:hover i { transform: translateX(3px); }
+
+/* --------------------------------------------------------------------------
+   Destinations
+   -------------------------------------------------------------------------- */
+.hp-destinations { padding: 3rem 0; }
+.hp-destinations__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 767px) { .hp-destinations__grid { grid-template-columns: 1fr; } }
+.hp-destination-card {
+  display: block; position: relative;
+  border-radius: 1rem; overflow: hidden;
+  min-height: 230px;
+}
+.hp-destination-card__img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.hp-destination-card:hover .hp-destination-card__img { transform: scale(1.05); }
+.hp-destination-card__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+}
+body.concept .hp-destination-card__overlay {
+  background: linear-gradient(to top, rgba(34,69,63,0.72) 0%, rgba(34,69,63,0.05) 60%);
+}
+.hp-destination-card__title {
+  position: absolute; bottom: 1.1rem; left: 1.25rem; right: 1.25rem;
+  font-family: var(--display-font);
+  font-size: 1.15rem; font-weight: 600; color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+body.concept .hp-destination-card__title { font-weight: 700; }
+.hp-destination-card__count {
+  position: absolute; top: 0.9rem; left: 0.9rem;
+  font-size: 0.7rem; font-weight: 600;
+  padding: 0.25rem 0.7rem; border-radius: 2rem;
+  background: color-mix(in srgb, var(--bg) 94%, transparent); color: var(--forest);
+}
+
+/* --------------------------------------------------------------------------
+   Features  (contour texture appears in concept mode)
+   -------------------------------------------------------------------------- */
+.hp-features { padding: 3.5rem 0; background: var(--bg-alt); position: relative; overflow: hidden; }
+.hp-features__contours {
+  display: none;
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+body.concept .hp-features__contours { display: block; }
+.hp-features .container { position: relative; z-index: 1; }
+.hp-features__header { text-align: center; max-width: 520px; margin: 0 auto 2.5rem; }
+.hp-features__title {
+  font-family: var(--display-font);
+  font-size: 1.6rem; font-weight: 600; color: var(--heading);
+  margin-bottom: 0.35rem;
+}
+body.concept .hp-features__title { font-weight: 700; }
+.hp-features__subtitle { font-size: 0.9rem; color: var(--muted); }
+.hp-features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+@media (max-width: 767px) { .hp-features__grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; } }
+.hp-feature { text-align: center; padding: 1.5rem 1rem; }
+.hp-feature__icon {
+  width: 3rem; height: 3rem; border-radius: 50%;
+  background: var(--chip-bg); color: var(--chip-fg);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.875rem;
+  font-size: 1.1rem;
+}
+/* each feature icon a distinct palette colour — light tint bg + deeper glyph */
+body.concept .hp-feature:nth-child(1) .hp-feature__icon { background: color-mix(in srgb, var(--water)      22%, #fff); color: var(--deep-water); }
+body.concept .hp-feature:nth-child(2) .hp-feature__icon { background: color-mix(in srgb, var(--sunset)     26%, #fff); color: var(--burnt);      }
+body.concept .hp-feature:nth-child(3) .hp-feature__icon { background: color-mix(in srgb, var(--forest)     16%, #fff); color: var(--forest);     }
+body.concept .hp-feature:nth-child(4) .hp-feature__icon { background: color-mix(in srgb, var(--deep-water) 20%, #fff); color: var(--deep-water); }
+body.concept .hp-feature:nth-child(5) .hp-feature__icon { background: color-mix(in srgb, var(--burnt)      22%, #fff); color: var(--burnt);      }
+body.concept .hp-feature:nth-child(6) .hp-feature__icon { background: color-mix(in srgb, var(--stone)      45%, #fff); color: var(--charcoal);   }
+.hp-feature__title { font-size: 0.9rem; font-weight: 600; color: var(--heading); margin-bottom: 0.35rem; font-family: var(--heading-font); }
+.hp-feature__text { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+
+/* --------------------------------------------------------------------------
+   Fisheries cards
+   -------------------------------------------------------------------------- */
+.hp-fisheries { padding: 3rem 0; }
+.hp-fisheries__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+@media (max-width: 767px) { .hp-fisheries__grid { grid-template-columns: 1fr; } }
+.fishery-card {
+  border: 1.5px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: var(--bg);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.fishery-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.fishery-card__img { width: 100%; height: 150px; object-fit: cover; }
+.fishery-card__body { padding: 1rem 1.15rem 1.2rem; }
+.fishery-card__title { font-size: 0.95rem; font-weight: 600; color: var(--heading); margin-bottom: 0.25rem; }
+.fishery-card__meta { font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 0.35rem; }
+.fishery-card__meta i { color: var(--primary); font-size: 0.7rem; }
+body.concept .fishery-card__meta i { color: var(--sunset); }
+.fishery-card__tags { display: flex; gap: 0.4rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.fishery-card__tag {
+  font-size: 0.68rem; font-weight: 600;
+  padding: 0.22rem 0.65rem; border-radius: 2rem;
+  background: var(--chip-bg); color: var(--chip-fg);
+}
+
+/* --------------------------------------------------------------------------
+   Add fishery CTA — shared chrome (.lf-cta in components.css; also used on
+   fisheries.html). Only the concept-mode tweak is page-local.
+   -------------------------------------------------------------------------- */
+body.concept .lf-cta__title em { color: var(--sunset-60); }
+</style>
+</head>
+<body class="concept">
+
+<!-- ════════════════════════ Navigation ════════════════════════ -->
+<nav class="lf-nav lf-nav--transparent">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="#">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Hero ════════════════════════ -->
+<section class="hp-hero">
+  <!-- Two stacked layers crossfade between place photos (driven by JS) -->
+  <img class="hp-hero__img is-active" id="hero-img-a" alt="Wild fishing landscape"
+       src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=1920">
+  <img class="hp-hero__img" id="hero-img-b" alt="">
+  <div class="hp-hero__overlay"></div>
+  <p class="hp-hero__credit" id="hero-credit"></p>
+  <div class="hp-hero__content">
+    <h1 class="hp-hero__title">Discover Wild Fishing in<br><span class="hp-hero__rotator" id="hero-rotator">Assynt</span></h1>
+    <div class="hp-hero__search-bar">
+      <i class="fa-solid fa-magnifying-glass hp-hero__search-icon"></i>
+      <input type="text" class="hp-hero__search-input" placeholder="Search by water, destination, or fishery">
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Floating category card ════════════════════════ -->
+<section class="hp-quicklinks">
+  <div class="container">
+    <div class="hp-quicklinks__card">
+      <a class="hp-quicklink" href="#">
+        <span class="hp-quicklink__icon"><i class="fa-solid fa-water"></i></span>
+        <span class="hp-quicklink__body">
+          <span class="hp-quicklink__label">All Waters</span>
+          <span class="hp-quicklink__link">Explore <i class="fa-solid fa-arrow-right"></i></span>
+        </span>
+      </a>
+      <a class="hp-quicklink" href="#">
+        <span class="hp-quicklink__icon"><i class="fa-solid fa-location-dot"></i></span>
+        <span class="hp-quicklink__body">
+          <span class="hp-quicklink__label">Destinations</span>
+          <span class="hp-quicklink__link">Explore <i class="fa-solid fa-arrow-right"></i></span>
+        </span>
+      </a>
+      <a class="hp-quicklink" href="#">
+        <span class="hp-quicklink__icon"><i class="fa-solid fa-people-group"></i></span>
+        <span class="hp-quicklink__body">
+          <span class="hp-quicklink__label">Fisheries</span>
+          <span class="hp-quicklink__link">Explore <i class="fa-solid fa-arrow-right"></i></span>
+        </span>
+      </a>
+      <a class="hp-quicklink" href="#">
+        <span class="hp-quicklink__icon"><i class="fa-solid fa-fish"></i></span>
+        <span class="hp-quicklink__body">
+          <span class="hp-quicklink__label">Species</span>
+          <span class="hp-quicklink__link">Explore <i class="fa-solid fa-arrow-right"></i></span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Destinations ════════════════════════ -->
+<section class="hp-destinations">
+  <div class="container">
+    <div class="hp-section-header">
+      <div>
+        <h2 class="hp-section-header__title">Destinations</h2>
+        <p class="hp-section-header__subtitle">Wild fishing areas to explore</p>
+      </div>
+      <a class="hp-section-header__link" href="#">See all destinations <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="hp-destinations__grid">
+      <a class="hp-destination-card" href="#">
+        <img class="hp-destination-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=left&w=600&h=460">
+        <div class="hp-destination-card__overlay"></div>
+        <span class="hp-destination-card__count">42 waters</span>
+        <h3 class="hp-destination-card__title">Assynt</h3>
+      </a>
+      <a class="hp-destination-card" href="#">
+        <img class="hp-destination-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=center&w=600&h=460">
+        <div class="hp-destination-card__overlay"></div>
+        <span class="hp-destination-card__count">28 waters</span>
+        <h3 class="hp-destination-card__title">Isle of Jura</h3>
+      </a>
+      <a class="hp-destination-card" href="#">
+        <img class="hp-destination-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=right&w=600&h=460">
+        <div class="hp-destination-card__overlay"></div>
+        <span class="hp-destination-card__count">35 waters</span>
+        <h3 class="hp-destination-card__title">Outer Hebrides</h3>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Features (contour texture in concept mode) ════════════════════════ -->
+<section class="hp-features">
+  <svg class="hp-features__contours" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#22453F" stroke-opacity="0.08" stroke-width="1.5">
+      <path d="M-50 80 C200 20 380 140 620 90 C860 40 1020 150 1250 100"/>
+      <path d="M-50 130 C200 70 380 190 620 140 C860 90 1020 200 1250 150"/>
+      <path d="M-50 180 C200 120 380 240 620 190 C860 140 1020 250 1250 200"/>
+      <path d="M-50 230 C200 170 380 290 620 240 C860 190 1020 300 1250 250"/>
+      <path d="M-50 280 C200 220 380 340 620 290 C860 240 1020 350 1250 300"/>
+      <path d="M-50 330 C200 270 380 390 620 340 C860 290 1020 400 1250 350"/>
+      <path d="M-50 380 C200 320 380 440 620 390 C860 340 1020 450 1250 400"/>
+      <path d="M-50 430 C200 370 380 490 620 440 C860 390 1020 500 1250 450"/>
+    </g>
+  </svg>
+  <div class="container">
+    <div class="hp-features__header">
+      <h2 class="hp-features__title">Plan your wild fishing trip</h2>
+      <p class="hp-features__subtitle">Everything you need to find, plan, and enjoy wild fishing across the UK</p>
+    </div>
+    <div class="hp-features__grid">
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-location-dot"></i></div>
+        <h3 class="hp-feature__title">Discover waters</h3>
+        <p class="hp-feature__text">Search hundreds of waters and explore numerous destinations.</p>
+      </div>
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-ticket"></i></div>
+        <h3 class="hp-feature__title">Permits &amp; access</h3>
+        <p class="hp-feature__text">Get information about permits, access and permission.</p>
+      </div>
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-map"></i></div>
+        <h3 class="hp-feature__title">OS Maps</h3>
+        <p class="hp-feature__text">We'll tell you the OS map you'll need and the coordinates to find a water.</p>
+      </div>
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-fish"></i></div>
+        <h3 class="hp-feature__title">Species</h3>
+        <p class="hp-feature__text">Find out what you can catch in each water.</p>
+      </div>
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-route"></i></div>
+        <h3 class="hp-feature__title">Walking routes</h3>
+        <p class="hp-feature__text">Routes to get you to the most remote waters without getting lost.</p>
+      </div>
+      <div class="hp-feature">
+        <div class="hp-feature__icon"><i class="fa-solid fa-flask"></i></div>
+        <h3 class="hp-feature__title">Water data</h3>
+        <p class="hp-feature__text">Physical and chemical characteristics to help you understand a water.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Fisheries ════════════════════════ -->
+<section class="hp-fisheries">
+  <div class="container">
+    <div class="hp-section-header">
+      <div>
+        <h2 class="hp-section-header__title">Fisheries</h2>
+        <p class="hp-section-header__subtitle">Explore fisheries across the UK</p>
+      </div>
+      <a class="hp-section-header__link" href="#">See all fisheries <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="hp-fisheries__grid">
+      <a class="fishery-card" href="#">
+        <img class="fishery-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=top&w=600&h=300">
+        <div class="fishery-card__body">
+          <h3 class="fishery-card__title">Inchnadamph Estate Waters</h3>
+          <p class="fishery-card__meta"><i class="fa-solid fa-location-dot"></i> Assynt, Sutherland</p>
+          <div class="fishery-card__tags">
+            <span class="fishery-card__tag">Brown trout</span>
+            <span class="fishery-card__tag">12 lochs</span>
+          </div>
+        </div>
+      </a>
+      <a class="fishery-card" href="#">
+        <img class="fishery-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=bottom&w=600&h=300">
+        <div class="fishery-card__body">
+          <h3 class="fishery-card__title">Forsinard Flows</h3>
+          <p class="fishery-card__meta"><i class="fa-solid fa-location-dot"></i> Sutherland</p>
+          <div class="fishery-card__tags">
+            <span class="fishery-card__tag">Wild brownies</span>
+            <span class="fishery-card__tag">Remote</span>
+          </div>
+        </div>
+      </a>
+      <a class="fishery-card" href="#">
+        <img class="fishery-card__img" alt=""
+             src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=enhance&fit=crop&crop=edges&w=600&h=300">
+        <div class="fishery-card__body">
+          <h3 class="fishery-card__title">Scourie Angling Club</h3>
+          <p class="fishery-card__meta"><i class="fa-solid fa-location-dot"></i> North-west Highlands</p>
+          <div class="fishery-card__tags">
+            <span class="fishery-card__tag">300+ lochs</span>
+            <span class="fishery-card__tag">Day tickets</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Add fishery CTA ════════════════════════ -->
+<section class="lf-cta" id="s-cta">
+  <div class="container">
+    <div class="lf-cta__panel">
+      <div class="lf-cta__mark">
+        <span class="lf-cta__plus"><i class="fa-solid fa-map-location-dot"></i></span>
+      </div>
+      <div class="lf-cta__content">
+        <h3 class="lf-cta__title">Run a fishery? <em>Let&rsquo;s get you found.</em></h3>
+        <p class="lf-cta__text">It's free and takes a few minutes. Reach more anglers, manage your listing, and put your waters on the map.</p>
+      </div>
+      <a class="lf-cta__btn" href="#">Add your fishery</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="#">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hero: rotate the accent place name and crossfade its photo in sync
+(function () {
+  var BASE = 'https://letsfish.imgix.net/';
+  var OPTS = '?auto=format%2Ccompress&fit=crop&w=1920';
+  // Mirrors the Rails water-hero attribution markup:
+  //   © <a href=profile>name</a> · <a href=licence>CC Licence</a>
+  // Geograph profile links come from the photo ID in the filename; the made-up
+  // names use placeholder ('#') links to be filled with real attributions.
+  var GEOGRAPH = 'https://www.geograph.org.uk/photo/';
+  var CC_BY_SA = 'https://creativecommons.org/licenses/by-sa/2.0/';
+  function creditHTML(p) {
+    return '&copy; <a href="' + p.profile + '" target="_blank" rel="noopener">' + p.by + '</a>'
+         + ' &middot; <a href="' + p.licence + '" target="_blank" rel="noopener">CC Licence</a>';
+  }
+  var places = [
+    { name: 'Assynt',     img: BASE + 'destinations/images/000/000/001/original/Assynt.jpg' + OPTS,                          by: 'Fiona MacLeod',   profile: '#',                  licence: CC_BY_SA },
+    { name: 'Jura',       img: BASE + 'destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg' + OPTS, by: 'Rob Farrow',      profile: GEOGRAPH + '2972792', licence: CC_BY_SA },
+    { name: 'Cape Wrath', img: BASE + 'destinations/images/000/000/034/original/geograph-5088283-by-Peter-Moore.jpg' + OPTS, by: 'Peter Moore',     profile: GEOGRAPH + '5088283', licence: CC_BY_SA },
+    { name: 'Shetland',   img: BASE + 'destinations/images/000/000/002/original/shetland.jpg' + OPTS,                       by: 'Greta Tulloch',   profile: '#',                  licence: CC_BY_SA },
+    { name: 'Skye',       img: BASE + 'destinations/images/000/000/067/original/geograph-6378477-by-Ian-Hawfinch.jpg' + OPTS, by: 'Ian Hawfinch',    profile: GEOGRAPH + '6378477', licence: CC_BY_SA },
+    { name: 'Eryri National Park', img: BASE + 'destinations/images/000/000/011/original/geograph-7720810-by-Phil-Brandon-Hunter.jpg' + OPTS, by: 'Phil Brandon Hunter', profile: GEOGRAPH + '7720810', licence: CC_BY_SA }
+  ];
+  var rot = document.getElementById('hero-rotator');
+  var creditEl = document.getElementById('hero-credit');
+  var layers = [document.getElementById('hero-img-a'), document.getElementById('hero-img-b')];
+  if (!rot || !layers[0] || !layers[1]) return;
+
+  if (creditEl) creditEl.innerHTML = creditHTML(places[0]);   // initial (Assynt)
+
+  var i = 0, active = 0;
+  function preload(src) { var im = new Image(); im.src = src; }
+
+  // Reduced motion: hold the first photo, swap the word without animation
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(function () {
+      i = (i + 1) % places.length;
+      rot.textContent = places[i].name;
+      if (creditEl) creditEl.innerHTML = creditHTML(places[i]);
+    }, 4000);
+    return;
+  }
+
+  preload(places[1].img);
+
+  setInterval(function () {
+    var next = (i + 1) % places.length;
+    var incoming = layers[(active + 1) % 2];
+    var outgoing = layers[active];
+
+    // Word fades down-and-out, swaps, fades back in
+    rot.classList.add('is-out');
+    setTimeout(function () {
+      rot.textContent = places[next].name;
+      if (creditEl) creditEl.innerHTML = creditHTML(places[next]);
+      rot.classList.remove('is-out');
+    }, 400);
+
+    // Crossfade the photo once the incoming image is ready
+    function swap() {
+      incoming.classList.add('is-active');
+      outgoing.classList.remove('is-active');
+      active = (active + 1) % 2;
+      i = next;
+      preload(places[(next + 1) % places.length].img);  // stage the one after
+    }
+    incoming.onload = function () { incoming.onload = null; swap(); };
+    incoming.src = places[next].img;
+    if (incoming.complete && incoming.naturalWidth) { incoming.onload = null; swap(); }
+  }, 4000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Credits</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Credits mockup — pages#credits. NOT the legal TOC template: banner +
+   a grid of attribution cards (shared .lf-info-card in .lf-card-grid--cols-3).
+   Only page-local CSS is prose links/leading inside the cards.
+   ========================================================================== */
+.cr-card p { font-size: 0.88rem; line-height: 1.6; }
+.cr-card p + p { margin-top: 0.7rem; }
+.cr-card a { text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="sign-in.html">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="sign-up.html">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Header banner ════════════════════════ -->
+<div class="lf-explore-banner">
+  <div class="container">
+    <nav class="lf-breadcrumb">
+      <a href="homepage.html">Home</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <span class="lf-breadcrumb__current">Credits</span>
+    </nav>
+    <h1 class="lf-explore-banner__title">Credits</h1>
+    <p class="lf-explore-banner__count">Let's Fish uses data and services from the following third-party sources. We are grateful to these organisations for making their data available.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════ Attribution cards ════════════════════════ -->
+<div class="container">
+  <div class="lf-card-grid lf-card-grid--cols-3">
+
+    <div class="lf-info-card cr-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">UK Lakes Portal</span>
+        <i class="fa-solid fa-water lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <p>Lake data including names, locations, depths, surface areas, and descriptions is sourced from the <a href="https://uklakes.ceh.ac.uk" target="_blank" rel="noopener">UK Lakes Portal</a>, operated by the UK Centre for Ecology &amp; Hydrology (CEH).</p>
+        <p>Contains Ordnance Survey data. Public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">Open Government Licence v3.0</a>.</p>
+      </div>
+    </div>
+
+    <div class="lf-info-card cr-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Geograph Britain and Ireland</span>
+        <i class="fa-solid fa-camera lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <p>Location photographs are sourced from <a href="https://www.geograph.org.uk" target="_blank" rel="noopener">Geograph Britain and Ireland</a>. Individual image attributions are displayed alongside each photograph. Images are licensed under the <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike 2.0</a> licence.</p>
+      </div>
+    </div>
+
+    <div class="lf-info-card cr-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">OpenStreetMap &amp; OpenTopoMap</span>
+        <i class="fa-solid fa-map lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <p>Map data is provided by <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, available under the <a href="https://opendatacommons.org/licenses/odbl/" target="_blank" rel="noopener">Open Data Commons Open Database Licence</a> (ODbL). Map tiles are rendered by <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a>.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

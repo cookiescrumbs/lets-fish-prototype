@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Loch Coruisk</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Water show mockup — waters#show. Hero photo → TRANSPARENT header.
+   Built section by section. So far: hero (image + gradient + save-heart +
+   photo credit). Title, stats, map, tabs, sidebar and "Explore nearby"
+   follow in later passes.
+   ========================================================================== */
+
+/* ── Hero ── */
+.ws-hero { position: relative; height: 62vh; min-height: 420px; max-height: 640px; }
+@media (max-width: 640px) { .ws-hero { height: 52svh; min-height: 320px; } }
+.ws-hero__img { width: 100%; height: 100%; object-fit: cover; }
+.ws-hero__gradient { position: absolute; inset: 0; background:
+  linear-gradient(to bottom, rgba(34,69,63,0) 55%, rgba(34,69,63,0.55) 100%); }
+
+/* Photo credit — top-right, low-key over the photo */
+.ws-hero__credit { position: absolute; top: 1.25rem; right: 1.25rem; z-index: 2; font-size: 0.7rem; color: rgba(255,255,255,0.85); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.ws-hero__credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Hero action bar — pinned to the hero's lower edge */
+.ws-hero__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 1.25rem 0 1.5rem; }
+.ws-hero__bar-inner { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
+.ws-actions--hero { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+/* Hero buttons — solid white pills, matching the save-heart so the controls read as one set */
+.btn--hero { background: color-mix(in srgb, var(--charcoal) 8%, #fff); border: 1.5px solid transparent; color: var(--forest); box-shadow: var(--shadow-sm); }
+.btn--hero:hover { background: color-mix(in srgb, var(--charcoal) 16%, #fff); color: var(--forest); }
+.btn--hero-ghost { background: transparent; border-color: transparent; color: #fff; box-shadow: none; }
+.btn--hero-ghost:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+/* "More" overflow — native Popover API: light-dismiss (click-outside) + Escape for
+   free, and top-layer so it's never clipped. Placement uses CSS anchor positioning
+   (newer support); where unsupported the menu still opens/dismisses, just positioned
+   by the UA default. No JS. */
+.ws-more-btn { anchor-name: --ws-more; }
+.ws-more__menu { margin: 0; inset: auto; border: none; padding: 0.4rem; min-width: 200px; background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+  position: absolute; position-anchor: --ws-more; top: calc(anchor(bottom) + 0.5rem); right: anchor(right); }
+.ws-more__menu:popover-open { display: flex; flex-direction: column; }
+.ws-more__item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600; color: var(--forest); }
+.ws-more__item:hover { background: var(--forest-tint); }
+
+/* Small screens: collapse visible hero buttons to icon-only (menu items keep text) */
+@media (max-width: 640px) {
+  .ws-actions--hero .btn--hero .ws-btn-label { display: none; }
+  .ws-actions--hero > .btn--hero { padding-left: 0.85rem; padding-right: 0.85rem; }
+  .ws-actions--hero .btn--hero i { font-size: 1.1rem; }
+}
+
+/* ── Title section — name block left, water-identity stats (Type/Species) right ── */
+.ws-title { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.25rem 2.5rem; padding: 1.75rem 0 0.5rem; }
+.ws-title__stats { display: flex; gap: 1.75rem; }
+.ws-title__stats .ws-stat { flex: 0 1 auto; min-width: 0; padding: 0; }
+.ws-title__stats .ws-stat > div { min-width: 0; }
+.ws-title__stats .ws-stat + .ws-stat { border-left: none; }
+.ws-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; font-size: 0.8rem; color: var(--muted); }
+.ws-breadcrumb a { color: var(--muted); }
+.ws-breadcrumb a:hover { color: var(--forest); }
+.ws-breadcrumb__sep { color: var(--border); }
+.ws-name { font-size: 2.6rem; font-weight: 800; color: var(--heading); letter-spacing: -0.02em; line-height: 1.05; margin: 0.75rem 0 0; }
+.ws-subtitle { font-size: 0.98rem; color: var(--muted); margin-top: 0.5rem; }
+.ws-subtitle a { font-weight: 600; }
+
+/* ── Quick-stats strip — framed top & bottom, vertical dividers between ── */
+.ws-stats { display: flex; flex-wrap: wrap; margin-top: 1.5rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.ws-stat { display: flex; align-items: center; gap: 0.75rem; flex: 1 1 0; min-width: 160px; padding: 1.1rem 1.5rem; }
+.ws-stat + .ws-stat { border-left: 1px solid var(--border); }
+.ws-stat__icon { display: inline-flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; flex-shrink: 0; border-radius: var(--radius-pill); background: var(--forest-tint); color: var(--forest); font-size: 0.95rem; }
+.ws-stat__label { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.ws-stat__value { font-size: 0.9rem; font-weight: 600; color: var(--heading); line-height: 1.2; }
+
+@media (max-width: 640px) {
+  .ws-name { font-size: 2rem; }
+  .ws-stat { flex-basis: 50%; }
+  .ws-stat:nth-child(odd) { border-left: none; }
+}
+
+
+/* ── Lake data pills — equal-width, mint fill, centred, with a solid info badge ── */
+.ws-lakedata { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 1rem 0 0.5rem; }
+.ws-datum { flex: 1 1 auto; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: var(--water-tint); border-radius: var(--radius-md); padding: 0.85rem 1rem; cursor: help; }
+.ws-datum__value { font-size: 0.9rem; font-weight: 700; color: var(--deep-water); }
+
+/* ── Main content + sidebar ── */
+.ws-content { padding: 2rem 0 4rem; }
+.ws-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: start; }
+@media (max-width: 880px) { .ws-layout { grid-template-columns: 1fr; gap: 2rem; } }
+
+.ws-section + .ws-section { margin-top: 2.5rem; }
+.ws-prose { color: var(--text); line-height: 1.65; }
+.ws-prose p + p { margin-top: 0.9rem; }
+
+/* Route stats lead into the map (route is drawn on it) — no frame/dividers, just a clean row */
+.ws-stats--route { margin-bottom: 1rem; border: none; }
+.ws-stats--route .ws-stat + .ws-stat { border-left: none; }
+.ws-stats--route .ws-stat { padding-left: 0; padding-right: 2rem; }
+
+/* Photo gallery — simple thumbnail grid */
+.ws-gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.ws-gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-md); }
+
+/* Sidebar stacks shared .lf-info-card (components.css) */
+.ws-sidebar { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+
+/* ── Explore nearby — the nearby-waters experience embedded as the onward
+   journey. Banner + card grid are shared (.lf-explore-banner / .lf-card-grid
+   in components.css). Page-local here: only the section's top divider. ── */
+.ws-nearby { border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (standard) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Hero ════════════════════════ -->
+<section class="ws-hero">
+  <img class="ws-hero__img" alt="Loch Coruisk"
+       src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=1920">
+  <div class="ws-hero__gradient"></div>
+
+  <p class="ws-hero__credit">Photo: <a href="#">John Allan</a> · CC BY-SA 2.0</p>
+
+  <!-- Action bar on the hero's lower edge: actions left, save-heart right -->
+  <div class="ws-hero__bar">
+    <div class="container ws-hero__bar-inner">
+      <div class="ws-actions ws-actions--hero">
+        <a class="btn btn--hero" href="#"><i class="fa-solid fa-heart-circle-plus"></i> <span class="ws-btn-label">Save</span></a>
+        <a class="btn btn--hero" href="#"><i class="fa-solid fa-diamond-turn-right"></i> <span class="ws-btn-label">Directions</span></a>
+        <a class="btn btn--hero" href="#"><i class="fa-solid fa-cloud-sun"></i> <span class="ws-btn-label">Conditions</span></a>
+        <button class="btn btn--hero ws-more-btn" popovertarget="ws-more-menu" title="More actions"><i class="fa-solid fa-ellipsis"></i></button>
+        <div id="ws-more-menu" class="ws-more__menu" popover>
+          <a class="ws-more__item" href="#"><i class="fa-solid fa-route"></i> Route</a>
+          <a class="ws-more__item" href="#"><i class="fa-solid fa-download"></i> Download GPX</a>
+          <a class="ws-more__item" href="#"><i class="fa-solid fa-ship"></i> Boats</a>
+          <a class="ws-more__item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit water</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Title & quick info ════════════════════════ -->
+<div class="container">
+  <div class="ws-title">
+    <div class="ws-title__main">
+      <nav class="ws-breadcrumb">
+        <a href="homepage.html">Home</a>
+        <span class="ws-breadcrumb__sep">/</span>
+        <a href="#">Isle of Skye</a>
+      </nav>
+
+      <h1 class="ws-name">Loch Coruisk</h1>
+
+      <p class="ws-subtitle">
+        Water managed by <a href="#">Skye &amp; Lochalsh Angling Association</a>
+      </p>
+    </div>
+
+    <!-- Water identity — Type & Species, beside the name -->
+    <div class="ws-title__stats">
+      <div class="ws-stat">
+        <span class="ws-stat__icon"><i class="fa fa-water"></i></span>
+        <div>
+          <div class="ws-stat__label">Type</div>
+          <div class="ws-stat__value">Loch</div>
+        </div>
+      </div>
+      <div class="ws-stat">
+        <span class="ws-stat__icon"><i class="fa fa-fish"></i></span>
+        <div>
+          <div class="ws-stat__label">Species</div>
+          <div class="ws-stat__value">Brown trout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── Lake data pills ──────────────── -->
+  <div class="ws-lakedata">
+    <div class="ws-datum" title="High alkalinity indicates a fertile water and can signal larger trout.">
+      <span class="ws-datum__value">High alkalinity</span>
+    </div>
+    <div class="ws-datum" title="Deeper lakes get less heat and light, which inhibits algal growth.">
+      <span class="ws-datum__value">Shallow</span>
+    </div>
+    <div class="ws-datum" title="A complex shoreline has numerous bays, points and peninsulas.">
+      <span class="ws-datum__value">Low shoreline complexity</span>
+    </div>
+    <div class="ws-datum" title="Higher lakes warm slowly and may not fish well until summer.">
+      <span class="ws-datum__value">Mid elevation</span>
+    </div>
+    <div class="ws-datum" title="Larger lakes often hold many smaller trout; small lakes can produce larger fish.">
+      <span class="ws-datum__value">Very small</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ Main content + sidebar ════════════════════════ -->
+<section class="ws-content">
+  <div class="container">
+    <div class="ws-layout">
+
+      <!-- ──────────── Left: description, map, gallery ──────────── -->
+      <div>
+        <div class="ws-section">
+          <div class="ws-prose">
+            <p>Cradled beneath the Black Cuillin, Loch Coruisk is one of Skye's most dramatic stretches of water — a long, dark freshwater loch reached only on foot or by boat across Loch Scavaig. The walk in rewards you with brown trout in a setting few other waters can match.</p>
+            <p>The fish run small but free-rising, and the loch fishes best on an overcast day with a light ripple. Wading is straightforward along the northern shore; the south side is rockier and better covered from the bank.</p>
+          </div>
+        </div>
+
+        <div class="ws-section">
+          <!-- Route stats — the walk-in to the water, leading into the map that draws the route -->
+          <div class="ws-stats ws-stats--route">
+            <div class="ws-stat">
+              <span class="ws-stat__icon"><i class="fa-solid fa-clock"></i></span>
+              <div>
+                <div class="ws-stat__label">Duration</div>
+                <div class="ws-stat__value">1h 45m</div>
+              </div>
+            </div>
+            <div class="ws-stat">
+              <span class="ws-stat__icon"><i class="fa-solid fa-ruler"></i></span>
+              <div>
+                <div class="ws-stat__label">Distance</div>
+                <div class="ws-stat__value">4.2 km</div>
+              </div>
+            </div>
+            <div class="ws-stat">
+              <span class="ws-stat__icon"><i class="fa-solid fa-mountain"></i></span>
+              <div>
+                <div class="ws-stat__label">Ascent</div>
+                <div class="ws-stat__value">180m</div>
+              </div>
+            </div>
+            <div class="ws-stat">
+              <span class="ws-stat__icon"><i class="fa-solid fa-signal"></i></span>
+              <div>
+                <div class="ws-stat__label">Difficulty</div>
+                <div class="ws-stat__value">45 / 100</div>
+              </div>
+            </div>
+          </div>
+          <div class="lf-map-placeholder lf-map-placeholder--inline"><i class="fa-solid fa-map-location-dot"></i> Map</div>
+        </div>
+
+        <div class="ws-section">
+          <div class="ws-gallery-grid">
+            <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480">
+            <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480&rot=180">
+            <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480&flip=h">
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────────── Right: sidebar cards ──────────── -->
+      <aside class="ws-sidebar">
+        <div class="lf-info-card">
+          <div class="lf-info-card__header">
+            <span class="lf-info-card__title">Permission &amp; tickets</span>
+            <i class="fa-solid fa-ticket lf-info-card__icon"></i>
+          </div>
+          <div class="lf-info-card__body">
+            <p>Day tickets are available from the association at £12, covering all club waters. No Sunday fishing for salmon and sea trout.</p>
+          </div>
+        </div>
+
+        <div class="lf-info-card">
+          <div class="lf-info-card__header">
+            <span class="lf-info-card__title">Rules</span>
+            <i class="fa-solid fa-book lf-info-card__icon"></i>
+          </div>
+          <div class="lf-info-card__body">
+            <p>Fly only. Barbless hooks. All wild brown trout to be returned. Please carry out all litter and respect lambing season on the approach path.</p>
+          </div>
+        </div>
+
+        <div class="lf-info-card">
+          <div class="lf-info-card__header">
+            <span class="lf-info-card__title">Boats</span>
+            <i class="fa-solid fa-sailboat lf-info-card__icon"></i>
+          </div>
+          <div class="lf-info-card__body">
+            <p>One association boat is kept at the north end. Book through the secretary; oars and bailer provided, bring your own buoyancy aids.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Explore nearby ════════════════════════ -->
+<section class="ws-nearby">
+  <!-- Shared contour-wave banner: title, count, search + List/Map toggle -->
+  <div class="lf-explore-banner">
+    <div class="container">
+      <h2 class="lf-explore-banner__title">Explore nearby</h2>
+      <p class="lf-explore-banner__count"><i class="fa-solid fa-map-pin"></i> 14 waters within 5 miles of Loch Coruisk</p>
+      <div class="lf-explore-banner__toolbar">
+        <div class="lf-explore-banner__search">
+          <div class="lf-search-bar">
+            <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+            <input type="text" class="lf-search-bar__input" placeholder="Search by name, location or species...">
+          </div>
+        </div>
+        <div class="lf-toggle">
+          <button type="button" class="lf-toggle__btn lf-toggle__btn--active"><i class="fa-solid fa-list"></i> List</button>
+          <button type="button" class="lf-toggle__btn"><i class="fa-solid fa-map"></i> Map</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="lf-card-grid">
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Scavaig"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246">
+          </a>
+          <span class="lf-water-card__index">1</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Scavaig</h3></a>
+          <p class="lf-water-card__location">Isle of Skye</p>
+          <p class="lf-water-card__desc">The short sea loch you cross to reach Coruisk — sea trout and the occasional salmon close to the river mouth.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Sea loch</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Sea trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="River Brittle"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246">
+          </a>
+          <span class="lf-water-card__index">2</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">River Brittle</h3></a>
+          <p class="lf-water-card__location">Glen Brittle, Isle of Skye</p>
+          <p class="lf-water-card__desc">A small Cuillin spate river running to the sea at Loch Brittle, with sea trout running on a good tide and rain.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> River</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Sea trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch na Crèitheach"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246&flip=h">
+          </a>
+          <span class="lf-water-card__index">3</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch na Crèitheach</h3></a>
+          <p class="lf-water-card__location">Isle of Skye</p>
+          <p class="lf-water-card__desc">A remote hill loch on the walk between Sligachan and Camasunary, holding free-rising wild brown trout.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Loch</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Slapin"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246&flip=h">
+          </a>
+          <span class="lf-water-card__index">4</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Slapin</h3></a>
+          <p class="lf-water-card__location">Strathaird, Isle of Skye</p>
+          <p class="lf-water-card__desc">A sea loch under Bla Bheinn with sea trout and the occasional salmon working the shoreline on a rising tide.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Sea loch</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Sea trout</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

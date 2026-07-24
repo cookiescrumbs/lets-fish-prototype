@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Components &amp; States</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+<script src="../../app/javascript/lf_popover_anchor.js" defer></script>
+
+<style>
+/* ==========================================================================
+   Components & states sheet — buttons, fields, alerts, badges, type, palette.
+   All colour/type from tokens.css. Error/success/warning are Layer 2 (derived)
+   — see palette.md.
+   ========================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+a { text-decoration: none; }
+ul { list-style: none; }
+
+/* ── Header ── */
+.cs-header { background: var(--footer-bg); padding: 1.4rem 0; }
+.cs-header__inner { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; }
+.cs-header__brand { display: flex; align-items: center; gap: 0.6rem; }
+.cs-header__brand .roundel  { height: 2.4rem; }
+.cs-header__brand .wordmark { height: 1.2rem; }
+.cs-header__title { margin-left: auto; color: color-mix(in srgb, var(--bg) 80%, transparent); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.02em; }
+
+/* ── Layout ── */
+.cs-container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+.cs-section__title { font-size: 1.35rem; font-weight: 800; color: var(--heading); margin-bottom: 0.25rem; }
+.cs-section__sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+.cs-note { font-size: 0.78rem; color: var(--muted); margin-top: 1rem; }
+
+/* ── Palette swatches ── */
+.cs-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.8rem; }
+.cs-swatch__chip { height: 56px; border-radius: 0.6rem 0.6rem 0 0; border: 1px solid rgba(0,0,0,0.08); }
+.cs-swatch__meta { font-size: 0.72rem; padding: 0.4rem 0.1rem 0; }
+.cs-swatch__name { font-weight: 700; color: var(--heading); }
+.cs-swatch__hex { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ── State grid (buttons / fields) ── */
+.cs-grid { display: grid; grid-template-columns: 7rem repeat(4, 1fr); gap: 1rem 1.25rem; align-items: center; }
+.cs-grid__colhead { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); text-align: center; }
+.cs-grid__rowhead { font-size: 0.82rem; font-weight: 700; color: var(--heading); }
+.cs-grid__cell { display: flex; justify-content: center; }
+@media (max-width: 720px) { .cs-grid { grid-template-columns: 1fr; } .cs-grid__colhead { display: none; } }
+
+/* ── Buttons ── (component lifted to components.css on first real-page use) */
+
+/* ── Form fields — shared chrome (.field in components.css) ── */
+.cs-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+
+/* ── Alerts ── (component lifted to components.css on first real-page use) */
+.cs-alerts { display: flex; flex-direction: column; gap: 0.8rem; }
+
+/* ── Badges & tags ── */
+.cs-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.badge { font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 2rem; }
+.badge--neutral { background: var(--chip-bg); color: var(--chip-fg); }
+.badge--error   { background: var(--error-bg);   color: color-mix(in srgb, var(--error) 80%, #000); }
+.badge--success { background: var(--success-bg); color: color-mix(in srgb, var(--success) 70%, #000); }
+.badge--warning { background: var(--warning-bg); color: color-mix(in srgb, var(--warning) 72%, #000); }
+.badge--solid   { background: var(--sunset); color: var(--charcoal); }
+.tag { font-size: 0.7rem; font-weight: 600; padding: 0.22rem 0.65rem; border-radius: 2rem; background: var(--chip-bg); color: var(--chip-fg); }
+
+/* ── Shared-component specimens (real .lf-* classes from components.css) ── */
+.cs-searchbar { max-width: 420px; }
+.cs-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; max-width: 540px; }
+/* markers sit on a hatched "map" panel so the white pin ring reads */
+.cs-mapfield { display: flex; flex-wrap: wrap; align-items: center; gap: 2rem; padding: 1.75rem; border-radius: var(--radius-md);
+  background: repeating-linear-gradient(45deg, var(--bg-alt), var(--bg-alt) 18px, var(--bg) 18px, var(--bg) 36px); }
+.cs-marker { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.cs-marker__label { font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+
+/* ── Type scale ── */
+.cs-type > * { color: var(--heading); margin-bottom: 0.6rem; line-height: 1.2; }
+.cs-type .t-display { font-size: 3rem; font-weight: 800; letter-spacing: -0.015em; }
+.cs-type .t-h1 { font-size: 2rem; font-weight: 800; }
+.cs-type .t-h2 { font-size: 1.5rem; font-weight: 700; }
+.cs-type .t-h3 { font-size: 1.15rem; font-weight: 700; }
+.cs-type .t-body { font-size: 1rem; font-weight: 400; color: var(--text); line-height: 1.6; }
+.cs-type .t-small { font-size: 0.85rem; font-weight: 400; color: var(--text); }
+.cs-type .t-caption { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.cs-type .px { font-size: 0.7rem; color: var(--muted); font-weight: 600; margin-left: 0.5rem; letter-spacing: 0; text-transform: none; }
+
+/* ── Site header specimens ── (transparent/solid use the real .lf-nav classes;
+   paper is a local-only unadopted option, so it keeps local .hdr-* styling) */
+.hdr-specimens { display: flex; flex-direction: column; gap: 1.25rem; }
+.hdr-spec { border: 1px solid var(--border); border-radius: 0.9rem; overflow: hidden; }
+.hdr-spec__label { font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+/* Transparent over a photo */
+.hdr-spec--photo { position: relative; height: 120px; }
+.hdr-spec--photo .hdr-bg { position: absolute; inset: 0; }
+.hdr-spec--photo .hdr-bg img { width: 100%; height: 100%; object-fit: cover; }
+.hdr-spec--photo .hdr-bg__scrim { position: absolute; inset: 0; background: linear-gradient(to bottom, var(--hero-overlay-top) 0%, var(--hero-overlay-bottom) 100%); }
+
+/* Solid paper (unadopted option) */
+.hdr { display: flex; align-items: center; justify-content: space-between; padding: 0 1.2rem; height: 66px; }
+.hdr__brand { display: flex; align-items: center; gap: 0.55rem; }
+.hdr__brand .lockup   { height: 2rem; width: auto; }
+.hdr__nav { display: flex; align-items: center; gap: 0.85rem; }
+.hdr__link { font-size: 0.82rem; font-weight: 600; }
+.hdr__btn { font-size: 0.82rem; font-weight: 600; padding: 0.45rem 1.15rem; border-radius: 2rem; }
+.hdr__btn--ghost { border: 1.5px solid transparent; }
+.hdr--paper { background: var(--bg); border-bottom: 1px solid var(--border); }
+.hdr--paper .hdr__link { color: var(--forest); }
+.hdr--paper .hdr__btn--ghost { color: var(--forest); border-color: var(--forest); }
+.hdr--paper .hdr__btn--cta { background: var(--forest); color: #fff; }
+</style>
+</head>
+<body>
+
+<header class="cs-header">
+  <div class="cs-header__inner">
+    <span class="cs-header__brand">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </span>
+    <span class="cs-header__title">Components &amp; States</span>
+  </div>
+</header>
+
+<div class="cs-container">
+
+  <!-- ───────────────── Site header ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Site header</h2>
+    <p class="cs-section__sub">The transparent header only works over a hero photo. Pages without a hero use the <strong>solid forest</strong> header (chosen). See it live on <code>destinations.html</code>.</p>
+    <div class="hdr-specimens">
+
+      <div class="hdr-spec">
+        <div class="hdr-spec__label">Transparent (<code>.lf-nav--transparent</code>) — over a hero photo (homepage, has a dark image behind it)</div>
+        <div class="hdr-spec--photo">
+          <div class="hdr-bg">
+            <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=1200&h=240">
+            <div class="hdr-bg__scrim"></div>
+          </div>
+          <nav class="lf-nav lf-nav--transparent">
+            <div class="lf-nav__inner">
+              <span class="lf-nav__brand">
+                <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+                <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+              </span>
+              <div class="lf-nav__actions">
+                <a class="lf-nav__link" href="#">Add your fishery</a>
+                <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+                <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <div class="hdr-spec">
+        <div class="hdr-spec__label">Solid · forest (<code>.lf-nav--solid</code>) — bold, brand-forward (cream logo + links)</div>
+        <nav class="lf-nav lf-nav--solid">
+          <div class="lf-nav__inner">
+            <span class="lf-nav__brand">
+              <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+              <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+            </span>
+            <div class="lf-nav__actions">
+              <a class="lf-nav__link" href="#">Add your fishery</a>
+              <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+              <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="hdr-spec">
+        <div class="hdr-spec__label">Solid · paper — lighter, app-like (forest-ink lockup + forest links)</div>
+        <div class="hdr hdr--paper">
+          <span class="hdr__brand">
+            <img class="lockup" src="../../public/img/brand/lf-landscape-white.svg" alt="Let's Fish">
+          </span>
+          <span class="hdr__nav">
+            <a class="hdr__link" href="#">Add your fishery</a>
+            <a class="hdr__btn hdr__btn--ghost" href="#">Sign in</a>
+            <a class="hdr__btn hdr__btn--cta" href="#">Sign up</a>
+          </span>
+        </div>
+      </div>
+
+      <div class="hdr-spec">
+        <div class="hdr-spec__label">Signed in — avatar pill + account menu (native popover — click it; light-dismiss + Escape, no JS). Replaces the Sign in/Sign up buttons on both header variants. Live on the fishlists pages, <code>manage-account.html</code>, and the owner/wizard pages (edit-fishery, edit-water, add-water, add-fishery).</div>
+        <nav class="lf-nav lf-nav--solid">
+          <div class="lf-nav__inner">
+            <span class="lf-nav__brand">
+              <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+              <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+            </span>
+            <div class="lf-nav__actions">
+              <a class="lf-nav__link" href="#">Add your fishery</a>
+              <button class="lf-nav__avatar-btn" popovertarget="cs-account-menu" aria-label="Account menu">
+                <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+                <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+              </button>
+              <div class="lf-nav__menu" id="cs-account-menu" popover>
+                <a class="lf-nav__menu-item" href="#">Your Fishlists</a>
+                <a class="lf-nav__menu-item" href="#">Destinations</a>
+                <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+                <div class="lf-nav__menu-divider"></div>
+                <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+    </div>
+    <p class="cs-note"><strong>Chosen: solid forest</strong> for hero-less pages — bold and brand-forward, matching the forest footer for consistent dark chrome top and bottom. (Paper remains an option if a lighter content page is ever wanted.)</p>
+  </section>
+
+  <!-- ───────────────── Site footer ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Site footer</h2>
+    <p class="cs-section__sub">Forest bar (<code>.lf-footer</code>) used site-wide: brand + tagline, link columns, copyright bottom strip. Maps to Rails' <code>shared/_footer</code>. Not rendered on auth pages, error pages, or the wizards (focused flows).</p>
+    <div class="hdr-spec">
+      <footer class="lf-footer">
+        <div class="lf-footer__main">
+          <div class="container">
+            <div class="lf-footer__grid">
+              <div>
+                <a class="lf-footer__brand" href="#">
+                  <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+                  <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+                </a>
+                <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+              </div>
+              <div>
+                <h6 class="lf-footer__heading">Explore</h6>
+                <ul class="lf-footer__links">
+                  <li><a href="#">Add a fishery</a></li>
+                  <li><a href="#">Contact us</a></li>
+                </ul>
+              </div>
+              <div>
+                <h6 class="lf-footer__heading">Legal</h6>
+                <ul class="lf-footer__links">
+                  <li><a href="#">Terms of Service</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+                  <li><a href="#">Credits</a></li>
+                  <li><a href="#">Cookie settings</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lf-footer__bottom">
+          <div class="container">
+            <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ───────────────── Palette ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Palette</h2>
+    <p class="cs-section__sub">Brand colours from <code>colours.pdf</code>; semantic colours derived (Layer 2).</p>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Primary &amp; secondary</h3>
+    <div class="cs-swatches" style="margin-bottom:1.5rem;">
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--forest)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Forest</div><div class="cs-swatch__hex">#22453F</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--water)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Water</div><div class="cs-swatch__hex">#5E95AC</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--sunset)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Sunset</div><div class="cs-swatch__hex">#DD9951</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--stone)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Stone</div><div class="cs-swatch__hex">#D0C7B5</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--taupe)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Taupe</div><div class="cs-swatch__hex">#BFB49F</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--deep-water)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Deep water</div><div class="cs-swatch__hex">#3E6B7D</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--burnt)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Burnt</div><div class="cs-swatch__hex">#C4813E</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--charcoal)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Charcoal</div><div class="cs-swatch__hex">#3C3833</div></div></div>
+    </div>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Semantic</h3>
+    <div class="cs-swatches">
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--error)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Error</div><div class="cs-swatch__hex">#A8432E</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--success)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Success</div><div class="cs-swatch__hex">#4F7A48</div></div></div>
+      <div class="cs-swatch"><div class="cs-swatch__chip" style="background:var(--warning)"></div><div class="cs-swatch__meta"><div class="cs-swatch__name">Warning</div><div class="cs-swatch__hex">#C8911F</div></div></div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Buttons ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Buttons</h2>
+    <p class="cs-section__sub">Hover and pressed states are shown statically here; the real <code>:hover</code> also works on the Default column.</p>
+    <div class="cs-grid">
+      <span></span>
+      <span class="cs-grid__colhead">Default</span>
+      <span class="cs-grid__colhead">Hover</span>
+      <span class="cs-grid__colhead">Pressed</span>
+      <span class="cs-grid__colhead">Disabled</span>
+
+      <span class="cs-grid__rowhead">Primary</span>
+      <span class="cs-grid__cell"><button class="btn btn--primary">Save trip</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--primary is-hover">Save trip</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--primary is-pressed">Save trip</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--primary is-disabled">Save trip</button></span>
+
+      <span class="cs-grid__rowhead">Accent</span>
+      <span class="cs-grid__cell"><button class="btn btn--accent">Add your fishery</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--accent is-hover">Add your fishery</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--accent is-pressed">Add your fishery</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--accent is-disabled">Add your fishery</button></span>
+
+      <span class="cs-grid__rowhead">Secondary</span>
+      <span class="cs-grid__cell"><button class="btn btn--secondary">See all waters</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--secondary is-hover">See all waters</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--secondary is-pressed">See all waters</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--secondary is-disabled">See all waters</button></span>
+
+      <span class="cs-grid__rowhead">Danger</span>
+      <span class="cs-grid__cell"><button class="btn btn--danger-outline">Clear route</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--danger-outline is-hover">Clear route</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--danger-outline is-pressed">Clear route</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--danger-outline is-disabled">Clear route</button></span>
+
+      <span class="cs-grid__rowhead">Ghost</span>
+      <span class="cs-grid__cell"><button class="btn btn--ghost">Cancel</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--ghost is-hover">Cancel</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--ghost is-pressed">Cancel</button></span>
+      <span class="cs-grid__cell"><button class="btn btn--ghost is-disabled">Cancel</button></span>
+    </div>
+  </section>
+
+  <!-- ───────────────── Form fields ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Form fields</h2>
+    <p class="cs-section__sub">Default, focus, validation, and disabled states, plus the checkbox row, the native select (same <code>.field__input</code> chrome — edit-fishery's Country and Map Zoom Level), the <code>.field__hint</code> note for short field-tied text (single-phrase hints go in the label, e.g. sign-up's "(6 characters minimum)"; how-to guidance gets an <code>.alert--info</code> banner — see Alerts), and the <code>.field-row</code> two-up (collapses to one column on small screens).</p>
+    <div class="cs-fields">
+      <div class="field">
+        <label class="field__label">Default</label>
+        <input class="field__input" placeholder="Loch name">
+      </div>
+      <div class="field">
+        <label class="field__label">Focus</label>
+        <input class="field__input is-focus" value="Loch Assynt">
+      </div>
+      <div class="field field--error">
+        <label class="field__label">Error</label>
+        <input class="field__input" value="not-an-email">
+        <span class="field__msg"><i class="fa-solid fa-circle-exclamation"></i> Enter a valid email address</span>
+      </div>
+      <div class="field field--success">
+        <label class="field__label">Success</label>
+        <input class="field__input" value="angler@example.com">
+        <span class="field__msg"><i class="fa-solid fa-circle-check"></i> Looks good</span>
+      </div>
+      <div class="field field--disabled">
+        <label class="field__label">Disabled</label>
+        <input class="field__input" value="Locked" disabled>
+      </div>
+      <div class="field field--checkbox">
+        <input type="checkbox" class="field__checkbox" id="cs-check" checked>
+        <label class="field__checkbox-label" for="cs-check">Join our wild fishing mailer</label>
+      </div>
+      <div class="field">
+        <label class="field__label">With hint</label>
+        <input class="field__input" value="loch-assynt">
+        <p class="field__hint">This determines the water's URL path</p>
+      </div>
+      <div class="field">
+        <label class="field__label">Select</label>
+        <select class="field__input">
+          <option>England</option>
+          <option selected>Scotland</option>
+          <option>Wales</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label">Textarea</label>
+        <textarea class="field__input" rows="3" placeholder="Tell us about your fishery…"></textarea>
+      </div>
+    </div>
+    <div class="field-row" style="margin-top: 1rem; max-width: 480px;">
+      <div class="field">
+        <label class="field__label">Latitude</label>
+        <input class="field__input" value="58.4521">
+      </div>
+      <div class="field">
+        <label class="field__label">Longitude</label>
+        <input class="field__input" value="-5.0473">
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Search bar ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Search bar</h2>
+    <p class="cs-section__sub">Pill input with a leading icon. Shared chrome — destinations index and the explore banner's search slot (nearby-waters, fisheries, fishery-show, waters-show). The page sets the width; the component is the chrome.</p>
+    <div class="cs-searchbar lf-search-bar">
+      <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+      <input type="text" class="lf-search-bar__input" placeholder="Search by name, location or species...">
+    </div>
+  </section>
+
+  <!-- ───────────────── List / Map toggle ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">List / Map toggle</h2>
+    <p class="cs-section__sub">Segmented pill switching a browse surface between list and map views; the active segment is forest. Lives in the explore banner (nearby-waters header, water-show "Explore nearby", fishery-show's Waters section, fishlist-show).</p>
+    <div class="lf-toggle">
+      <button type="button" class="lf-toggle__btn lf-toggle__btn--active"><i class="fa-solid fa-list"></i> List</button>
+      <button type="button" class="lf-toggle__btn"><i class="fa-solid fa-map"></i> Map</button>
+    </div>
+  </section>
+
+  <!-- ───────────────── Explore banner ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Explore banner</h2>
+    <p class="cs-section__sub">Contour-wave header band: breadcrumb + heading + result count + the search/List-Map toggle. The standard page-head band on every hero-less content page (nearby-waters, fisheries, fishery-show, fishlists, contact, legal, manage-account, the edit pages); also the embedded onward-journey section on <code>waters#show</code>. Full-bleed — holds its own <code>.container</code>; the contour texture (homepage motif) is baked in as a <code>::before</code> data-URI background, so pages add no markup for it. Wraps its card lists in the shared <code>.lf-card-grid</code> (4-up; <code>--cols-3</code> variant), with <code>.lf-map-placeholder</code> as the hidden Map-toggle stand-in.</p>
+    <div class="lf-explore-banner">
+      <div class="container">
+        <nav class="lf-breadcrumb">
+          <a href="#">Home</a>
+          <span class="lf-breadcrumb__sep">/</span>
+          <a href="#">Destinations</a>
+          <span class="lf-breadcrumb__sep">/</span>
+          <span class="lf-breadcrumb__current">Loch Lomond &amp; The Trossachs</span>
+        </nav>
+        <h3 class="lf-explore-banner__title">Loch Lomond &amp; The Trossachs</h3>
+        <p class="lf-explore-banner__count"><i class="fa-solid fa-map-pin"></i> 8 waters within 50 miles</p>
+        <div class="lf-explore-banner__toolbar">
+          <div class="lf-explore-banner__search">
+            <div class="lf-search-bar">
+              <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+              <input type="text" class="lf-search-bar__input" placeholder="Search by name, location or species...">
+            </div>
+          </div>
+          <div class="lf-toggle">
+            <button type="button" class="lf-toggle__btn lf-toggle__btn--active"><i class="fa-solid fa-list"></i> List</button>
+            <button type="button" class="lf-toggle__btn"><i class="fa-solid fa-map"></i> Map</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role states: the banner is the main surface that changes by role.
+         Rule (see design-system.md): a role-gated element renders NOTHING
+         when absent — no reserved rows. The manager actions are page-local
+         (.fs-banner-actions on fishery-show); shown inline here. -->
+    <p class="cs-note" style="margin-top: 1.5rem;"><strong>Role states</strong> — signed-out / angler (no actions; the row does not exist):</p>
+    <div class="lf-explore-banner">
+      <div class="container">
+        <div class="lf-explore-banner__row">
+          <div>
+            <h3 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h3>
+            <p class="lf-explore-banner__count"><i class="fa-solid fa-map-signs"></i> North West Sutherland, Scotland</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="cs-note" style="margin-top: 1rem;">Fishery manager (admin adds a third <em>Add fishery</em> button):</p>
+    <div class="lf-explore-banner">
+      <div class="container">
+        <div class="lf-explore-banner__row">
+          <div>
+            <h3 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h3>
+            <p class="lf-explore-banner__count"><i class="fa-solid fa-map-signs"></i> North West Sutherland, Scotland</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit fishery</a>
+            <a class="btn btn--accent" href="#"><i class="fa-solid fa-plus"></i> Add water</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Map placeholder ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Map placeholder</h2>
+    <p class="cs-section__sub">Hatched stand-in for a live Leaflet map. Base <code>.lf-map-placeholder</code> is the hidden List/Map-toggle view (<code>nearby-waters</code>, <code>fishlist-show</code>); <code>--inline</code> shows it as a visible embedded panel (waters-show route map; the conditions overlay's live map; the edit-water and add-water forms' lake-search / annotations / boats / parking / route maps), with <code>--sm</code> for shorter panels.</p>
+    <div class="lf-map-placeholder lf-map-placeholder--inline lf-map-placeholder--sm"><i class="fa-solid fa-map-location-dot"></i> Map</div>
+  </section>
+
+  <!-- ───────────────── Info card ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Info card</h2>
+    <p class="cs-section__sub">Titled panel with a trailing icon in a soft header band, then prose — the Rails <code>water-card</code>, now the general card workhorse. Sidebar cards on <code>waters#show</code> (Permission &amp; tickets / Rules / Boats); Rules &amp; Info grid and Contact details on <code>fisheries#show</code>; the contact form; credits attribution cards; the legal Contents box; every form-page card (manage-account, edit-fishery, edit-water). The page owns the layout around it.</p>
+    <div style="max-width: 420px;">
+      <div class="lf-info-card">
+        <div class="lf-info-card__header">
+          <span class="lf-info-card__title">Permission &amp; tickets</span>
+          <i class="fa-solid fa-ticket lf-info-card__icon"></i>
+        </div>
+        <div class="lf-info-card__body">
+          <p>Day tickets from the estate office or online. Juniors free with a permit-holding adult.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Form page ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Form page</h2>
+    <p class="cs-section__sub">Single centred column (<code>.lf-form-col</code>; <code>--wide</code> when cards hold maps) of <code>.lf-info-card</code>s whose bodies stack <code>.field</code>s, closed by the <code>.lf-form-actions</code> row (ghost Cancel + accent submit). The banner gains <code>.lf-explore-banner__row</code> to right-align a View action beside the title. Live on manage-account, edit-water, edit-fishery — promoted on third use.</p>
+    <div class="lf-explore-banner">
+      <div class="container">
+        <div class="lf-explore-banner__row">
+          <div>
+            <h3 class="lf-explore-banner__title">Edit Fishery</h3>
+            <p class="lf-explore-banner__count"><i class="fa-solid fa-pen-to-square"></i> Durness and Kinlochbervie Angling Club</p>
+          </div>
+          <a class="btn btn--secondary" href="#"><i class="fa-solid fa-eye"></i> View fishery</a>
+        </div>
+      </div>
+    </div>
+    <div class="lf-form-col" style="padding: 1.5rem 0 0;">
+      <div class="lf-info-card">
+        <div class="lf-info-card__header">
+          <span class="lf-info-card__title">Basic Details</span>
+          <i class="fa-solid fa-circle-info lf-info-card__icon"></i>
+        </div>
+        <div class="lf-info-card__body">
+          <div class="field">
+            <label class="field__label">Fishery Name</label>
+            <input class="field__input" value="Durness and Kinlochbervie Angling Club">
+          </div>
+        </div>
+      </div>
+      <div class="lf-form-actions">
+        <a class="btn btn--ghost" href="#">Cancel</a>
+        <button class="btn btn--accent" type="button"><i class="fa-solid fa-check"></i> Save fishery details</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Form map panels ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Form map panels</h2>
+    <p class="cs-section__sub">The interaction layouts shared by <code>edit-water</code> and the <code>add-water</code> wizard (promoted on second use). These come from the Rails partials + Stimulus controllers and must survive the port: <strong>lake search</strong> results LEFT / map RIGHT (result rows and map pins highlight/select each other — hover = tint, selected = solid forest); <strong>Geograph photo picker</strong> gallery LEFT / photo-pin map RIGHT, with a browsing state (thumb grid, wizard) and a selected state (preview + attribution, edit-water), plus the <code>.lf-upload-link</code> reveal and manual-upload dropzone; <strong>map + side panel</strong> (<code>.lf-map-split</code>) — drawing map 58% / entries panel, used by annotations (both pages) and the wizard's Boats step, with <code>.lf-x-btn</code> instant removal and the <code>.lf-map-actions</code> Undo/Clear/Finish row; <strong>boat entry</strong> sub-panels (JS-added ones get the ×). Pages set map heights.</p>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Lake search — result states</h3>
+    <div class="lf-lake-search" style="margin-bottom:2rem;">
+      <div class="lf-lake-search__panel">
+        <div class="field">
+          <label class="field__label" for="cs-lake-search">Lake name or ID</label>
+          <div class="lf-search-group">
+            <input class="field__input" id="cs-lake-search" type="search" placeholder="e.g. Crummock Water or 29386">
+            <button class="btn btn--secondary" type="button">Search</button>
+          </div>
+        </div>
+        <div>
+          <button class="lf-lake-result lf-lake-result--selected" type="button">Loch Aisir — Sutherland (selected)</button>
+          <button class="lf-lake-result lf-lake-result--map-highlight" type="button">Loch Aisir Mór — Sutherland (map pin hovered)</button>
+          <button class="lf-lake-result" type="button">Loch na Claise Airigh — Sutherland</button>
+        </div>
+      </div>
+      <div class="lf-lake-search__map">
+        <div class="lf-map-placeholder lf-map-placeholder--inline lf-map-placeholder--sm"><i class="fa-solid fa-map-location-dot"></i> Lake search map</div>
+      </div>
+    </div>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Geograph photo picker — browsing state + dropzone</h3>
+    <div class="lf-photo-layout" style="margin-bottom:1rem;">
+      <div class="lf-photo-layout__gallery">
+        <div class="lf-geograph-grid">
+          <div class="lf-geograph-thumb lf-geograph-thumb--selected">
+            <img class="lf-geograph-thumb__img" alt="" src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=300&h=200">
+            <div class="lf-geograph-thumb__caption">Rob Farrow</div>
+          </div>
+          <div class="lf-geograph-thumb">
+            <img class="lf-geograph-thumb__img" alt="" src="https://letsfish.imgix.net/images/images/000/001/163/original/geograph-7876468-by-Richard-Webb.jpg?auto=format%2Ccompress&fit=crop&w=300&h=200">
+            <div class="lf-geograph-thumb__caption">Richard Webb</div>
+          </div>
+        </div>
+      </div>
+      <div class="lf-photo-layout__map">
+        <div class="lf-map-placeholder lf-map-placeholder--inline lf-map-placeholder--sm"><i class="fa-solid fa-camera"></i> Photo-pin map</div>
+      </div>
+    </div>
+    <a class="lf-upload-link" href="#"><i class="fa-solid fa-cloud-arrow-up"></i> Or upload your own photo</a>
+    <label class="lf-dropzone" style="margin:0.75rem 0 2rem;">
+      <i class="fa-solid fa-image"></i>
+      <span>Choose a photo</span>
+      <input type="file" accept="image/*">
+    </label>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Annotations — entries panel + drawing controls</h3>
+    <div class="lf-map-split" style="margin-bottom:1rem;">
+      <div class="lf-map-split__map">
+        <div class="lf-map-placeholder lf-map-placeholder--inline lf-map-placeholder--sm"><i class="fa-solid fa-draw-polygon"></i> Drawing map</div>
+      </div>
+      <div class="lf-map-split__panel">
+        <div class="lf-annotation-entry">
+          <span>North shore beat</span>
+          <button class="lf-x-btn" type="button" aria-label="Remove North shore beat">&times;</button>
+        </div>
+      </div>
+    </div>
+    <div class="lf-map-actions" style="margin-bottom:2rem;">
+      <button class="btn btn--secondary" type="button" disabled><i class="fa-solid fa-rotate-left"></i> Undo last point</button>
+      <button class="btn btn--secondary" type="button" disabled><i class="fa-solid fa-trash-can"></i> Clear annotation</button>
+      <button class="btn btn--accent" type="button" disabled><i class="fa-solid fa-check"></i> Finish &amp; label</button>
+    </div>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Boat entry — JS-added (× removes instantly)</h3>
+    <div class="lf-boat" style="max-width:26rem;">
+      <div class="lf-boat__header">
+        <span>New Boat</span>
+        <button class="lf-x-btn" type="button" aria-label="Remove new boat">&times;</button>
+      </div>
+      <div class="field">
+        <label class="field__label" for="cs-boat-name">Boat name</label>
+        <input class="field__input" id="cs-boat-name" type="text" placeholder="e.g. North Shore Boat">
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Choice pills & option cards ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Choice pills &amp; option cards</h2>
+    <p class="cs-section__sub">Two selection treatments, promoted on their second use (edit-water → add-water wizard). <strong>Choice pills</strong> (<code>.lf-choice</code>) — native checkboxes/radios in bordered pills for dense multi-selects (species) and short single choices (water type). <strong>Option cards</strong> (<code>.lf-option</code>) — the bigger radio-as-card treatment for the important either/or choices (publish status): icon + label + one-line consequence.</p>
+    <div class="lf-choice-grid" style="margin-bottom:1.5rem; max-width: 34rem;">
+      <label class="lf-choice"><input type="checkbox" checked> Brown trout</label>
+      <label class="lf-choice"><input type="checkbox" checked> Sea trout</label>
+      <label class="lf-choice"><input type="checkbox"> Atlantic salmon</label>
+      <label class="lf-choice"><input type="checkbox"> Pike</label>
+    </div>
+    <div class="lf-option-grid" style="max-width: 34rem;">
+      <label class="lf-option">
+        <input type="radio" name="cs-publish" checked>
+        <span class="lf-option__card">
+          <i class="fa-solid fa-pencil"></i>
+          <span><strong>Draft</strong><small>Not visible to the public. Review before publishing.</small></span>
+        </span>
+      </label>
+      <label class="lf-option">
+        <input type="radio" name="cs-publish">
+        <span class="lf-option__card">
+          <i class="fa-solid fa-eye"></i>
+          <span><strong>Published</strong><small>Visible to anglers on the site immediately.</small></span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ───────────────── Wizard chrome ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Wizard chrome</h2>
+    <p class="cs-section__sub">The stepped-flow shell shared by the add-water and add-fishery wizards (promoted on second use): 4px progress bar (sticky in Rails), header (surtitle / title with a right-aligned step counter / optional description + status line), the info-left/fields-right band (<code>.lf-wizard__band</code>), and the nav row (ghost Back left; Skip/Next right, accent for the final submit). Landing steps use the <code>.lf-wizard-landing__*</code> lead + icon-feature list with a <code>.btn--lg</code> CTA. Wizard pages render no footer.</p>
+    <div style="border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;">
+      <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 50%"></div></div>
+      <div style="padding: 1.5rem 1.75rem 1.75rem;">
+        <div class="lf-wizard__header">
+          <p class="lf-wizard__surtitle">Add a fishery</p>
+          <div class="lf-wizard__title-row"><h3 class="lf-wizard__title">Location</h3><span class="lf-wizard__counter">Step 2 of 4</span></div>
+          <p class="lf-wizard__desc">Where is your fishery? This helps anglers find you and plan their trip.</p>
+          <p class="lf-wizard__status">&#10022; Generating description&hellip;</p>
+        </div>
+        <div class="lf-wizard__band">
+          <div class="lf-wizard__band-info">
+            <h3>Location</h3>
+            <p>The blurb sits left of its fields, so each group carries its own guidance.</p>
+          </div>
+          <div class="lf-wizard__band-fields">
+            <div class="field">
+              <label class="field__label" for="cs-wiz-county">County</label>
+              <input class="field__input" id="cs-wiz-county" type="text" value="Sutherland">
+            </div>
+          </div>
+        </div>
+        <div class="lf-wizard__nav">
+          <button class="btn btn--ghost" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+          <div class="lf-wizard__nav-right">
+            <button class="btn btn--ghost" type="button">Skip this step</button>
+            <button class="btn btn--primary" type="button">Next step <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="cs-note">Landing feature row specimen:</p>
+    <div class="lf-wizard-landing__feature" style="margin-top: 0.75rem;">
+      <div class="lf-wizard-landing__icon"><i class="fa-solid fa-clock"></i></div>
+      <div>
+        <strong>Takes a few minutes</strong>
+        <p>Just the basics — name, location, and a short description to get started.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Legal page ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Legal page</h2>
+    <p class="cs-section__sub">The <code>pages#</code> template — terms and privacy: banner with last-updated meta, sticky Contents <code>.lf-info-card</code>, prose body. Body styles cover h2 sections, h3 sub-sections, lists, links and data tables. Live on <code>terms.html</code> / <code>privacy.html</code>; specimen below shows the prose elements. (Credits turned out NOT to be this template — it's banner + attribution info-cards.)</p>
+    <div class="lf-legal__body">
+      <h2>5. Third-Party Services</h2>
+      <h3>5.1 Service providers</h3>
+      <p>We share data with the following third-party service providers, as described in our <a href="#">Privacy Policy</a>:</p>
+      <ul>
+        <li>Subscription and payment management</li>
+        <li>Image storage</li>
+      </ul>
+      <table>
+        <thead>
+          <tr><th>Service</th><th>Purpose</th><th>Data Shared</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RevenueCat</td><td>Subscription management</td><td>User ID, subscription status</td></tr>
+          <tr><td>AWS (S3)</td><td>Image storage</td><td>Uploaded photographs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ───────────────── Add-fishery CTA ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Add-fishery CTA</h2>
+    <p class="cs-section__sub">Forest panel with contour texture, map-marker roundel and a sunset button. Rails renders the same section on the homepage and <code>fisheries#index</code> (<code>hp-cta</code> partial); shown live on <code>homepage.html</code> and <code>fisheries.html</code>. The stone-stroke contour texture is a <code>::before</code> data-URI background — no per-page markup.</p>
+    <div class="lf-cta">
+      <div class="container">
+        <div class="lf-cta__panel">
+          <div class="lf-cta__mark">
+            <span class="lf-cta__plus"><i class="fa-solid fa-map-location-dot"></i></span>
+          </div>
+          <div class="lf-cta__content">
+            <h3 class="lf-cta__title">Run a fishery? <em>Let&rsquo;s get you found.</em></h3>
+            <p class="lf-cta__text">It's free and takes a few minutes. Reach more anglers, manage your listing, and put your waters on the map.</p>
+          </div>
+          <a class="lf-cta__btn" href="#">Add your fishery</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Photo credit ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Photo credit</h2>
+    <p class="cs-section__sub">The © caption for CC-licensed imagery (Rails <code>shared/_photo_credit</code>): faded-white type with underlined author/licence links, overlaid on hero and card images. Typography only — each context positions it (water hero bottom-left, card corners, homepage hero right). Promoted from <code>water_page.css</code> in reskin phase 6.</p>
+    <div style="position:relative; max-width:24rem; height:6rem; border-radius:0.85rem; overflow:hidden; background:linear-gradient(to top, #22453F, #5E95AC);">
+      <div class="photo-credit" style="position:absolute; right:0.7rem; bottom:0.55rem;">
+        &copy; <a href="#">Rob Farrow</a> &middot; <a href="#">CC</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Mailer band ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Mailer band</h2>
+    <p class="cs-section__sub">Newsletter signup rendered inside the footer on every page (<code>shared/_mailer</code>) — forest band one step lighter than the footer, pill input group with a sunset submit. Rails renders three states: signed-out email form (shown), signed-in Subscribe button, subscribed confirmation line. Designed during reskin phase 5 (no page mockup carries it; the footer sections here omit it to keep the catalogue short).</p>
+    <div class="lf-mailer">
+      <div class="container">
+        <div class="lf-mailer__inner">
+          <h3 class="lf-mailer__title">Join our wild fishing mailer</h3>
+          <p class="lf-mailer__text">Receive articles &amp; information to help plan your wild fishing trip.</p>
+          <form class="lf-mailer__form" onsubmit="return false">
+            <div class="lf-mailer__input-group">
+              <input class="lf-mailer__input" type="email" placeholder="Your email address">
+              <button class="lf-mailer__submit" type="submit">Subscribe</button>
+            </div>
+          </form>
+          <p class="lf-mailer__disclaimer">We promise not to share your email address with anyone else.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Auth card ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Auth card</h2>
+    <p class="cs-section__sub">Devise sign in / sign up card — label-above fields (no floating labels: no JS, label stays visible), sunset submit, OAuth buttons in the providers' own brand colours, cross-link footer. Lives on the two-photo forest-scrim background (<code>.lf-auth</code>); see <code>sign-in.html</code> / <code>sign-up.html</code>. Auth pages have no site footer, matching Rails. Forgot-password (<code>forgot-password.html</code>, no OAuth) adds the <code>__subtitle</code> under the title and the <code>__note</code> fine print — second card below.</p>
+    <div class="lf-auth-card">
+      <h3 class="lf-auth-card__title">Welcome back.<br>Sign in and start exploring.</h3>
+      <form class="lf-auth-card__form" onsubmit="return false">
+        <div class="field">
+          <label class="field__label" for="cs-auth-email">Email address</label>
+          <input class="field__input" id="cs-auth-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label class="field__label" for="cs-auth-pw">Password</label>
+          <input class="field__input" id="cs-auth-pw" type="password">
+        </div>
+        <button class="btn btn--accent lf-auth-card__submit" type="submit">Sign In</button>
+      </form>
+      <a class="lf-auth-card__forgot" href="#">Forgot your password?</a>
+      <div class="lf-auth-card__oauth">
+        <button class="lf-oauth-btn lf-oauth-btn--google" type="button">
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/><path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <button class="lf-oauth-btn lf-oauth-btn--apple" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#fff"/></svg>
+          Continue with Apple
+        </button>
+      </div>
+      <p class="lf-auth-card__footer">Don't have an account? <a href="#">Sign up</a></p>
+    </div>
+    <div class="lf-auth-card" style="margin-top:1.25rem;">
+      <h3 class="lf-auth-card__title">Forgot your password?</h3>
+      <p class="lf-auth-card__subtitle">Enter your email to get help logging in.</p>
+      <form class="lf-auth-card__form" onsubmit="return false">
+        <div class="field">
+          <label class="field__label" for="cs-fp-email">Email</label>
+          <input class="field__input" id="cs-fp-email" type="email">
+        </div>
+        <button class="btn btn--accent lf-auth-card__submit" type="submit">Send email</button>
+      </form>
+      <a class="lf-auth-card__forgot" href="#">Back to sign in</a>
+      <p class="lf-auth-card__note">Note: The password reset email may take a few minutes. If you don't see it, check your "Promotions" tab and spam folder.</p>
+    </div>
+
+    <p class="cs-section__sub" style="margin-top:2rem;"><strong>Modal variants</strong> — the sign-in modal and the usage-wall gate (<code>shared/_sign_in_modal</code> / <code>_sign_in_gate_modal</code>), <strong>the port replacement for Bootstrap's modal</strong>: the last <code>data-bs-*</code> on the public site, so <code>bootstrap.bundle.min.js</code> leaves both layouts once this lands. Same card — the markup is <code>&lt;dialog class="lf-auth-card lf-modal"&gt;</code> and both Rails modals render one shared body partial, so the body ports once; <code>.lf-modal</code> adds only the dialog chrome (<code>::backdrop</code>, × close, "or" divider — no logo, no title override: the card is left-aligned as auth pages are: the app's logo-trout header is dropped). <em>Dismissible:</em> <code>showModal()</code> gives backdrop + focus trap; <code>closedby="any"</code> adds backdrop-click light-dismiss (not a dialog default; where unsupported, × and Escape still close). <em>Gated</em> (<code>.lf-modal--gated</code>, the usage wall) is this same card <strong>minus the ×</strong>, plus a <code>cancel</code> listener calling <code>preventDefault()</code> to swallow Escape — the whole replacement for <code>data-bs-backdrop="static"</code> + <code>data-bs-keyboard="false"</code>, moving into the usage-wall Stimulus controller in place of <code>bootstrap.Modal.getOrCreateInstance()</code>. Specimen shown in flow (<code>open</code> + <code>position:static</code>); it's the exact markup <code>showModal()</code> opens.</p>
+
+    <dialog class="lf-auth-card lf-modal" open style="position:static;" closedby="any">
+      <button class="lf-modal__close" type="button" aria-label="Close">&#x2715;</button>
+      <h3 class="lf-auth-card__title">To keep exploring, sign up or sign in</h3>
+      <a class="btn btn--accent lf-auth-card__submit" href="sign-up.html">Sign up</a>
+      <div class="lf-modal__divider"><span>or</span></div>
+      <div class="lf-auth-card__oauth">
+        <a class="lf-oauth-btn lf-oauth-btn--email" href="sign-in.html">Continue with email</a>
+        <button class="lf-oauth-btn lf-oauth-btn--google" type="button">
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/><path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <button class="lf-oauth-btn lf-oauth-btn--apple" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#fff"/></svg>
+          Continue with Apple
+        </button>
+      </div>
+      <p class="lf-auth-card__footer">By continuing to use Let's Fish, you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+    </dialog>
+  </section>
+
+  <!-- ───────────────── Alerts ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Alerts</h2>
+    <p class="cs-section__sub">Inline banners for feedback and system messages. <code>--info</code> without the bold title doubles as the <strong>form guidance banner</strong> (the app's blue <code>.wizard__ai-hint</code>, brand-toned) — lead a form card or field with it when explaining how to use the thing (map instructions, season-override semantics). Short field-tied notes stay <code>.field__hint</code>.</p>
+    <div class="cs-alerts">
+      <div class="alert alert--error"><i class="fa-solid fa-circle-exclamation"></i><div><span class="alert__title">Couldn't save your trip.</span> Check your connection and try again.</div></div>
+      <div class="alert alert--success"><i class="fa-solid fa-circle-check"></i><div><span class="alert__title">Trip saved.</span> You'll find it under My Trips.</div></div>
+      <div class="alert alert--warning"><i class="fa-solid fa-triangle-exclamation"></i><div><span class="alert__title">Permit required.</span> This water needs a day ticket before you fish.</div></div>
+      <div class="alert alert--info"><i class="fa-solid fa-circle-info"></i><div><span class="alert__title">Heads up.</span> Access routes may be boggy after rain.</div></div>
+      <div class="alert alert--info"><i class="fa-solid fa-route"></i><div>Click on the map to plot your walking route to the water. Drag markers to adjust. We'll calculate the distance automatically.</div></div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Tooltip ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Tooltip</h2>
+    <p class="cs-section__sub">One bubble (<code>.lf-tooltip</code>) for everything Bootstrap tooltips did — Bootstrap is dropped on port. Used by the conditions ⓘ cue explainers, the one-time nudge and the slider hint (product nudges reuse the bubble; their show/dismiss timing stays app JS). <strong>Tap-to-reveal via the native Popover API</strong> (light-dismiss + Escape — the nav-menu precedent), not hover: the copy is load-bearing on mobile. Plain <code>title</code> attributes remain the free desktop nicety. Placement is <code>lf-popover-anchor.js</code> (all browsers, once in the layout on port): centred over the trigger, <strong>clamped inside the viewport</strong> — a bubble centred on an edge-hugging ⓘ would hang off-screen on phones — with the caret sliding to stay pointing at the trigger. No wiring per instance beyond <code>popovertarget</code> — app-opened bubbles (nudges, <code>popover="manual"</code> so the app owns dismissal) name their trigger with <code>data-anchor</code> instead and are positioned identically; see the live nudge on <code>conditions.html</code>. The script is also the nav menu's Safari/Firefox positioning fallback. The specimen is live — tap the ⓘ.</p>
+    <div class="cs-row">
+      <span class="lf-verdict-pill lf-verdict-pill--good">good</span>
+      <button class="lf-pill-cue" type="button" popovertarget="cs-tip" aria-label="What does this rating mean?"><i class="fa-solid fa-circle-info"></i></button>
+      <div class="lf-tooltip" id="cs-tip" popover>Fishing conditions rating for this hour. We score the wind direction, wind strength, cloud cover and temperature, then combine them into Good, Fair or Poor.</div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Badges & tags ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Badges &amp; tags</h2>
+    <p class="cs-section__sub">Status pills (semantic) and content tags (neutral).</p>
+    <div class="cs-row" style="margin-bottom:1rem;">
+      <span class="badge badge--neutral">42 waters</span>
+      <span class="badge badge--solid">Featured</span>
+      <span class="badge badge--success">Open</span>
+      <span class="badge badge--warning">Permit needed</span>
+      <span class="badge badge--error">Closed</span>
+    </div>
+    <div class="cs-row">
+      <span class="tag">Brown trout</span>
+      <span class="tag">12 lochs</span>
+      <span class="tag">Day tickets</span>
+      <span class="tag">Remote</span>
+    </div>
+  </section>
+
+  <!-- ───────────────── Water card ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Water card</h2>
+    <p class="cs-section__sub">Numbered index + heart overlay, then title, location, description, and water-type / species tags. The whole card is one link (stretched title anchor); the heart sits above it. Heart states: <strong>add</strong> (white chip, forest <code>heart-circle-plus</code> → sunset on hover) and <strong>added</strong> (solid sunset, white <code>heart-circle-minus</code> → burnt on hover) — shown on the two cards below.</p>
+    <div class="cs-cards">
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Ard"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246">
+          </a>
+          <span class="lf-water-card__index">2</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Ard</h3></a>
+          <p class="lf-water-card__location">Aberfoyle, Stirling</p>
+          <p class="lf-water-card__desc">A scenic Trossachs loch under Ben Lomond, well stocked with wild brown trout and pike among its wooded bays.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Loch</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout &amp; pike</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="lf-water-card">
+        <div class="lf-water-card__image-wrap">
+          <a class="lf-water-card__link" href="#">
+            <img class="lf-water-card__img" alt="Loch Chon"
+                 src="https://letsfish.imgix.net/destinations/images/000/000/034/original/geograph-5088283-by-Peter-Moore.jpg?auto=format%2Ccompress&fit=crop&w=420&h=246">
+          </a>
+          <span class="lf-water-card__index">3</span>
+          <div class="lf-water-card__hearts">
+            <a class="lf-water-card__heart lf-water-card__heart--active" href="#" title="Remove from fishlist"><i class="fa-solid fa-heart-circle-minus"></i></a>
+          </div>
+        </div>
+        <div class="lf-water-card__body">
+          <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Loch Chon</h3></a>
+          <p class="lf-water-card__location">Kinlochard, Stirling</p>
+          <p class="lf-water-card__desc">A quiet hill loch on the Loch Katrine road, holding hard-fighting wild brownies that rise freely to the dry fly.</p>
+          <div class="lf-water-card__meta">
+            <span class="lf-water-card__tag"><i class="fa fa-water"></i> Loch</span>
+            <span class="lf-water-card__tag"><i class="fa fa-fish"></i> Brown trout</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ───────────────── Map markers ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Map markers</h2>
+    <p class="cs-section__sub">Pins and cluster bubbles on the Leaflet nearby map. Brand-tokened — they replace the off-brand hexes the app currently hardcodes in JS (<code>#3b82f6</code> blue, <code>#22c55e</code> green).</p>
+    <div class="cs-mapfield">
+      <div class="cs-marker">
+        <span class="lf-map-pin"><i class="fa-solid fa-fish"></i></span>
+        <span class="cs-marker__label">Water</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-pin lf-map-pin--location"><i class="fa-solid fa-location-dot"></i></span>
+        <span class="cs-marker__label">Location (focal point)</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-pin lf-map-pin--selected"><i class="fa-solid fa-fish"></i></span>
+        <span class="cs-marker__label">Selected</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-cluster">8</span>
+        <span class="cs-marker__label">Cluster &lt;10</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-cluster lf-map-cluster--md">24</span>
+        <span class="cs-marker__label">Cluster 10–49</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-cluster lf-map-cluster--lg">60</span>
+        <span class="cs-marker__label">Cluster 50+</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-pin lf-map-pin--station"><i class="fa-solid fa-anchor"></i></span>
+        <span class="cs-marker__label">Tide station</span>
+      </div>
+      <div class="cs-marker">
+        <span class="lf-map-pin lf-map-pin--farm"><i class="fa-solid fa-bug"></i></span>
+        <span class="cs-marker__label">Salmon farm</span>
+      </div>
+    </div>
+    <p class="cs-note">Water and selected pins keep the app's <code>fa-fish</code> glyph; the location pin uses <code>fa-location-dot</code> (the app currently uses a fish for it too — we're fixing that). The location pin marks the page's focal point (fishery, water, fishlist centre) — used on fisheries#show, fishlists and the water form, <strong>not</strong> the nearby page. Tide-station and salmon-farm pins appear on the coastal conditions overlay map (see <code>conditions.html</code>) — deep-water and warning-amber replacing the app's hardcoded navy/amber; the farm pin just says "a farm is here", its popup carries the sea-lice count.</p>
+  </section>
+
+  <!-- ───────────────── Map selection card ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Map selection card</h2>
+    <p class="cs-section__sub">Compact popup shown when a marker is clicked on the nearby map — thumbnail, name, water type and species, with a close button.</p>
+    <div class="lf-water-selection-card">
+      <a class="lf-water-selection-card__link" href="#">
+        <img class="lf-water-selection-card__img" alt="Loch Ard"
+             src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=112&h=112">
+        <div class="lf-water-selection-card__info">
+          <strong class="lf-water-selection-card__name">Loch Ard</strong>
+          <span class="lf-water-selection-card__type"><i class="fa-solid fa-water"></i> Loch</span>
+          <span class="lf-water-selection-card__species"><i class="fa-solid fa-fish"></i> Brown trout &amp; pike</span>
+        </div>
+      </a>
+      <button class="lf-water-selection-card__close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </section>
+
+  <!-- ───────────────── Conditions overlay ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Conditions overlay</h2>
+    <p class="cs-section__sub">The fishing-forecast overlay on <code>waters#show</code> — JS-rendered in Rails, so like the map markers these brand-tokened classes replace hardcoded hexes on port; see <code>conditions.html</code> for the assembled states. <strong>Colour decisions:</strong> verdict traffic light → Layer-2 semantics (good=success, fair=warning, poor=error); tide signalling → water tokens (prime=water, outside=taupe). The fair pill and tide pills take dark text — white fails contrast on the amber/water fills.</p>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Verdict &amp; tide pills</h3>
+    <div class="cs-row" style="margin-bottom:1.5rem;">
+      <span class="lf-verdict-pill lf-verdict-pill--good">good</span>
+      <span class="lf-verdict-pill lf-verdict-pill--fair">fair</span>
+      <span class="lf-verdict-pill lf-verdict-pill--poor">poor</span>
+      <span class="lf-tide-pill lf-tide-pill--prime">Falling — low water 4:07pm</span>
+      <span class="lf-tide-pill lf-tide-pill--outside">Rising — high water 10:31am</span>
+      <span class="lf-tide-pill lf-tide-pill--loading">Tide loading…</span>
+      <span class="lf-tide-pill lf-tide-pill--unknown">Tide unavailable</span>
+    </div>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Hour row — label + slider over the verdict and tide bands (agree under the thumb)</h3>
+    <div class="lf-hour-row" style="margin: 0 0 1.5rem;">
+      <span class="lf-hour-label">2pm</span>
+      <div class="lf-hour-slider-wrap">
+      <div class="lf-hour-strip">
+        <span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span>
+      </div>
+      <div class="lf-hour-strip">
+        <span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-unknown"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-unknown"></span>
+      </div>
+      <input class="lf-hour-slider" type="range" min="0" max="23" step="1" value="14" aria-label="Hour of day">
+      </div>
+    </div>
+
+    <h3 class="cs-grid__rowhead" style="margin-bottom:0.7rem;">Day strip &amp; wind marker</h3>
+    <div class="cs-row">
+      <div class="lf-day-strip">
+        <button class="lf-day-btn lf-day-btn--active" type="button">Thu<small>16/7</small></button>
+        <button class="lf-day-btn" type="button">Fri<small>17/7</small></button>
+      </div>
+      <span class="lf-wind-icon" style="margin-left: 1rem;">
+        <span class="lf-wind-icon__arrow-wrap" style="transform: rotate(225deg);">
+          <svg class="lf-wind-icon__arrow-tip" viewBox="0 0 18 14" aria-hidden="true">
+            <polygon points="9,0 18,14 0,14" fill="#fff" stroke="#3C3833" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>12</span>
+      </span>
+    </div>
+    <p class="cs-note">The assembled sheet lives on <code>conditions.html</code>: <code>.lf-conditions-sheet</code> (<code>--no-tide</code> shortens it for lakes), the <code>.lf-conditions-readouts</code> row, <code>.lf-pill-row</code>/<code>.lf-pill-cue</code> (pill + tap-for-tooltip ⓘ — see Tooltip), and the stone-shimmer loading skeleton (<code>.lf-conditions-skeleton</code>).</p>
+  </section>
+
+  <!-- ───────────────── Type scale ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Type scale</h2>
+    <p class="cs-section__sub">Nunito Sans — one family, differentiated by size and weight.</p>
+    <div class="cs-type">
+      <div class="t-display">Discover wild fishing<span class="px">Display · 48 / 800</span></div>
+      <div class="t-h1">Destinations<span class="px">H1 · 32 / 800</span></div>
+      <div class="t-h2">Inchnadamph Estate Waters<span class="px">H2 · 24 / 700</span></div>
+      <div class="t-h3">Permits &amp; access<span class="px">H3 · 18 / 700</span></div>
+      <div class="t-body">Search hundreds of waters across the UK, with permits, access notes, OS map references and the species you can expect to catch.<span class="px">Body · 16 / 400</span></div>
+      <div class="t-small">It's free and takes a few minutes to add your fishery.<span class="px">Small · 14 / 400</span></div>
+      <div class="t-caption">Sutherland · North-west Highlands<span class="px">Caption · 12 / 600</span></div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Text links ───────────────── -->
+  <section style="border-bottom:none;">
+    <h2 class="cs-section__title">Text links</h2>
+    <p class="cs-section__sub">Forest link on charcoal body copy is a hue-only difference, so links in prose carry an underline as well — the cue that survives colour blindness. Opt in with <code>.prose</code> on the copy container; card bodies get it automatically through their <code>&lt;p&gt;</code>s (<code>.lf-info-card__body p a</code>), which leaves the legal Contents list and any button in a card body undecorated. Structural links — nav, cards, breadcrumbs, buttons — stay colour-only.</p>
+    <div class="prose" style="max-width:46rem; line-height:1.65; color:var(--text);">
+      <p>Legal rules apply to this water on top of any fishery rules. See the <a href="#">fishing bylaws in Scotland</a> before you fish, and check the <a href="#">permit conditions</a> for the beat.</p>
+      <p style="margin-top:0.9rem;">Hover thickens the underline from 1px to 2px; the colour darkens to <code>--primary-hover</code> as it does everywhere else.</p>
+    </div>
+    <p class="cs-note">Prose containers in Rails: <code>.ws-prose</code> / <code>.fs-prose</code> / <code>.fl-desc__text</code> (all carry <code>.prose</code>), <code>.lf-legal__body</code>, and every <code>.lf-info-card__body</code> paragraph.</p>
+  </section>
+
+</div>
+</body>
+</html>

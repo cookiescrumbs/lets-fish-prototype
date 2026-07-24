@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Account Settings</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Manage account mockup — devise/registrations#edit (avatar-menu "Manage
+   Account"). Signed-in page → SOLID nav with avatar pill + shared explore
+   banner. Faithful to the real view: a single column of .lf-info-cards
+   (Profile Photo / Email / Change Password / Preferences / Confirm Changes)
+   then Cancel + Save actions. Column + actions row are the shared form-page
+   chrome (.lf-form-col, .lf-form-actions — promoted on their third page,
+   edit-fishery). Page-local: avatar row, checkbox-with-description.
+   ========================================================================== */
+
+/* Profile photo — avatar preview beside the upload field */
+.ma-avatar { display: flex; align-items: center; gap: 1.25rem; }
+.ma-avatar__img { width: 4.5rem; height: 4.5rem; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.ma-avatar__img--default { font-size: 4.5rem; color: var(--forest-60); line-height: 1; }
+.ma-avatar__upload { flex: 1; min-width: 0; }
+.ma-avatar__hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; }
+
+@media (max-width: 640px) { .ma-avatar { flex-direction: column; align-items: flex-start; } }
+
+/* Preferences — checkbox with a title + description label */
+.ma-toggle { display: flex; align-items: flex-start; gap: 0.65rem; cursor: pointer; }
+.ma-toggle .field__checkbox { margin-top: 0.2rem; }
+.ma-toggle__title { font-size: 0.88rem; font-weight: 700; color: var(--heading); }
+.ma-toggle__desc { display: block; font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-top: 0.15rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (signed in) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <button class="lf-nav__avatar-btn" popovertarget="account-menu" aria-label="Account menu">
+        <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+        <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+      </button>
+      <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
+        <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
+        <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+        <div class="lf-nav__menu-divider"></div>
+        <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Header banner ════════════════════════ -->
+<div class="lf-explore-banner">
+  <div class="container">
+    <nav class="lf-breadcrumb">
+      <a href="homepage.html">Home</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <span class="lf-breadcrumb__current">Account Settings</span>
+    </nav>
+    <h1 class="lf-explore-banner__title">Account Settings</h1>
+    <p class="lf-explore-banner__count"><i class="fa-solid fa-user-gear"></i> Manage your profile and preferences</p>
+  </div>
+</div>
+
+<!-- ════════════════════════ Account form ════════════════════════ -->
+<div class="container">
+  <form class="lf-form-col" onsubmit="return false">
+
+    <!-- Profile photo -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Profile Photo</span>
+        <i class="fa-solid fa-camera lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="ma-avatar">
+          <i class="fa-solid fa-circle-user ma-avatar__img ma-avatar__img--default" aria-hidden="true"></i>
+          <div class="ma-avatar__upload">
+            <div class="field">
+              <label class="field__label" for="avatar">Update photo</label>
+              <input class="field__input" id="avatar" type="file" accept="image/*">
+            </div>
+            <p class="ma-avatar__hint">Upload a photo to personalise your profile.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Email Address</span>
+        <i class="fa-solid fa-envelope lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="field">
+          <label class="field__label" for="email">Email</label>
+          <input class="field__input" id="email" type="email" autocomplete="email" value="steven@trinnaclesoftware.com" placeholder="name@address.com">
+        </div>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Change Password</span>
+        <i class="fa-solid fa-lock lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="password">New password (6 characters minimum)</label>
+            <input class="field__input" id="password" type="password" autocomplete="new-password" placeholder="Leave blank to keep current">
+          </div>
+          <div class="field">
+            <label class="field__label" for="password-confirmation">Confirm new password</label>
+            <input class="field__input" id="password-confirmation" type="password" autocomplete="new-password">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Preferences</span>
+        <i class="fa-solid fa-bell lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <label class="ma-toggle">
+          <input class="field__checkbox" type="checkbox" checked>
+          <span>
+            <span class="ma-toggle__title">Wild fishing mailer</span>
+            <span class="ma-toggle__desc">Receive our newsletter with the latest fishing spots and tips</span>
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Confirm changes -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Confirm Changes</span>
+        <i class="fa-solid fa-shield-halved lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <p>Enter your current password to save any changes to your account.</p>
+        <div class="field">
+          <label class="field__label" for="current-password">Current password</label>
+          <input class="field__input" id="current-password" type="password" autocomplete="current-password">
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="lf-form-actions">
+      <a class="btn btn--ghost" href="homepage.html">Cancel</a>
+      <button class="btn btn--accent" type="submit">Save Changes</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

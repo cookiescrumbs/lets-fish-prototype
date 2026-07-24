@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Permit confirmation email</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<!-- Permit-confirmation email mockup — the transactional email sent when the
+     Buy-day-ticket flow completes. It confirms the booking, carries the PDF
+     permit as an attachment, and offers the wallet + download actions. Framed
+     inside a mock inbox header (From / To / Subject / attachment).
+
+     Mockup only — previews the intended appearance. A real send is built with
+     a table layout and fully inline styles (mail clients ignore <style>/CSS
+     files); the wallet buttons become plain links to the .pkpass / Google Wallet
+     save URL (email can't system-render Apple/Google Pay-style buttons).
+
+     PLACEHOLDER (same as the permit): the rules snippet and club contact.
+     Everything else carries through from the ticket flow. -->
+
+<style>
+.em-page  { padding: 2rem 0 4rem; }
+.em-intro { max-width: 72ch; font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+.em-spec  { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg); margin-top: 2rem; box-shadow: var(--shadow-sm); }
+.em-spec__label { font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+/* Mock inbox header */
+.em-meta { padding: 0.9rem 1.1rem; font-size: 0.8rem; color: var(--text); display: flex; flex-direction: column; gap: 0.3rem; border-bottom: 1px solid var(--border); }
+.em-meta__k { display: inline-block; width: 3.4rem; color: var(--muted); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.em-meta__att { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 0.2rem 0.7rem; font-size: 0.76rem; color: var(--forest); font-weight: 700; }
+
+/* Email body */
+.em-stage { background: var(--bg-alt); padding: 2.5rem 1.5rem; display: flex; justify-content: center; }
+.em { width: 600px; max-width: 100%; background: #fff; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); }
+.em__head { background: var(--forest); color: #fff; padding: 1.5rem 1.8rem; display: flex; align-items: center; gap: 1rem; }
+.em__logo { width: 52px; height: 52px; border-radius: 50%; background: #fff; object-fit: contain; flex-shrink: 0; }
+.em__club { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+.em__doctype { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.85; margin-top: 0.15rem; }
+.em__body { padding: 1.8rem; }
+.em__greeting { font-size: 1rem; color: var(--heading); font-weight: 700; }
+.em__p { font-size: 0.9rem; color: var(--text); line-height: 1.65; margin-top: 0.6rem; }
+.em__cta { display: flex; flex-direction: column; gap: 0.6rem; margin: 1.35rem 0 1.5rem; }
+.em__wallets { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.em__fullbtn { width: 100%; justify-content: center; }
+
+/* Wallet badge lockups — faithful recreations. Swap for the vendors' official
+   "Add to … Wallet" badge artwork at build (developer.apple.com/wallet ·
+   developers.google.com/wallet). In email these are links, not buttons. */
+.em-wallet { border-radius: var(--radius-md); padding: 0.7rem; font-family: var(--font-ui); font-weight: 700; font-size: 0.82rem; text-decoration: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.45rem; background: #000; color: #fff; border: none; }
+.em-wallet svg { height: 17px; width: auto; flex-shrink: 0; }
+
+.em__rules { background: var(--forest-tint); border-radius: var(--radius-md); padding: 1.1rem 1.25rem; }
+.em__rules h4 { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--forest); margin-bottom: 0.55rem; }
+.em__rules p { font-size: 0.84rem; color: var(--text); line-height: 1.6; }
+.em__link { color: var(--forest); font-weight: 700; text-decoration: none; }
+.em__signoff { font-size: 0.9rem; color: var(--text); margin-top: 1.4rem; line-height: 1.6; }
+.em__foot { background: var(--bg-alt); padding: 1.3rem 1.8rem; font-size: 0.74rem; color: var(--muted); line-height: 1.65; border-top: 1px solid var(--border); }
+.em__foot b { color: var(--heading); }
+
+@media (max-width: 440px) { .em__wallets { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (signed in) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <button class="lf-nav__avatar-btn" popovertarget="account-menu" aria-label="Account menu">
+        <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+        <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+      </button>
+      <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="#">Your Fishery</a>
+        <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
+        <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
+        <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+        <div class="lf-nav__menu-divider"></div>
+        <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container em-page">
+  <p class="em-intro">Mockup note: the confirmation email sent the moment Callum pays. It restates the booking, attaches the <b>PDF permit</b>, and offers add-to-wallet + download. Values carry through from the ticket flow; the rules snippet and club contact are the same placeholders as the permit.</p>
+
+  <div class="em-spec">
+    <div class="em-spec__label">Confirmation email — sent on purchase, carries the PDF permit as an attachment</div>
+
+    <!-- Mock inbox header -->
+    <div class="em-meta">
+      <div><span class="em-meta__k">From</span> Durness &amp; Kinlochbervie AC <span style="color:var(--muted)">&lt;permits@lets.fish&gt;</span></div>
+      <div><span class="em-meta__k">To</span> callum.reid@mail.com</div>
+      <div><span class="em-meta__k">Subject</span> <b>Your day permit — Durness &amp; KLB AC, Sat 15 Aug 2026</b></div>
+      <div><span class="em-meta__k">Files</span> <span class="em-meta__att"><i class="fa-solid fa-file-pdf"></i> Adult-Day-Ticket-CR-20260815-0427.pdf</span></div>
+    </div>
+
+    <!-- Email body -->
+    <div class="em-stage">
+      <div class="em">
+        <div class="em__head">
+          <img class="em__logo" src="durness-klb-logo.jpg" alt="Durness &amp; Kinlochbervie Angling Club">
+          <div>
+            <div class="em__club">Durness &amp; Kinlochbervie AC</div>
+            <div class="em__doctype">Day permit confirmation</div>
+          </div>
+        </div>
+
+        <div class="em__body">
+          <div class="em__greeting">Hi Callum,</div>
+          <p class="em__p">Your <b>Adult Day Ticket</b> for <b>Saturday 15 August 2026</b> is confirmed. Your permit is attached as a PDF — add it to your phone's wallet below, and show it to any club bailiff on request.</p>
+
+          <div class="lf-info-card" style="margin-top:1.3rem">
+            <div class="lf-info-card__header"><span class="lf-info-card__title">Adult Day Ticket</span><i class="fa-solid fa-ticket lf-info-card__icon"></i></div>
+            <div class="lf-info-card__body" style="font-size:.85rem;display:flex;flex-direction:column;gap:.5rem">
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)"><i class="fa-solid fa-calendar" style="color:var(--forest-60);margin-right:.4rem"></i>Date</span><span style="font-weight:700">Sat 15 Aug 2026 · sunrise–sunset</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)"><i class="fa-solid fa-user" style="color:var(--forest-60);margin-right:.4rem"></i>Angler</span><span style="font-weight:700">Callum Reid</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)"><i class="fa-solid fa-fish" style="color:var(--forest-60);margin-right:.4rem"></i>Waters</span><span style="font-weight:700">All club waters · one rod</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)"><i class="fa-solid fa-car" style="color:var(--forest-60);margin-right:.4rem"></i>Vehicle</span><span style="font-weight:700">SA68 KLB</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Reference</span><span style="font-weight:700">CR-20260815-0427</span></div>
+              <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:.5rem;margin-top:.1rem"><span style="color:var(--muted)">Total paid</span><span style="font-weight:800;color:var(--heading)">£15.90</span></div>
+            </div>
+          </div>
+
+          <div class="em__cta">
+            <div class="em__wallets">
+              <a class="em-wallet"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" fill="#fff"/></svg>Add to Apple Wallet</a>
+              <a class="em-wallet"><svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/><path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/></svg>Add to Google Wallet</a>
+            </div>
+            <a class="btn btn--secondary em__fullbtn"><i class="fa-solid fa-download"></i> Download PDF permit</a>
+          </div>
+
+          <div class="em__rules">
+            <h4>Before you fish <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">— placeholder</span></h4>
+            <p>Fly only unless otherwise stated — check the water's page on Let's Fish first. Return all salmon and sea trout. Ground-nesting birds Apr–Jul: keep to paths and keep dogs on a lead.<br>
+            <a class="em__link" href="#">View Durness &amp; KLB AC on Let's Fish <i class="fa-solid fa-arrow-right" style="font-size:.72rem"></i></a></p>
+          </div>
+
+          <div class="em__signoff">Tight lines,<br><b>The Durness &amp; Kinlochbervie AC team</b></div>
+        </div>
+
+        <div class="em__foot">
+          Sent by <b>Let's Fish</b> on behalf of Durness &amp; Kinlochbervie Angling Club · lets.fish<br>
+          Booking reference CR-20260815-0427 · keep this email for your records. Questions? Bailiff 07700 900123 <span style="color:var(--muted)">[placeholder]</span>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

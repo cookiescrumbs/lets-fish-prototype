@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Fisheries</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Fisheries index mockup — fisheries#index. Hero-less page → SOLID FOREST
+   header. Shared explore banner (breadcrumb, title, subtitle, search) with
+   an Add-your-fishery button in the toolbar; no List/Map toggle (this page
+   has no map view). Cards are the shared .lf-water-card WITHOUT the numbered
+   index / heart / tags — faithful to shared/_fisheries, which shows only
+   image, name, short address and truncated description (alphabetical order,
+   no filters). Bottom add-fishery CTA is the shared .lf-cta.
+   Everything is components.css chrome — no page-local CSS (grid is the
+   shared .lf-card-grid--cols-3, matching Rails col-lg-4).
+   ========================================================================== */
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Header banner ════════════════════════ -->
+<div class="lf-explore-banner">
+  <div class="container">
+    <nav class="lf-breadcrumb">
+      <a href="homepage.html">Home</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <span class="lf-breadcrumb__current">Fisheries</span>
+    </nav>
+    <h1 class="lf-explore-banner__title">Fisheries</h1>
+    <p class="lf-explore-banner__count">Explore fisheries across the UK</p>
+    <div class="lf-explore-banner__toolbar">
+      <div class="lf-explore-banner__search">
+        <div class="lf-search-bar">
+          <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+          <input type="text" class="lf-search-bar__input" placeholder="Search by name or location...">
+        </div>
+      </div>
+      <a class="btn btn--accent" href="#"><i class="fa-solid fa-plus"></i> Add your fishery</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ Fishery-card grid ════════════════════════ -->
+<div class="container">
+  <div class="lf-card-grid lf-card-grid--cols-3">
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Assynt Angling Group"
+               src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Assynt Angling Group</h3></a>
+        <p class="lf-water-card__location">Lochinver, Sutherland</p>
+        <p class="lf-water-card__desc">Hundreds of wild brown trout lochs across the crofting estates of Assynt, fished on one affordable permit&hellip;</p>
+      </div>
+    </article>
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Forsinard Flows"
+               src="https://letsfish.imgix.net/destinations/images/000/000/034/original/geograph-5088283-by-Peter-Moore.jpg?auto=format%2Ccompress&fit=crop&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Forsinard Flows</h3></a>
+        <p class="lf-water-card__location">Forsinard, Sutherland</p>
+        <p class="lf-water-card__desc">Remote peatland lochs in the heart of the Flow Country — dark water, free-rising brownies and total solitude&hellip;</p>
+      </div>
+    </article>
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Inchnadamph Estate Waters"
+               src="https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg?auto=format%2Ccompress&fit=crop&crop=top&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Inchnadamph Estate Waters</h3></a>
+        <p class="lf-water-card__location">Inchnadamph, Sutherland</p>
+        <p class="lf-water-card__desc">Limestone-fed lochs below Ben More Assynt holding unusually large wild trout for the far north&hellip;</p>
+      </div>
+    </article>
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Jura Estate Fishings"
+               src="https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg?auto=format%2Ccompress&fit=crop&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Jura Estate Fishings</h3></a>
+        <p class="lf-water-card__location">Craighouse, Isle of Jura</p>
+        <p class="lf-water-card__desc">Island hill lochs walked to over open moor, with sea trout in the burns after summer rain&hellip;</p>
+      </div>
+    </article>
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Scourie Angling Club"
+               src="https://letsfish.imgix.net/destinations/images/000/000/067/original/geograph-6378477-by-Ian-Hawfinch.jpg?auto=format%2Ccompress&fit=crop&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Scourie Angling Club</h3></a>
+        <p class="lf-water-card__location">Scourie, Sutherland</p>
+        <p class="lf-water-card__desc">Over three hundred trout lochs on day tickets from the village shop — a lifetime of water in one parish&hellip;</p>
+      </div>
+    </article>
+
+    <article class="lf-water-card">
+      <div class="lf-water-card__image-wrap">
+        <a class="lf-water-card__link" href="#">
+          <img class="lf-water-card__img" alt="Shetland Anglers Association"
+               src="https://letsfish.imgix.net/destinations/images/000/000/002/original/shetland.jpg?auto=format%2Ccompress&fit=crop&w=650&h=380&q=75">
+        </a>
+      </div>
+      <div class="lf-water-card__body">
+        <a class="lf-water-card__title-link" href="#"><h3 class="lf-water-card__title">Shetland Anglers Association</h3></a>
+        <p class="lf-water-card__location">Lerwick, Shetland</p>
+        <p class="lf-water-card__desc">Hundreds of voes and lochs across the isles, from roadside water to remote headlands, on a single season permit&hellip;</p>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ Add fishery CTA ════════════════════════ -->
+<section class="lf-cta">
+  <div class="container">
+    <div class="lf-cta__panel">
+      <div class="lf-cta__mark">
+        <span class="lf-cta__plus"><i class="fa-solid fa-map-location-dot"></i></span>
+      </div>
+      <div class="lf-cta__content">
+        <h3 class="lf-cta__title">Run a fishery? <em>Let&rsquo;s get you found.</em></h3>
+        <p class="lf-cta__text">It's free and takes a few minutes. Reach more anglers, manage your listing, and put your waters on the map.</p>
+      </div>
+      <a class="lf-cta__btn" href="#">Add your fishery</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Conditions Overlay</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+<script src="../../app/javascript/lf_popover_anchor.js" defer></script>
+
+<style>
+/* ==========================================================================
+   Conditions overlay mockup — the fishing-forecast overlay opened from the
+   Conditions button on waters#show. Not a route: a full-screen JS-built
+   overlay (conditions_view_controller.js + conditions.css/tide.css), live
+   Leaflet map on top, controls sheet at the bottom. Each panel below is one
+   overlay state at viewport proportions: LAKE (verdict strip only, 220px
+   sheet), COASTAL (tide pill + tide band + tide-station/salmon-farm map
+   pins, 260px sheet), and the loading/error states. All chrome is the
+   brand-tokened .lf-* conditions set in components.css — the port
+   replacement for the overlay's hardcoded hexes (same deal as the map
+   markers).
+
+   Colour decisions recorded in components.css: verdict good/fair/poor →
+   Layer-2 success/warning/error; tide prime/outside → water/taupe; fair
+   pill and tide pills take dark text (white fails contrast on amber/water
+   fills — the accent button sets the convention). Bootstrap is dropped on
+   port: the verdict/tide ⓘ cues are BUTTONS opening working .lf-tooltip
+   bubbles via the native Popover API (tap-friendly; try them). The one-time
+   nudge is the SAME mechanism app-side: a popover="manual" bubble named to
+   its trigger by data-anchor, opened by script (here: on page load, standing
+   in for the app's show-once logic) and self-positioned like every other
+   bubble. The hour-slider hint reuses the bubble too; not shown. Map tile
+   detail skipped.
+   ========================================================================== */
+
+/* Mockup scaffolding — labelled panel per overlay state */
+.cx-page { padding: 2rem 0 4rem; }
+.cx-intro { max-width: 72ch; font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+.cx-spec { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg); margin-top: 2rem; box-shadow: var(--shadow-sm); }
+.cx-spec__label { font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+/* Overlay = map area filling everything above the sheet */
+.cx-overlay { position: relative; height: 620px; }
+.cx-map { position: absolute; top: 0; left: 0; right: 0; bottom: 260px; }
+.cx-map--no-tide { bottom: 220px; }
+.cx-map .lf-map-placeholder { height: 100%; border: none; border-radius: 0; }
+.cx-close { position: absolute; top: 1rem; right: 1rem; z-index: 2; width: 2.5rem; height: 2.5rem;
+  display: flex; align-items: center; justify-content: center; border: none; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92); color: var(--charcoal); font-size: 1rem; cursor: pointer;
+  box-shadow: var(--shadow-sm); }
+.cx-close:hover { background: #fff; }
+/* wind marker demo, centred where the water sits on the live map */
+.cx-wind-anchor { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }
+
+/* Nudge panel — the waters-show hero action bar, reproduced as context for
+   the one-time nudge bubble. .btn--hero is copied from waters-show's
+   page-local CSS (same page's chrome, shown here as a specimen — still
+   page-local there, promotion deferred as noted in design-system.md). */
+.cx-hero { position: relative; height: 300px; overflow: hidden; }
+.cx-hero img { width: 100%; height: 100%; object-fit: cover; }
+.cx-hero__scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 55%); }
+.cx-hero__actions { position: absolute; left: 1.25rem; bottom: 1rem; display: flex; gap: 0.6rem; }
+.btn--hero { background: color-mix(in srgb, var(--charcoal) 8%, #fff); border: 1.5px solid transparent; color: var(--forest); box-shadow: var(--shadow-sm); }
+.btn--hero:hover { background: color-mix(in srgb, var(--charcoal) 16%, #fff); color: var(--forest); }
+</style>
+</head>
+<body>
+
+<div class="container cx-page">
+  <p class="cx-intro">Mockup note: the conditions overlay is opened from the Conditions button on the water page — a full-screen view, live map on top, forecast sheet at the bottom. The panels below are its states at viewport proportions. The ⓘ cues are live — tap one to open its <code>.lf-tooltip</code> explainer (native Popover API; placed and viewport-clamped by <code>lf-popover-anchor.js</code>).</p>
+
+  <!-- ════════ Nudge (on the water page, before opening) ════════ -->
+  <div class="cx-spec">
+    <div class="cx-spec__label">Nudge — one-time prompt on the water page's Conditions button, shown when the button scrolls into view (once per user; timing/dismissal is app JS). Same .lf-tooltip bubble, opened by the app rather than a tap</div>
+    <div class="cx-hero">
+      <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=1200&h=400">
+      <div class="cx-hero__scrim"></div>
+      <div class="cx-hero__actions">
+        <a class="btn btn--hero" href="#"><i class="fa-solid fa-heart-circle-plus"></i> Save</a>
+        <a class="btn btn--hero" href="#"><i class="fa-solid fa-diamond-turn-right"></i> Directions</a>
+        <a class="btn btn--hero" id="nudge-btn" href="#"><i class="fa-solid fa-cloud-sun"></i> Conditions</a>
+        <!-- app-opened bubble: popover="manual" (no light-dismiss — the app owns
+             dismissal), anchored to its button via data-anchor, opened on load
+             below to stand in for the app's show-once logic. Same positioning +
+             viewport clamping as the tap-opened cues — nothing hand-placed. -->
+        <div class="lf-tooltip" id="tip-nudge" popover="manual" data-anchor="nudge-btn">Tap to see today's fishing forecast</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Lake water ════════ -->
+  <div class="cx-spec">
+    <div class="cx-spec__label">Lake water — verdict strip only · today selected, slider on 2pm, wind marker shows speed + direction at the water</div>
+    <div class="cx-overlay">
+      <div class="cx-map cx-map--no-tide">
+        <div class="lf-map-placeholder lf-map-placeholder--inline"><i class="fa-solid fa-map"></i> Topo map, centred on the water</div>
+        <span class="cx-wind-anchor">
+          <span class="lf-wind-icon">
+            <span class="lf-wind-icon__arrow-wrap" style="transform: rotate(225deg);">
+              <svg class="lf-wind-icon__arrow-tip" viewBox="0 0 18 14" aria-hidden="true">
+                <polygon points="9,0 18,14 0,14" fill="#fff" stroke="#3C3833" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>12</span>
+          </span>
+        </span>
+        <button class="cx-close" type="button" aria-label="Close map">&#x2715;</button>
+      </div>
+      <div class="lf-conditions-sheet lf-conditions-sheet--no-tide">
+        <div class="lf-conditions-readouts">
+          <span class="lf-verdict-pill lf-verdict-pill--good">good</span>
+          <span><i class="fa-solid fa-temperature-half"></i> 14°C</span>
+          <span><i class="fa-solid fa-cloud"></i> 35%</span>
+          <span><i class="fa-solid fa-wind"></i> 12 mph</span>
+          <span><i class="fa-solid fa-droplet"></i> 5%</span>
+          <button class="lf-pill-cue" type="button" popovertarget="tip-verdict-lake" aria-label="What does this rating mean?"><i class="fa-solid fa-circle-info"></i></button>
+          <div class="lf-tooltip" id="tip-verdict-lake" popover>Fishing conditions rating for this hour. We score the wind direction, wind strength, cloud cover and temperature, then combine them into Good, Fair or Poor.</div>
+        </div>
+        <div class="lf-day-strip">
+          <button class="lf-day-btn lf-day-btn--active" type="button">Thu<small>16/7</small></button>
+          <button class="lf-day-btn" type="button">Fri<small>17/7</small></button>
+          <button class="lf-day-btn" type="button">Sat<small>18/7</small></button>
+          <button class="lf-day-btn" type="button">Sun<small>19/7</small></button>
+          <button class="lf-day-btn" type="button">Mon<small>20/7</small></button>
+          <button class="lf-day-btn" type="button">Tue<small>21/7</small></button>
+          <button class="lf-day-btn" type="button">Wed<small>22/7</small></button>
+        </div>
+        <div class="lf-hour-row">
+          <span class="lf-hour-label">2pm</span>
+          <div class="lf-hour-slider-wrap">
+            <div class="lf-hour-strip">
+              <span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span>
+            </div>
+            <input class="lf-hour-slider" type="range" min="0" max="23" step="1" value="14" aria-label="Hour of day">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Coastal water ════════ -->
+  <div class="cx-spec">
+    <div class="cx-spec__label">Coastal water — adds the tide pill above the readouts and the tide band under the verdict strip (colours agree as the user scrubs); the map also pins the tide station (anchor) and nearby salmon farms · fair verdict shown: dark text on amber</div>
+    <div class="cx-overlay">
+      <div class="cx-map">
+        <div class="lf-map-placeholder lf-map-placeholder--inline"><i class="fa-solid fa-map"></i> Topo map — water centroid + tide-station and salmon-farm pins, fitted to the nearest farm</div>
+        <span class="cx-wind-anchor">
+          <span class="lf-wind-icon">
+            <span class="lf-wind-icon__arrow-wrap" style="transform: rotate(315deg);">
+              <svg class="lf-wind-icon__arrow-tip" viewBox="0 0 18 14" aria-hidden="true">
+                <polygon points="9,0 18,14 0,14" fill="#fff" stroke="#3C3833" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>18</span>
+          </span>
+        </span>
+        <span class="lf-map-pin lf-map-pin--station" style="position: absolute; top: 62%; left: 30%; z-index: 2;" title="Tide station: Kinlochbervie (Admiralty 0113)"><i class="fa-solid fa-anchor"></i></span>
+        <span class="lf-map-pin lf-map-pin--farm" style="position: absolute; top: 28%; left: 72%; z-index: 2;" title="Loch Laxford salmon farm — popup shows operator + weekly sea-lice count"><i class="fa-solid fa-bug"></i></span>
+        <button class="cx-close" type="button" aria-label="Close map">&#x2715;</button>
+      </div>
+      <div class="lf-conditions-sheet">
+        <span class="lf-pill-row">
+          <span class="lf-tide-pill lf-tide-pill--prime">Falling — low water 4:07pm</span>
+          <button class="lf-pill-cue" type="button" popovertarget="tip-tide" aria-label="How do we rate the tide?"><i class="fa-solid fa-circle-info"></i></button>
+          <div class="lf-tooltip" id="tip-tide" popover>Fishing is often best around low water. We mark the tide as favourable within 2 hours either side of low tide.</div>
+        </span>
+        <div class="lf-conditions-readouts">
+          <span class="lf-verdict-pill lf-verdict-pill--fair">fair</span>
+          <span><i class="fa-solid fa-temperature-half"></i> 13°C</span>
+          <span><i class="fa-solid fa-cloud"></i> 70%</span>
+          <span><i class="fa-solid fa-wind"></i> 18 mph</span>
+          <span><i class="fa-solid fa-droplet"></i> 20%</span>
+          <button class="lf-pill-cue" type="button" popovertarget="tip-verdict-coastal" aria-label="What does this rating mean?"><i class="fa-solid fa-circle-info"></i></button>
+          <div class="lf-tooltip" id="tip-verdict-coastal" popover>Fishing conditions rating for this hour. We score the wind direction, wind strength, cloud cover and temperature, then combine them into Good, Fair or Poor.</div>
+        </div>
+        <div class="lf-day-strip">
+          <button class="lf-day-btn lf-day-btn--active" type="button">Thu<small>16/7</small></button>
+          <button class="lf-day-btn" type="button">Fri<small>17/7</small></button>
+          <button class="lf-day-btn" type="button">Sat<small>18/7</small></button>
+          <button class="lf-day-btn" type="button">Sun<small>19/7</small></button>
+          <button class="lf-day-btn" type="button">Mon<small>20/7</small></button>
+          <button class="lf-day-btn" type="button">Tue<small>21/7</small></button>
+          <button class="lf-day-btn" type="button">Wed<small>22/7</small></button>
+        </div>
+        <div class="lf-hour-row">
+          <span class="lf-hour-label">2pm</span>
+          <div class="lf-hour-slider-wrap">
+            <div class="lf-hour-strip">
+              <span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span><span class="lf-hour-strip__band lf-hour-strip__band--good"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span><span class="lf-hour-strip__band lf-hour-strip__band--fair"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span><span class="lf-hour-strip__band lf-hour-strip__band--poor"></span>
+            </div>
+            <div class="lf-hour-strip">
+              <span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-prime"></span>
+              <span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span><span class="lf-hour-strip__band lf-hour-strip__band--tide-outside"></span>
+            </div>
+            <input class="lf-hour-slider" type="range" min="0" max="23" step="1" value="14" aria-label="Hour of day">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Loading & error ════════ -->
+  <div class="cx-spec">
+    <div class="cx-spec__label">Loading &amp; error — stone-shimmer skeleton in the sheet (revealed only if loading takes &gt;200ms); forecast failure shows an error banner over the map</div>
+    <div class="cx-overlay" style="height: 480px;">
+      <div class="cx-map cx-map--no-tide">
+        <div class="lf-map-placeholder lf-map-placeholder--inline"><i class="fa-solid fa-map"></i> Topo map</div>
+        <div class="alert alert--error" style="position: absolute; top: 1.25rem; left: 50%; transform: translateX(-50%); z-index: 2; box-shadow: var(--shadow-md);"><i class="fa-solid fa-circle-exclamation"></i><div>Could not load weather forecast</div></div>
+        <button class="cx-close" type="button" aria-label="Close map">&#x2715;</button>
+      </div>
+      <div class="lf-conditions-sheet lf-conditions-sheet--no-tide">
+        <div class="lf-conditions-skeleton">
+          <span class="lf-conditions-skeleton__pill"></span>
+          <div class="lf-conditions-skeleton__row"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="lf-conditions-skeleton__days"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="lf-conditions-skeleton__slider"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Stands in for the app's show-once nudge logic (IntersectionObserver +
+  // localStorage in Rails). DOMContentLoaded so the deferred positioning
+  // script is already listening when the popover opens.
+  addEventListener('DOMContentLoaded', () => document.getElementById('tip-nudge').showPopover())
+</script>
+
+</body>
+</html>

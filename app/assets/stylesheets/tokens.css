@@ -1,0 +1,114 @@
+/* ==========================================================================
+   Let's Fish — design tokens
+   Single source of truth for colour + type across every brand mockup.
+   Values are the FINAL brand assets:
+     • Palette  → docs/colours.pdf  (and Brand guidelines v2.pdf, p.2)
+     • Logo     → Gelica (Adobe Fonts) — baked into the logo SVGs as outlined
+                  paths, so it is NEVER loaded as a webfont. Artwork only.
+     • UI font  → Nunito Sans (Google Fonts) — body, headings, buttons, labels.
+                  A friendly geometric sans chosen to harmonise with Gelica's
+                  warm, rounded slab; per docs/brand-guide.md → Typography.
+   New pages should @import or <link> this file and use the var() tokens below
+   rather than re-typing hexes.
+
+   The two-layer system (official brand palette vs. derived UI palette) is
+   documented in palette.md — read it before adding or changing a token.
+   ========================================================================== */
+
+:root {
+  /* ── Brand palette — PRIMARY (docs/colours.pdf) ────────────────────────── */
+  --forest:  #22453F;   /* deep green — primary brand colour, headings        */
+  --water:   #5E95AC;   /* river blue                                         */
+  --sunset:  #DD9951;   /* sunset orange — accent / calls-to-action           */
+  --stone:   #D0C7B5;   /* warm sand/stone neutral                            */
+
+  /* ── Brand palette — SECONDARY (deeper shades + charcoal) ──────────────── */
+  --taupe:       #BFB49F;   /* darker stone                                   */
+  --deep-water:  #3E6B7D;   /* darker river blue                              */
+  --burnt:       #C4813E;   /* darker sunset                                  */
+  --charcoal:    #3C3833;   /* near-black — body text                         */
+
+  /* 60% tints (palette shows each of these at 60% for soft fills/hovers).
+     color-mix keeps them locked to the base hue. */
+  --stone-60:  color-mix(in srgb, var(--stone)  60%, #fff);
+  --water-60:  color-mix(in srgb, var(--water)  60%, #fff);
+  --sunset-60: color-mix(in srgb, var(--sunset) 60%, #fff);
+  --forest-60: color-mix(in srgb, var(--forest) 60%, #fff);
+
+  /* 14% tints — soft fills (pale chip/badge/icon backgrounds), one ratio for
+     all so they stay consistent across pages. Same color-mix construction as
+     the 60% tier. Add a colour here only when a page actually uses its tint. */
+  --water-tint:  color-mix(in srgb, var(--water)  14%, #fff);
+  --forest-tint: color-mix(in srgb, var(--forest) 14%, #fff);
+
+  /* ── Semantic tokens — what components actually reference ──────────────── */
+  --primary:        var(--forest);
+  --primary-hover:  color-mix(in srgb, var(--forest) 85%, #000);
+  --accent:         var(--sunset);
+
+  /* Neutrals are DERIVED from the palette — the colours.pdf set has no near-
+     white, off-black, or hairline tones (its lightest is stone #D0C7B5, too
+     dark for a page background). Each is a stone/forest/charcoal mix so every
+     value still traces back to a brand colour; #fff / #000 are only mix ends. */
+  --bg:        color-mix(in srgb, var(--stone) 16%, #fff);   /* warm paper white */
+  --bg-alt:    color-mix(in srgb, var(--stone) 30%, #fff);   /* alternating band */
+
+  --text:      var(--charcoal);
+  --heading:   var(--forest);
+  --muted:     color-mix(in srgb, var(--charcoal) 55%, var(--stone)); /* muted taupe-grey */
+  --border:    color-mix(in srgb, var(--stone) 55%, #fff);   /* hairline */
+
+  --chip-bg:   var(--stone-60);  /* tag / pill background */
+  --chip-fg:   var(--forest);
+  --cta-bg:    color-mix(in srgb, var(--stone) 28%, #fff);
+  --cta-border:color-mix(in srgb, var(--stone) 45%, #fff);
+  --footer-bg: color-mix(in srgb, var(--forest) 82%, #000);  /* deep forest */
+
+  /* Hero photo overlays (forest-tinted so cream nav text reads over photos) */
+  --hero-overlay-top:    rgba(34, 69, 63, 0.45);   /* forest #22453F */
+  --hero-overlay-bottom: rgba(34, 69, 63, 0.20);
+
+  /* ── Semantic — approved by Emma, July 2026 ─────────────────────────────
+     The brand guide leaves error/success/warning as "designer's choice" and
+     says they must sit in the earthy palette, not read as neon. Layer 2;
+     each has a light tint for alert/field backgrounds. */
+  --error:      #A8432E;   /* brick / rust red  */
+  --success:    #4F7A48;   /* leaf green        */
+  --warning:    #C8911F;   /* goldenrod amber   */
+  --error-bg:   color-mix(in srgb, var(--error)   12%, #fff);
+  --success-bg: color-mix(in srgb, var(--success) 12%, #fff);
+  --warning-bg: color-mix(in srgb, var(--warning) 14%, #fff);
+
+  /* ── Type ──────────────────────────────────────────────────────────────
+     One family for everything that isn't the logo. The logo SVG carries the
+     Gelica voice on every screen, so the UI font stays a clean sans. */
+  --font-ui:      'Nunito Sans', system-ui, sans-serif;
+  --heading-font: var(--font-ui);
+  --display-font: var(--font-ui);   /* no separate display face in v1         */
+
+  /* ── Spacing scale (rem) ────────────────────────────────────────────────
+     Use these instead of ad-hoc rem values so vertical rhythm stays even. */
+  --space-1: 0.25rem;  --space-2: 0.5rem;  --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.5rem;   --space-6: 2rem;    --space-7: 3rem;    --space-8: 4rem;
+
+  /* ── Radius ── */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 2rem;
+
+  /* ── Elevation (forest-tinted, not flat black) ── */
+  --shadow-sm: 0 2px 8px rgba(34, 69, 63, 0.10);
+  --shadow-md: 0 6px 24px rgba(34, 69, 63, 0.12);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
+
+  /* ── Layout ── */
+  --container: 1140px;   /* max content width */
+  --nav-h: 72px;         /* header height (shared by nav + hero offset) */
+}
+
+body {
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+}

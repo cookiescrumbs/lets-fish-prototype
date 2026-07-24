@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Privacy Policy</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<!-- Privacy-policy mockup — pages#privacy_policy, on the shared .lf-legal
+     template (components.css). Exercises the template elements terms.html
+     doesn't: h3 sub-sections (§2) and the data table (§5). Sections 1, 2 and
+     5 shown with the real text; the rest is more of the same and lives in
+     the Rails view. No page-local CSS. -->
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="sign-in.html">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="sign-up.html">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ Header banner ════════════════════════ -->
+<div class="lf-explore-banner">
+  <div class="container">
+    <nav class="lf-breadcrumb">
+      <a href="homepage.html">Home</a>
+      <span class="lf-breadcrumb__sep">/</span>
+      <span class="lf-breadcrumb__current">Privacy Policy</span>
+    </nav>
+    <h1 class="lf-explore-banner__title">Privacy Policy</h1>
+    <p class="lf-explore-banner__count"><i class="fa-regular fa-calendar"></i> Last updated: 2 May 2026</p>
+  </div>
+</div>
+
+<!-- ════════════════════════ Contents + prose ════════════════════════ -->
+<div class="container">
+  <div class="lf-legal">
+
+    <aside class="lf-legal__toc">
+      <div class="lf-info-card">
+        <div class="lf-info-card__header">
+          <span class="lf-info-card__title">Contents</span>
+          <i class="fa-solid fa-list-ol lf-info-card__icon"></i>
+        </div>
+        <div class="lf-info-card__body">
+          <ol class="lf-legal__toc-list">
+            <li><a href="#pp-1">Data Controller</a></li>
+            <li><a href="#pp-2">Data We Collect</a></li>
+            <li><a href="#">Legal Basis for Processing</a></li>
+            <li><a href="#">How We Use Your Data</a></li>
+            <li><a href="#pp-5">Third-Party Services</a></li>
+            <li><a href="#">Children's Data</a></li>
+            <li><a href="#">Automated Processing and AI Features</a></li>
+            <li><a href="#">Data Retention</a></li>
+            <li><a href="#">Your Rights Under UK GDPR</a></li>
+            <li><a href="#">Cookies and Tracking Technologies</a></li>
+            <li><a href="#">International Data Transfers</a></li>
+            <li><a href="#">Data Security</a></li>
+            <li><a href="#">Changes to This Policy</a></li>
+            <li><a href="#">Complaints</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ol>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lf-legal__body">
+      <h2 id="pp-1">1. Data Controller</h2>
+      <p>The data controller for the Let's Fish application and website ("Service") is:</p>
+      <p>
+        Trinnacle Software Engineering Solutions Ltd<br>
+        Email: <a href="mailto:steven@lets.fish">steven@lets.fish</a><br>
+        ICO Registration Number: ZC094902
+      </p>
+      <p>We are committed to protecting your privacy and handling your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+
+      <h2 id="pp-2">2. Data We Collect</h2>
+      <h3>2.1 Account Information</h3>
+      <p>When you register for an account, we collect:</p>
+      <ul>
+        <li>Name</li>
+        <li>Email address</li>
+        <li>Date of birth (to verify age eligibility)</li>
+        <li>Profile information provided via third-party authentication (Google, Apple, Facebook)</li>
+      </ul>
+      <h3>2.2 User Content</h3>
+      <p>When you use the Service, you may provide:</p>
+      <ul>
+        <li>Photographs of fishing trips and catches</li>
+        <li>Trip reports and descriptions</li>
+        <li>Location data associated with trips and fishing venues</li>
+      </ul>
+      <h3>2.3 Usage Data</h3>
+      <p>We automatically collect:</p>
+      <ul>
+        <li>Device information (device type, operating system)</li>
+        <li>Usage patterns and feature interactions</li>
+        <li>IP address</li>
+        <li>Analytics data (via Google Analytics and PostHog)</li>
+      </ul>
+      <h3>2.4 Payment Data</h3>
+      <p>Subscription payments are processed by RevenueCat and the applicable app store (Apple or Google). We do not directly collect or store your payment card details. We receive confirmation of your subscription status from RevenueCat.</p>
+
+      <h2 id="pp-5">5. Third-Party Services</h2>
+      <p>We share data with the following third-party service providers:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Purpose</th>
+            <th>Data Shared</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RevenueCat</td>
+            <td>Subscription and payment management</td>
+            <td>User ID, subscription status</td>
+          </tr>
+          <tr>
+            <td>OpenAI</td>
+            <td>AI-generated trip descriptions</td>
+            <td>Trip content (text only)</td>
+          </tr>
+          <tr>
+            <td>Amazon Web Services (S3)</td>
+            <td>Image storage</td>
+            <td>Uploaded photographs</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><em>&hellip;sections 3&ndash;4 and 6&ndash;15 continue as in the live page; same heading/prose/list/table styling throughout.</em></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════ Footer ════════════════════════ -->
+<footer class="lf-footer">
+  <div class="lf-footer__main">
+    <div class="container">
+      <div class="lf-footer__grid">
+        <div>
+          <a class="lf-footer__brand" href="homepage.html">
+            <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+            <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+          </a>
+          <p class="lf-footer__tagline">Discover wild fishing across the UK</p>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Explore</h6>
+          <ul class="lf-footer__links">
+            <li><a href="#">Add a fishery</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6 class="lf-footer__heading">Legal</h6>
+          <ul class="lf-footer__links">
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="#">Cookie settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="lf-footer__bottom">
+    <div class="container">
+      <p>&copy; 2026 Let's Fish. A product of Tinnacle Software Engineering Solutions LTD. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

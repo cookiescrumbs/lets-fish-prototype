@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Add a Fishery (wizard)</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   Add-fishery wizard mockup — fisheries#new, faithful to
+   fisheries/_wizard_form.html.erb + fishery_wizard_controller.js (the whole
+   render tree: address/contact fields are inline fields_for, no partials;
+   no maps). Five screens: Landing, then Your fishery / Location / About /
+   Contact as "Step N of 4" (progress = N/4). Every step is an info-left /
+   fields-right band (.lf-wizard__band). Signed-in solid nav, no footer —
+   matching Rails. All chrome is the shared .lf-wizard__* set, promoted to
+   components.css this change (second wizard, after add-water); add-water
+   updated to the same names.
+
+   Design decision: one wizard header for both wizards — the app puts this
+   wizard's "Step N of 4" label UNDER the title; here it sits right of the
+   title in the shared counter slot, matching add-water. Faithful omissions:
+   validation errors (→ .field--error/.field__msg on port), admin-only
+   Publish radios, error alert, decorative map-photo step backgrounds
+   (same call as add-water). The hidden map_zoom_level (10) rides along in
+   the form. Only page-local CSS: the mockup panel scaffolding, duplicated
+   from add-water ON PURPOSE — it's specimen chrome, not site chrome.
+   ========================================================================== */
+.af-page { padding: 2rem 0 4rem; }
+.af-intro { max-width: 72ch; font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.5rem; }
+.af-spec { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg); margin-top: 2rem; box-shadow: var(--shadow-sm); }
+.af-spec__label { font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+.af-screen { padding: 2rem 2.25rem 2.5rem; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header (signed in) ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <button class="lf-nav__avatar-btn" popovertarget="account-menu" aria-label="Account menu">
+        <i class="fa-solid fa-bars lf-nav__hamburger"></i>
+        <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
+      </button>
+      <div class="lf-nav__menu" id="account-menu" popover>
+        <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
+        <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
+        <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
+        <div class="lf-nav__menu-divider"></div>
+        <a class="lf-nav__menu-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container af-page">
+  <p class="af-intro">Mockup note: the live wizard shows one step at a time under a sticky progress bar; the panels below are its five screen states in order. Content: the Scourie Angling Club signing up.</p>
+
+  <!-- ════════ Landing ════════ -->
+  <div class="af-spec">
+    <div class="af-spec__label">Landing — progress 0%, no step counter, no Back</div>
+    <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 0%"></div></div>
+    <div class="af-screen">
+      <div class="lf-wizard__header">
+        <p class="lf-wizard__surtitle">Add a fishery</p>
+        <div class="lf-wizard__title-row"><h1 class="lf-wizard__title">Let's get started</h1></div>
+      </div>
+      <p class="lf-wizard-landing__lead">List your fishery on Let's Fish and help anglers discover their next fishing adventure.</p>
+      <div class="lf-wizard-landing__features">
+        <div class="lf-wizard-landing__feature">
+          <div class="lf-wizard-landing__icon"><i class="fa-solid fa-clock"></i></div>
+          <div>
+            <strong>Takes a few minutes</strong>
+            <p>Just the basics — name, location, and a short description to get started.</p>
+          </div>
+        </div>
+        <div class="lf-wizard-landing__feature">
+          <div class="lf-wizard-landing__icon"><i class="fa-solid fa-sterling-sign"></i></div>
+          <div>
+            <strong>Completely free</strong>
+            <p>No fees, no subscriptions. Your listing is free, forever.</p>
+          </div>
+        </div>
+        <div class="lf-wizard-landing__feature">
+          <div class="lf-wizard-landing__icon"><i class="fa-solid fa-eye"></i></div>
+          <div>
+            <strong>We review before publishing</strong>
+            <p>We'll add your waters and confirm the details with you before anything goes live.</p>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn--accent btn--lg" type="button">Get started <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ════════ Step 1 — Your fishery ════════ -->
+  <div class="af-spec">
+    <div class="af-spec__label">Step 1 of 4 — Your fishery · name is required (validation → .field--error on port)</div>
+    <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 25%"></div></div>
+    <div class="af-screen">
+      <div class="lf-wizard__header">
+        <p class="lf-wizard__surtitle">Add a fishery</p>
+        <div class="lf-wizard__title-row"><h1 class="lf-wizard__title">Your fishery</h1><span class="lf-wizard__counter">Step 1 of 4</span></div>
+      </div>
+      <div class="lf-wizard__band">
+        <div class="lf-wizard__band-info">
+          <h3>Your fishery</h3>
+          <p>The name of your fishery as you'd like it to appear on Let's Fish. This is what anglers will search for.</p>
+        </div>
+        <div class="lf-wizard__band-fields">
+          <div class="field">
+            <label class="field__label" for="fishery-name">Fishery name</label>
+            <input class="field__input" id="fishery-name" type="text" value="Scourie Angling Club" required>
+          </div>
+        </div>
+      </div>
+      <div class="lf-wizard__nav">
+        <button class="btn btn--ghost" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn btn--primary" type="button">Next step <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Step 2 — Location ════════ -->
+  <div class="af-spec">
+    <div class="af-spec__label">Step 2 of 4 — Location · all optional; country select matches the ERB list</div>
+    <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 50%"></div></div>
+    <div class="af-screen">
+      <div class="lf-wizard__header">
+        <p class="lf-wizard__surtitle">Add a fishery</p>
+        <div class="lf-wizard__title-row"><h1 class="lf-wizard__title">Location</h1><span class="lf-wizard__counter">Step 2 of 4</span></div>
+      </div>
+      <div class="lf-wizard__band">
+        <div class="lf-wizard__band-info">
+          <h3>Location</h3>
+          <p>Where is your fishery? This helps anglers find you and plan their trip.</p>
+        </div>
+        <div class="lf-wizard__band-fields">
+          <div class="field">
+            <label class="field__label" for="street">Street address</label>
+            <input class="field__input" id="street" type="text" value="Harbour Road" placeholder="Street address">
+          </div>
+          <div class="field">
+            <label class="field__label" for="line2">Line 2</label>
+            <input class="field__input" id="line2" type="text" value="Scourie" placeholder="Line 2 (optional)">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label" for="county">County</label>
+              <input class="field__input" id="county" type="text" value="Sutherland" placeholder="County">
+            </div>
+            <div class="field">
+              <label class="field__label" for="postcode">Postcode</label>
+              <input class="field__input" id="postcode" type="text" value="IV27 4SX" placeholder="Postcode">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="country">Country</label>
+            <select class="field__input" id="country">
+              <option>England</option>
+              <option selected>Scotland</option>
+              <option>Wales</option>
+              <option>Norway</option>
+              <option>Sweden</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="lf-wizard__nav">
+        <button class="btn btn--ghost" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn btn--primary" type="button">Next step <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Step 3 — About your fishery ════════ -->
+  <div class="af-spec">
+    <div class="af-spec__label">Step 3 of 4 — About your fishery · description is required; two bands (Description, Permits &amp; tickets)</div>
+    <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 75%"></div></div>
+    <div class="af-screen">
+      <div class="lf-wizard__header">
+        <p class="lf-wizard__surtitle">Add a fishery</p>
+        <div class="lf-wizard__title-row"><h1 class="lf-wizard__title">About your fishery</h1><span class="lf-wizard__counter">Step 3 of 4</span></div>
+      </div>
+      <div class="lf-wizard__band">
+        <div class="lf-wizard__band-info">
+          <h3>Description</h3>
+          <p>Tell anglers about your fishery. What makes it special? What can they expect when they arrive?</p>
+        </div>
+        <div class="lf-wizard__band-fields">
+          <div class="field">
+            <label class="field__label" for="description">About your fishery</label>
+            <textarea class="field__input" id="description" rows="5" required>The Scourie Angling Club manages trout fishing on over thirty hill lochs around Scourie in north-west Sutherland. Wild brown trout in wonderfully varied water — roadside lochs for an easy evening and remote lochs for a full day on the hill.</textarea>
+          </div>
+        </div>
+      </div>
+      <div class="lf-wizard__band">
+        <div class="lf-wizard__band-info">
+          <h3>Permits &amp; tickets</h3>
+          <p>How do anglers get permission to fish? Day tickets, season permits, club membership — let them know.</p>
+          <p>Don't worry if you're not sure yet — you can finalise the details with us before your fishery goes live.</p>
+        </div>
+        <div class="lf-wizard__band-fields">
+          <div class="field">
+            <label class="field__label" for="permits">Permits &amp; tickets</label>
+            <textarea class="field__input" id="permits" rows="3">Day tickets £10 from the Scourie Filling Station and the Anchorage. Weekly tickets available. Juniors free with a permit-holding adult.</textarea>
+          </div>
+          <div class="field">
+            <label class="field__label" for="rules">Rules</label>
+            <p class="field__hint">Any fishing rules that apply across your waters — fly only, catch and release, barbless hooks, etc.</p>
+            <textarea class="field__input" id="rules" rows="3">Fly fishing only. Bag limit of 4 fish per day.</textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label" for="season-start">Season start</label>
+              <input class="field__input" id="season-start" type="date" value="2026-03-15">
+            </div>
+            <div class="field">
+              <label class="field__label" for="season-end">Season end</label>
+              <input class="field__input" id="season-end" type="date" value="2026-10-06">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lf-wizard__nav">
+        <button class="btn btn--ghost" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn btn--primary" type="button">Next step <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ Step 4 — Contact details ════════ -->
+  <div class="af-spec">
+    <div class="af-spec__label">Step 4 of 4 — Contact details · submits the wizard. Admin-only Publish radios skipped; hidden map_zoom_level (10) rides along</div>
+    <div class="lf-wizard__progress"><div class="lf-wizard__progress-bar" style="width: 100%"></div></div>
+    <div class="af-screen">
+      <div class="lf-wizard__header">
+        <p class="lf-wizard__surtitle">Add a fishery</p>
+        <div class="lf-wizard__title-row"><h1 class="lf-wizard__title">Contact details</h1><span class="lf-wizard__counter">Step 4 of 4</span></div>
+      </div>
+      <div class="lf-wizard__band">
+        <div class="lf-wizard__band-info">
+          <h3>Contact details</h3>
+          <p>How can anglers get in touch? These details will appear on your fishery page.</p>
+        </div>
+        <div class="lf-wizard__band-fields">
+          <div class="field">
+            <label class="field__label" for="contact-name">Contact name</label>
+            <input class="field__input" id="contact-name" type="text" value="A. Mackay" placeholder="Contact name">
+          </div>
+          <div class="field">
+            <label class="field__label" for="telephone">Telephone</label>
+            <input class="field__input" id="telephone" type="text" placeholder="Telephone number">
+          </div>
+          <div class="field">
+            <label class="field__label" for="mobile">Mobile</label>
+            <input class="field__input" id="mobile" type="text" value="07700 900123" placeholder="Mobile number">
+          </div>
+          <div class="field">
+            <label class="field__label" for="email">Email</label>
+            <input class="field__input" id="email" type="text" value="permits@scourieangling.co.uk" placeholder="Email address">
+          </div>
+          <div class="field">
+            <label class="field__label" for="website">Website</label>
+            <input class="field__input" id="website" type="text" placeholder="https://yourfishery.co.uk">
+          </div>
+        </div>
+      </div>
+      <div class="lf-wizard__nav">
+        <button class="btn btn--ghost" type="button"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn btn--accent" type="button">Submit fishery details <i class="fa-solid fa-check"></i></button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- No footer — the Rails wizard page renders none (focused flow). -->
+
+</body>
+</html>
