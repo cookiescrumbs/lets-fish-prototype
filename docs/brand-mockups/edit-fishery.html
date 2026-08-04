@@ -27,16 +27,48 @@
    All six form cards from fisheries/_form.html.erb as .lf-info-cards, in
    Rails order: Basic Details / Rules & Permits / Season / Contact Details /
    Address / Settings. Country select options and zoom 1–20 match the ERB.
-   Season left blank and Fishery/Boat Rules left as placeholders — this
+   Season left blank and Boat Rules left as a placeholder — this
    fishery has none (same faithful omission as fishery-show). DESIGN
    ADDITION (not in the ERB — add on port): the Season card's .alert--info
    guidance banner saying the season is fishery-wide and each water can
    override it — the counterpart of edit-water's "leave blank to inherit"
-   banner. Entirely
-   shared chrome (.lf-explore-banner__row, .lf-form-col, .lf-form-actions,
-   fields incl. the native select) — ZERO page-local CSS. Skipped: the
-   validation-error alert (conditional state; alerts are catalogued).
+   banner. Fishery Rules is its OWN card (after Rules & Permits, which keeps
+   Permission & Tickets + Boat Rules): the RULES EDITOR mockup (the Rule-model editor
+   behind _rule_fields.html.erb): one bounded .rule-card per rule (category
+   select + optional headline + remove up top, body below), dates tucked
+   behind a native <details> "Add dates" toggle — server renders it [open]
+   when a rule has dates, so no JS needed for the toggle. Populated with
+   Durness rules from fishery-show so the loaded state is honest. Page-local
+   CSS: the .rule-card block only; everything else is shared chrome
+   (.lf-explore-banner__row, .lf-form-col, .lf-form-actions, fields incl.
+   the native select). Skipped: the validation-error alert (conditional
+   state; alerts are catalogued).
    ========================================================================== -->
+
+<style>
+/* ── Rules editor: one bounded card per rule ── */
+.rule-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+.rule-card {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem;
+}
+.rule-card__top { display: grid; grid-template-columns: 12rem 1fr auto; gap: 0.6rem; align-items: center; }
+@media (max-width: 640px) { .rule-card__top { grid-template-columns: 1fr; } }
+.rule-card__remove {
+  border: 0; background: none; font-family: var(--font-ui); font-size: 0.78rem; font-weight: 700;
+  color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.35rem 0.5rem; border-radius: 0.4rem; justify-self: end;
+}
+.rule-card__remove:hover { color: color-mix(in srgb, var(--error) 78%, #000); background: var(--error-bg); }
+.rule-card__dates summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.78rem; font-weight: 700; color: var(--primary); width: fit-content;
+}
+.rule-card__dates summary::-webkit-details-marker { display: none; }
+.rule-card__dates .rule-card__dates-shown, .rule-card__dates[open] .rule-card__dates-add { display: none; }
+.rule-card__dates[open] .rule-card__dates-shown { display: inline; }
+.rule-card__dates[open] summary { margin-bottom: 0.6rem; }
+</style>
 </head>
 <body>
 
@@ -128,12 +160,151 @@
 Day tickets can be purchased online via the club's website, or in person at Oldshoremore Retreats &amp; Crafts, 152 Oldshoremore, IV27 4RS.</textarea>
         </div>
         <div class="field">
-          <label class="field__label" for="rules">Fishery Rules</label>
-          <textarea class="field__input" id="rules" rows="5" placeholder="Catch limits, allowed methods, keepnet rules..."></textarea>
-        </div>
-        <div class="field">
           <label class="field__label" for="boat-rules">Boat Rules</label>
           <textarea class="field__input" id="boat-rules" rows="4" placeholder="Boat hire availability, engine restrictions, drift rules..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fishery Rules -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Fishery Rules</span>
+        <i class="fa-solid fa-scale-balanced lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="field">
+          <p class="field__hint">One rule per card. Categories group rules on your fishery page. Add dates to notices that only apply for part of the year.</p>
+          <div class="rule-cards">
+
+            <!-- plain rule: category + body, nothing else -->
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option selected>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+              </div>
+              <textarea class="field__input" rows="2" placeholder="Rule text">Only one rod may be used at a time per angler</textarea>
+              <details class="rule-card__dates">
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <input class="field__input" type="date">
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <input class="field__input" type="date">
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <!-- second rule in the same category — grouping happens on the show page -->
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option selected>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+              </div>
+              <textarea class="field__input" rows="2" placeholder="Rule text">No Sunday fishing for salmon and sea trout — Scots law, all waters</textarea>
+              <details class="rule-card__dates">
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <input class="field__input" type="date">
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <input class="field__input" type="date">
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <!-- headlined prose rule -->
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option selected>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" value="Ground-nesting birds" placeholder="Headline (optional)">
+                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+              </div>
+              <textarea class="field__input" rows="3" placeholder="Rule text">North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</textarea>
+              <details class="rule-card__dates">
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <input class="field__input" type="date">
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <input class="field__input" type="date">
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <!-- dated rule: details renders [open] when dates are set -->
+            <div class="rule-card">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option selected>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+              </div>
+              <textarea class="field__input" rows="2" placeholder="Rule text">Divers are nesting on the small islands of Loch na Claise Càrnaich. Please avoid the loch until the young have fledged.</textarea>
+              <details class="rule-card__dates" open>
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <input class="field__input" type="date" value="2026-07-01">
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <input class="field__input" type="date" value="2026-08-31">
+                  </div>
+                </div>
+              </details>
+            </div>
+
+          </div>
+          <div>
+            <button type="button" class="btn btn--secondary"><i class="fa-solid fa-plus"></i> Add rule</button>
+          </div>
         </div>
       </div>
     </div>

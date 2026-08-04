@@ -658,8 +658,16 @@ textarea.field__input { resize: vertical; }
 .lf-dropzone i { font-size: 1.5rem; }
 .lf-dropzone input { display: none; }
 
+/* leaflet-gesture-handling flashes "use two fingers" on every one-finger
+   touchstart — including the taps that place points on the drawing maps, where
+   the tap did exactly what the user wanted. Drop the banner; the two-finger
+   panning it describes is JS and unaffected, and the desktop ctrl+wheel hint
+   (-scroll-warning) still shows. Doubled-up selector because the plugin's
+   stylesheet is injected at runtime, so it lands after ours in the cascade. */
+.leaflet-container.leaflet-gesture-handling-touch-warning::after { content: none; }
+
 /* Map + side panel — drawing map LEFT (58%), entries panel RIGHT (annotations on both pages; the wizard's Boats step) */
-.lf-map-split { display: flex; gap: 1.5rem; align-items: start; }
+.lf-map-split { display: flex; gap: 1.5rem; }
 .lf-map-split__map { flex: 0 0 58%; min-width: 0; }
 .lf-map-split__panel { flex: 1; min-width: 0; }
 .lf-annotation-entry { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;

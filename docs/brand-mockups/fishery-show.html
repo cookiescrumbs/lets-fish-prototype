@@ -63,6 +63,12 @@
 .fs-stats li + li { border-left: 1px solid var(--border); padding-left: 2.25rem; }
 .fs-stats__num { display: block; font-size: 1.35rem; font-weight: 800; color: var(--heading); }
 .fs-stats__label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+/* Small screens: 2×2 grid so columns align; divider follows the column, not DOM order (flex-wrap left a stray divider + indent on the wrapped item) */
+@media (max-width: 640px) {
+  .fs-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2.25rem; }
+  .fs-stats li + li { border-left: none; padding-left: 0; }
+  .fs-stats li:nth-child(even) { border-left: 1px solid var(--border); padding-left: 2.25rem; }
+}
 
 /* ── Overview: prose + attributes (angler view — no owner claim card) ── */
 .fs-prose { color: var(--text); line-height: 1.65; max-width: 70ch; }
@@ -434,6 +440,7 @@
       <details class="fs-disclosure">
         <summary><i class="fa-solid fa-crow"></i> Protected wildlife <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
         <div class="fs-disclosure__body">
+          <p><strong>Ground-nesting birds</strong></p>
           <p>North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</p>
           <p>You may come across red-throated divers on some of the smaller hill lochs. If so, simply move on to another loch: an adult bird kept off the nest leaves its eggs and young exposed to predators.</p>
         </div>
