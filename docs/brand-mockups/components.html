@@ -500,6 +500,38 @@ section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
     </div>
   </section>
 
+  <!-- ───────────────── Disclosure stack ───────────────── -->
+  <section>
+    <h2 class="cs-section__title">Disclosure stack</h2>
+    <p class="cs-section__sub">Collapsed native <code>&lt;details&gt;</code> groups, no JS — a category icon + label + chevron in the summary, prose body, and an optional muted date note (<code>.lf-rule__dates</code>). The rulebook on <code>fisheries#show</code> and <code>waters#show</code>, rendered by the shared <code>rules/_stack</code> partial. The page owns the heading above it.</p>
+    <div style="max-width: 46rem;">
+      <div class="lf-disclosures">
+        <details class="lf-disclosure" open>
+          <summary>
+            <i class="fa-solid fa-scale-balanced"></i>
+            Byelaws
+            <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i>
+          </summary>
+          <div class="lf-disclosure__body">
+            <p>Only one rod may be used at a time per angler.</p>
+            <p>No Sunday fishing for salmon and sea trout.</p>
+          </div>
+        </details>
+        <details class="lf-disclosure">
+          <summary>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Seasonal notices
+            <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i>
+          </summary>
+          <div class="lf-disclosure__body">
+            <p>No fishing east of the outflow while divers are nesting on the islands.</p>
+            <p class="lf-rule__dates"><i class="fa-solid fa-calendar"></i> Until 31 Aug</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ───────────────── Form page ───────────────── -->
   <section>
     <h2 class="cs-section__title">Form page</h2>

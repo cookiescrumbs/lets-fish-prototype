@@ -46,6 +46,22 @@
 /* deferred remove-on-save checkboxes (photos, persisted boats) — red tint */
 .ew-remove-check .field__checkbox { accent-color: var(--error); }
 .ew-remove-check .field__checkbox-label { color: color-mix(in srgb, var(--error) 78%, #000); }
+
+/* ── Water rules editor (rules slice 2) — same rule-card kit as edit-fishery
+   (hand-synced page CSS): cards are shared .lf-boat chrome; only the top grid
+   and the dates disclosure are page-local ── */
+.rule-cards { display: flex; flex-direction: column; gap: 1rem; }
+.rule-card__top { display: grid; grid-template-columns: 12rem 1fr auto; gap: 0.6rem; align-items: center; }
+.rule-card__top .lf-x-btn { justify-self: end; }
+@media (max-width: 640px) { .rule-card__top { grid-template-columns: 1fr; } }
+.rule-card__dates summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.78rem; font-weight: 700; color: var(--primary); width: fit-content;
+}
+.rule-card__dates summary::-webkit-details-marker { display: none; }
+.rule-card__dates .rule-card__dates-shown, .rule-card__dates[open] .rule-card__dates-add { display: none; }
+.rule-card__dates[open] .rule-card__dates-shown { display: inline; }
+.rule-card__dates[open] summary { margin-bottom: 0.6rem; }
 </style>
 </head>
 <body>
@@ -336,6 +352,141 @@
           <div class="field">
             <label class="field__label" for="nlf-boat-rules">Rules</label>
             <textarea class="field__input" id="nlf-boat-rules" rows="2" placeholder="Optional rules"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Water Rules (rules slice 2: rule_waters join) — same editor as the
+         fishery's Fishery Rules card; rules added here are scoped to this
+         water and merge into the fishery-wide stack on the water's page -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Water Rules</span>
+        <i class="fa-solid fa-scale-balanced lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="field">
+          <div class="alert alert--info"><i class="fa-solid fa-scale-balanced"></i><div>Rules added here apply to this water only. They appear on the water's page alongside your fishery-wide rules, grouped by category.</div></div>
+          <div class="rule-cards">
+
+            <!-- plain rule: category + body, nothing else -->
+            <div class="lf-boat">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option selected>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
+              </div>
+              <textarea class="field__input" rows="2" placeholder="Rule text">Fly fishing only — no spinning or bait</textarea>
+              <details class="rule-card__dates">
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <!-- dated rule: details renders [open] when dates are set -->
+            <div class="lf-boat">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option selected>Seasonal notices</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
+              </div>
+              <textarea class="field__input" rows="2" placeholder="Rule text">No fishing east of the outflow while divers are nesting on the islands</textarea>
+              <details class="rule-card__dates" open>
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label">Applies from</label>
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="field__label">Applies until</label>
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option selected>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option selected>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+          </div>
+          <div>
+            <button type="button" class="btn btn--secondary"><i class="fa-solid fa-plus"></i> Add rule</button>
           </div>
         </div>
       </div>

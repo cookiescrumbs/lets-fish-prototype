@@ -34,32 +34,38 @@
    override it — the counterpart of edit-water's "leave blank to inherit"
    banner. Fishery Rules is its OWN card (after Rules & Permits, which keeps
    Permission & Tickets + Boat Rules): the RULES EDITOR mockup (the Rule-model editor
-   behind _rule_fields.html.erb): one bounded .rule-card per rule (category
-   select + optional headline + remove up top, body below), dates tucked
-   behind a native <details> "Add dates" toggle — server renders it [open]
-   when a rule has dates, so no JS needed for the toggle. Populated with
-   Durness rules from fishery-show so the loaded state is honest. Page-local
-   CSS: the .rule-card block only; everything else is shared chrome
+   behind _rule_fields.html.erb): one card per rule (category select +
+   optional headline + × up top, body below), dates tucked behind a native
+   <details> "Add dates" toggle — server renders it [open] when a rule has
+   dates, so no JS needed for the toggle. Rule dates are Day + Month selects
+   (a season recurs yearly, no year captured), matching the implemented
+   _rule_fields.html.erb. Populated with Durness rules from fishery-show so
+   the loaded state is honest. The Season card also carries PER-SPECIES
+   SEASONS (the species_seasons block in _form.html.erb): one card per
+   species the fishery holds, Day/Month selects for open/close, and an
+   explicit remove per species. Species and dates match fishery-show's
+   Seasons strips (brown trout 15 Mar – 6 Oct, salmon & sea trout
+   11 Feb – 31 Oct). Both rule and species-season cards use edit-water's
+   boat-entry pattern — shared .lf-boat recessed card with an .lf-x-btn
+   remove (× in the .lf-boat__header for species; in the top grid for
+   rules). The mock leads the ERB here: _rule_fields still has a text
+   Remove button and _form still says "leave blank to remove" — align both
+   on port. Section instructions (rules editor, species seasons) are
+   .alert--info banners per the DS convention (field__hint is for short
+   field notes only) — the ERB still renders them as field__hints. Page-local CSS: the rules top grid + dates disclosure only;
+   everything else is shared chrome
    (.lf-explore-banner__row, .lf-form-col, .lf-form-actions, fields incl.
    the native select). Skipped: the validation-error alert (conditional
    state; alerts are catalogued).
    ========================================================================== -->
 
 <style>
-/* ── Rules editor: one bounded card per rule ── */
-.rule-cards { display: flex; flex-direction: column; gap: 0.75rem; }
-.rule-card {
-  border: 1px solid var(--border); border-radius: var(--radius-md);
-  padding: 0.9rem; display: flex; flex-direction: column; gap: 0.6rem;
-}
+/* ── Rules editor — cards are shared .lf-boat chrome; only the top grid and
+   the dates disclosure are page-local ── */
+.rule-cards { display: flex; flex-direction: column; gap: 1rem; }
 .rule-card__top { display: grid; grid-template-columns: 12rem 1fr auto; gap: 0.6rem; align-items: center; }
+.rule-card__top .lf-x-btn { justify-self: end; }
 @media (max-width: 640px) { .rule-card__top { grid-template-columns: 1fr; } }
-.rule-card__remove {
-  border: 0; background: none; font-family: var(--font-ui); font-size: 0.78rem; font-weight: 700;
-  color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;
-  padding: 0.35rem 0.5rem; border-radius: 0.4rem; justify-self: end;
-}
-.rule-card__remove:hover { color: color-mix(in srgb, var(--error) 78%, #000); background: var(--error-bg); }
 .rule-card__dates summary {
   list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
   font-size: 0.78rem; font-weight: 700; color: var(--primary); width: fit-content;
@@ -174,11 +180,11 @@ Day tickets can be purchased online via the club's website, or in person at Olds
       </div>
       <div class="lf-info-card__body">
         <div class="field">
-          <p class="field__hint">One rule per card. Categories group rules on your fishery page. Add dates to notices that only apply for part of the year.</p>
+          <div class="alert alert--info"><i class="fa-solid fa-scale-balanced"></i><div>One rule per card. Categories group rules on your fishery page. Add dates to notices that only apply for part of the year.</div></div>
           <div class="rule-cards">
 
             <!-- plain rule: category + body, nothing else -->
-            <div class="rule-card">
+            <div class="lf-boat">
               <div class="rule-card__top">
                 <select class="field__input">
                   <option>No category</option>
@@ -190,7 +196,7 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                   <option>Seasonal notices</option>
                 </select>
                 <input class="field__input" type="text" placeholder="Headline (optional)">
-                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
               </div>
               <textarea class="field__input" rows="2" placeholder="Rule text">Only one rod may be used at a time per angler</textarea>
               <details class="rule-card__dates">
@@ -198,18 +204,44 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                 <div class="field-row">
                   <div class="field">
                     <label class="field__label">Applies from</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="field">
                     <label class="field__label">Applies until</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </details>
             </div>
 
             <!-- second rule in the same category — grouping happens on the show page -->
-            <div class="rule-card">
+            <div class="lf-boat">
               <div class="rule-card__top">
                 <select class="field__input">
                   <option>No category</option>
@@ -221,7 +253,7 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                   <option>Seasonal notices</option>
                 </select>
                 <input class="field__input" type="text" placeholder="Headline (optional)">
-                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
               </div>
               <textarea class="field__input" rows="2" placeholder="Rule text">No Sunday fishing for salmon and sea trout — Scots law, all waters</textarea>
               <details class="rule-card__dates">
@@ -229,18 +261,44 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                 <div class="field-row">
                   <div class="field">
                     <label class="field__label">Applies from</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="field">
                     <label class="field__label">Applies until</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </details>
             </div>
 
             <!-- headlined prose rule -->
-            <div class="rule-card">
+            <div class="lf-boat">
               <div class="rule-card__top">
                 <select class="field__input">
                   <option>No category</option>
@@ -252,7 +310,7 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                   <option>Seasonal notices</option>
                 </select>
                 <input class="field__input" type="text" value="Ground-nesting birds" placeholder="Headline (optional)">
-                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
               </div>
               <textarea class="field__input" rows="3" placeholder="Rule text">North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</textarea>
               <details class="rule-card__dates">
@@ -260,18 +318,44 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                 <div class="field-row">
                   <div class="field">
                     <label class="field__label">Applies from</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="field">
                     <label class="field__label">Applies until</label>
-                    <input class="field__input" type="date">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </details>
             </div>
 
             <!-- dated rule: details renders [open] when dates are set -->
-            <div class="rule-card">
+            <div class="lf-boat">
               <div class="rule-card__top">
                 <select class="field__input">
                   <option>No category</option>
@@ -283,7 +367,7 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                   <option selected>Seasonal notices</option>
                 </select>
                 <input class="field__input" type="text" placeholder="Headline (optional)">
-                <button type="button" class="rule-card__remove"><i class="fa-solid fa-xmark"></i> Remove</button>
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
               </div>
               <textarea class="field__input" rows="2" placeholder="Rule text">Divers are nesting on the small islands of Loch na Claise Càrnaich. Please avoid the loch until the young have fledged.</textarea>
               <details class="rule-card__dates" open>
@@ -291,11 +375,37 @@ Day tickets can be purchased online via the club's website, or in person at Olds
                 <div class="field-row">
                   <div class="field">
                     <label class="field__label">Applies from</label>
-                    <input class="field__input" type="date" value="2026-07-01">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option selected>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="field">
                     <label class="field__label">Applies until</label>
-                    <input class="field__input" type="date" value="2026-08-31">
+                    <div style="display:flex;gap:0.5rem;">
+                      <select class="field__input" aria-label="Day">
+                        <option value="">Day</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                        <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                        <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option selected>31</option>
+                      </select>
+                      <select class="field__input" aria-label="Month">
+                        <option value="">Month</option>
+                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                        <option>Jul</option><option selected>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </details>
@@ -325,6 +435,135 @@ Day tickets can be purchased online via the club's website, or in person at Olds
           <div class="field">
             <label class="field__label" for="season-end">Season End</label>
             <input class="field__input" id="season-end" type="date">
+          </div>
+        </div>
+        <div class="alert alert--info" style="margin-top:0.5rem;"><i class="fa-solid fa-fish"></i><div>Set an open season per species. Shown as month strips on your fishery page.</div></div>
+        <div class="rule-cards">
+          <div class="lf-boat">
+            <div class="lf-boat__header">
+              <span><i class="fa fa-fish"></i> Brown trout</span>
+              <button class="lf-x-btn" type="button" aria-label="Remove Brown trout season">&times;</button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Season opens</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option selected>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option>Feb</option><option selected>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field__label">Season closes</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option selected>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lf-boat">
+            <div class="lf-boat__header">
+              <span><i class="fa fa-fish"></i> Salmon</span>
+              <button class="lf-x-btn" type="button" aria-label="Remove Salmon season">&times;</button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Season opens</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option selected>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option selected>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field__label">Season closes</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option selected>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option selected>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lf-boat">
+            <div class="lf-boat__header">
+              <span><i class="fa fa-fish"></i> Sea trout</span>
+              <button class="lf-x-btn" type="button" aria-label="Remove Sea trout season">&times;</button>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label">Season opens</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option selected>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option selected>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field__label">Season closes</label>
+                <div style="display:flex;gap:0.5rem;">
+                  <select class="field__input" aria-label="Day">
+                    <option value="">Day</option>
+                    <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                    <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                    <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                    <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option selected>31</option>
+                  </select>
+                  <select class="field__input" aria-label="Month">
+                    <option value="">Month</option>
+                    <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                    <option>Jul</option><option>Aug</option><option>Sep</option><option selected>Oct</option><option>Nov</option><option>Dec</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

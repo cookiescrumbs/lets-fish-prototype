@@ -54,8 +54,18 @@
 /* ── Banner: club crest badge (absent → renders nothing, title sits flush) ── */
 .fs-banner-id { display: flex; align-items: center; gap: 1.25rem; }
 .fs-crest {
-  width: 76px; height: 76px; flex-shrink: 0;
-  border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); object-fit: contain;
+  width: 112px; height: 112px; flex-shrink: 0;
+  border-radius: 50%; background: #fff; border: 3px solid #fff;
+  box-shadow: var(--shadow-sm); object-fit: cover;
+}
+/* Small screens: the title wraps to 2–3 lines, so shrink the crest and let the
+   title lead instead of the badge dominating. */
+@media (max-width: 560px) {
+  .fs-crest { width: 80px; height: 80px; }
+  .fs-banner-id { gap: 0.9rem; }
+  /* Smaller title beside the crest so a long name settles to 2 lines, not 3. */
+  .fs-banner-id .lf-explore-banner__title { font-size: 1.3rem; }
+  .fs-banner-id .lf-explore-banner__count { font-size: 0.85rem; }
 }
 
 /* ── Stats row (the AllTrails glance row: decide before you read) ── */
@@ -120,22 +130,10 @@
 .fs-season__month:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 .fs-season__month--open { background: var(--forest); border-color: var(--forest); color: #fff; }
 
-/* ── Fishery rules — one stack of native <details>, collapsed; any length, no JS ── */
+/* ── Fishery rules — one stack of native <details>, collapsed; any length, no JS.
+   The disclosure stack itself is the shared .lf-disclosure component (components.css). ── */
 .fs-rule-list { padding-left: 1.1rem; }
 .fs-rule-list li + li { margin-top: 0.45rem; }
-.fs-disclosures { max-width: 46rem; }
-.fs-disclosure { border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; }
-.fs-disclosure + .fs-disclosure { margin-top: 0.75rem; }
-.fs-disclosure summary {
-  display: flex; align-items: center; gap: 0.6rem;
-  padding: 0.9rem 1.1rem; cursor: pointer; list-style: none;
-  font-size: 0.92rem; font-weight: 700; color: var(--heading);
-}
-.fs-disclosure summary::-webkit-details-marker { display: none; }
-.fs-disclosure__chev { margin-left: auto; color: var(--muted); transition: transform 0.15s ease; }
-.fs-disclosure[open] .fs-disclosure__chev { transform: rotate(180deg); }
-.fs-disclosure__body { padding: 0 1.1rem 1.1rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); max-width: 70ch; }
-.fs-disclosure__body p + p { margin-top: 0.75rem; }
 
 /* ── Getting there: contact + outlet cards left, map right ── */
 .fs-getting { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.25rem; align-items: start; }
@@ -189,7 +187,7 @@
     <div class="lf-explore-banner__row">
       <div class="fs-banner-id">
         <!-- club crest — the fishery's uploaded logo; a fishery without one renders no badge -->
-        <img class="fs-crest" src="durness-klb-logo.jpg" alt="Durness and Kinlochbervie Angling Club crest">
+        <img class="fs-crest" src="https://letsfish.imgix.net/fisheries/logos/000/000/117/original/kinloch-logo.jpg?auto=format,compress&w=224" alt="Durness and Kinlochbervie Angling Club crest">
 
         <div>
           <h1 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h1>
@@ -403,10 +401,10 @@
     <h2 class="fs-section__heading">Fishery rules</h2>
     <!-- one stacked list of collapsed disclosures — short categories are bullet
          lists, long ones prose; the closed stack is the whole rulebook at a glance -->
-    <div class="fs-disclosures">
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+    <div class="lf-disclosures">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <ul class="fs-rule-list">
             <li>Only one rod may be used at a time per angler</li>
             <li>No Sunday fishing for salmon and sea trout — Scots law, all waters</li>
@@ -415,9 +413,9 @@
           </ul>
         </div>
       </details>
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-ruler-horizontal"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-ruler-horizontal"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <ul class="fs-rule-list">
             <li>Brown trout minimum size 10 inches (25 cm)</li>
             <li>Bag limit of four brown trout per angler per day</li>
@@ -426,9 +424,9 @@
           </ul>
         </div>
       </details>
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-wand-magic"></i> Permitted methods <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-wand-magic"></i> Permitted methods <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <ul class="fs-rule-list">
             <li>Fly fishing only on lochs holding salmon and sea trout</li>
             <li>Fly and spinning permitted on brown trout lochs</li>
@@ -437,23 +435,23 @@
           </ul>
         </div>
       </details>
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-crow"></i> Protected wildlife <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-crow"></i> Protected wildlife <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <p><strong>Ground-nesting birds</strong></p>
           <p>North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</p>
           <p>You may come across red-throated divers on some of the smaller hill lochs. If so, simply move on to another loch: an adult bird kept off the nest leaves its eggs and young exposed to predators.</p>
         </div>
       </details>
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-hand-sparkles"></i> Biosecurity <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-hand-sparkles"></i> Biosecurity <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <p>Check, clean and dry waders, nets and boats before moving between waters, especially if you have fished outside the area recently. Invasive weeds can spread from the smallest fragment of stem.</p>
         </div>
       </details>
-      <details class="fs-disclosure">
-        <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
-        <div class="fs-disclosure__body">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
           <p>July 2026 — divers are nesting on the small islands of Loch na Claise Càrnaich. Please avoid the loch until the young have fledged.</p>
         </div>
       </details>

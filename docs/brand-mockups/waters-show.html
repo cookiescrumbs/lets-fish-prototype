@@ -117,6 +117,22 @@
 /* Sidebar stacks shared .lf-info-card (components.css) */
 .ws-sidebar { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
 
+/* ── Rules section (main column, #rules — the hero "Rules" button jumps here).
+   Only THIS water's own rules, in the same collapsible disclosure stack as the
+   fishery page (shared partial when built). The full club rulebook is one click
+   away via the link card below. A dated rule renders its dates as a pill. ── */
+.ws-section--rules { scroll-margin-top: 1.5rem; }
+.ws-section__heading { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.01em; margin-bottom: 1rem; }
+.ws-rule-list { padding-left: 1.1rem; }
+.ws-rule-list li + li { margin-top: 0.45rem; }
+/* disclosure stack + date note are the shared .lf-disclosure component (components.css) */
+/* Link to the fishery's full rulebook — a quiet call-out card */
+.ws-rules-link { display: flex; align-items: center; gap: 0.75rem; max-width: 46rem; margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem; background: var(--forest-tint); border-radius: var(--radius-md);
+  font-size: 0.9rem; font-weight: 700; color: var(--forest); }
+.ws-rules-link:hover { color: var(--forest); text-decoration: underline; }
+.ws-rules-link i:last-child { margin-left: auto; }
+
 /* ── Explore nearby — the nearby-waters experience embedded as the onward
    journey. Banner + card grid are shared (.lf-explore-banner / .lf-card-grid
    in components.css). Page-local here: only the section's top divider. ── */
@@ -155,6 +171,7 @@
         <a class="btn btn--hero" href="#"><i class="fa-solid fa-heart-circle-plus"></i> <span class="ws-btn-label">Save</span></a>
         <a class="btn btn--hero" href="#"><i class="fa-solid fa-diamond-turn-right"></i> <span class="ws-btn-label">Directions</span></a>
         <a class="btn btn--hero" href="#"><i class="fa-solid fa-cloud-sun"></i> <span class="ws-btn-label">Conditions</span></a>
+        <a class="btn btn--hero" href="#rules"><i class="fa-solid fa-book"></i> <span class="ws-btn-label">Rules</span></a>
         <button class="btn btn--hero ws-more-btn" popovertarget="ws-more-menu" title="More actions"><i class="fa-solid fa-ellipsis"></i></button>
         <div id="ws-more-menu" class="ws-more__menu" popover>
           <a class="ws-more__item" href="#"><i class="fa-solid fa-route"></i> Route</a>
@@ -279,6 +296,50 @@
             <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480&flip=h">
           </div>
         </div>
+
+        <!-- ──────────── Rules (rules slice 2: nullable water_id) ────────────
+             Only THIS water's own rules, in the same collapsible disclosure stack
+             as the fishery page. A dated rule renders its starts_on/ends_on as a
+             pill. The full club rulebook is one click away via the link card
+             below. Hero "Rules" button jumps here. -->
+        <div class="ws-section ws-section--rules" id="rules">
+          <h2 class="ws-section__heading">Rules for this loch</h2>
+
+          <div class="lf-disclosures">
+            <details class="lf-disclosure" open>
+              <summary><i class="fa-solid fa-wand-magic"></i> Permitted methods <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+              <div class="lf-disclosure__body">
+                <ul class="ws-rule-list">
+                  <li>Fly fishing only — no spinning or bait</li>
+                </ul>
+              </div>
+            </details>
+            <details class="lf-disclosure">
+              <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+              <div class="lf-disclosure__body">
+                <ul class="ws-rule-list">
+                  <li>Wading is discouraged along the south shore; deep drop-offs close to the bank</li>
+                </ul>
+              </div>
+            </details>
+            <details class="lf-disclosure">
+              <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+              <div class="lf-disclosure__body">
+                <ul class="ws-rule-list">
+                  <li>No fishing east of the outflow while divers are nesting on the islands</li>
+                </ul>
+                <p class="lf-rule__dates"><i class="fa-solid fa-calendar"></i> Until 31 Aug</p>
+              </div>
+            </details>
+          </div>
+
+          <!-- link to the fishery's full rulebook — club-wide rules live there -->
+          <a class="ws-rules-link" href="fishery-show.html#rules">
+            <i class="fa-solid fa-book"></i>
+            See all Skye &amp; Lochalsh AA rules
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
       </div>
 
       <!-- ──────────── Right: sidebar cards ──────────── -->
@@ -290,16 +351,6 @@
           </div>
           <div class="lf-info-card__body">
             <p>Day tickets are available from the association at £12, covering all club waters. No Sunday fishing for salmon and sea trout.</p>
-          </div>
-        </div>
-
-        <div class="lf-info-card">
-          <div class="lf-info-card__header">
-            <span class="lf-info-card__title">Rules</span>
-            <i class="fa-solid fa-book lf-info-card__icon"></i>
-          </div>
-          <div class="lf-info-card__body">
-            <p>Fly only. Barbless hooks. All wild brown trout to be returned. Please carry out all litter and respect lambing season on the approach path.</p>
           </div>
         </div>
 

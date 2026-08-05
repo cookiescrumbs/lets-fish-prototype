@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Let's Fish — Durness and Kinlochbervie AC (manager)</title>
+<title>Let's Fish — Durness and Kinlochbervie Angling Club</title>
 
 <link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,23 +15,24 @@
 
 <style>
 /* ==========================================================================
-   Fishery show mockup — fisheries#show as the visiting angler's JUMP-OFF
-   page (the AllTrails trail-page model: one section per decision, sticky
-   anchor tabs), populated with the real Durness and Kinlochbervie Angling
-   Club listing (lets.fish). D&KLB is the FIRST PAID-FEATURES FISHERY —
-   tickets, memberships and boats are bought natively on Let's Fish, so
-   those CTAs are sunset Buy/Book buttons, with the in-person outlet kept
-   as fine print.
+   Fishery show mockup — NON-SELLING STATE (the common case). Companion to
+   fishery-show.html: same real Durness and Kinlochbervie club, but shown
+   as it looks BEFORE adopting native booking — how most fisheries on
+   Let's Fish present today. There is no offer grid and no native boat
+   booking; instead the "Permission & Tickets" free-text card carries how
+   to get on the water — a link out to the club's own site and an in-person
+   outlet. The #tickets section renders this ONE card in place of the
+   Buy/Book grid; the Boats tab is gone because there is nothing to book.
    No hero photo BY DESIGN (not an omission): photo hero = a water,
    banner head = an organisation page. Solid forest header + explore
    banner, plus a club-crest badge left of the title (renders nothing when
    a fishery has no logo) and an AllTrails-style stats row atop Overview.
-   INVENTED CONTENT, pending real data from the club: prices, offers,
-   boats, season dates, fishery/boat rules, and the placeholder crest.
-   Real content: description, species, contact, outlet address, waters.
-   MANAGER (owner, signed-in) STATE: shows the Edit fishery / Add water owner
-   actions in the hero and the "Your Fishery" account link. No claim card — the
-   owner already manages it. The angler (buyer) view is fishery-show.html.
+   INVENTED CONTENT, pending real data from the club: season dates and
+   fishery rules. Real content: description, species, permission text,
+   contact, outlet address, waters.
+   ANGLER (signed-in, non-manager) STATE: no owner Edit/Add actions and no
+   "Is this your fishery?" claim card. The owner/admin view lives in
+   edit-fishery.html + add-water.html.
    ========================================================================== */
 
 /* ── Sticky section tabs ── */
@@ -58,11 +59,12 @@
   border-radius: 50%; background: #fff; border: 3px solid #fff;
   box-shadow: var(--shadow-sm); object-fit: cover;
 }
-/* Small screens: shrink the crest and title so a long club name settles to
-   2 lines beside the badge instead of being crammed into 3. */
+/* Small screens: the title wraps to 2–3 lines, so shrink the crest and let the
+   title lead instead of the badge dominating. */
 @media (max-width: 560px) {
   .fs-crest { width: 80px; height: 80px; }
   .fs-banner-id { gap: 0.9rem; }
+  /* Smaller title beside the crest so a long name settles to 2 lines, not 3. */
   .fs-banner-id .lf-explore-banner__title { font-size: 1.3rem; }
   .fs-banner-id .lf-explore-banner__count { font-size: 0.85rem; }
 }
@@ -72,6 +74,12 @@
 .fs-stats li + li { border-left: 1px solid var(--border); padding-left: 2.25rem; }
 .fs-stats__num { display: block; font-size: 1.35rem; font-weight: 800; color: var(--heading); }
 .fs-stats__label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+/* Small screens: 2×2 grid so columns align; divider follows the column, not DOM order (flex-wrap left a stray divider + indent on the wrapped item) */
+@media (max-width: 640px) {
+  .fs-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2.25rem; }
+  .fs-stats li + li { border-left: none; padding-left: 0; }
+  .fs-stats li:nth-child(even) { border-left: 1px solid var(--border); padding-left: 2.25rem; }
+}
 
 /* ── Overview: prose + attributes (angler view — no owner claim card) ── */
 .fs-prose { color: var(--text); line-height: 1.65; max-width: 70ch; }
@@ -168,7 +176,6 @@
         <i class="fa-solid fa-circle-user lf-nav__avatar lf-nav__avatar--default" aria-hidden="true"></i>
       </button>
       <div class="lf-nav__menu" id="account-menu" popover>
-        <a class="lf-nav__menu-item" href="#">Your Fishery</a>
         <a class="lf-nav__menu-item" href="fishlists.html">Your Fishlists</a>
         <a class="lf-nav__menu-item" href="destinations.html">Destinations</a>
         <a class="lf-nav__menu-item" href="manage-account.html">Manage Account</a>
@@ -189,20 +196,16 @@
       <span class="lf-breadcrumb__sep">/</span>
       <span class="lf-breadcrumb__current">Durness and Kinlochbervie Angling Club</span>
     </nav>
-    <!-- manager (owner) state: Edit fishery / Add water owner actions -->
+    <!-- angler (signed-in, non-manager) state: no owner Edit/Add actions -->
     <div class="lf-explore-banner__row">
       <div class="fs-banner-id">
         <!-- club crest — the fishery's uploaded logo; a fishery without one renders no badge -->
-        <img class="fs-crest" src="durness-klb-logo.jpg" alt="Durness and Kinlochbervie Angling Club crest">
+        <img class="fs-crest" src="https://letsfish.imgix.net/fisheries/logos/000/000/117/original/kinloch-logo.jpg?auto=format,compress&w=224" alt="Durness and Kinlochbervie Angling Club crest">
 
         <div>
           <h1 class="lf-explore-banner__title">Durness and Kinlochbervie Angling Club</h1>
           <p class="lf-explore-banner__count"><i class="fa fa-map-signs"></i> North West Sutherland, Scotland</p>
         </div>
-      </div>
-      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <a class="btn btn--secondary" href="edit-fishery.html"><i class="fa-solid fa-pen-to-square"></i> Edit fishery</a>
-        <a class="btn btn--accent" href="add-water.html"><i class="fa-solid fa-plus"></i> Add water</a>
       </div>
     </div>
   </div>
@@ -214,7 +217,6 @@
     <nav class="fs-tabs">
       <a class="fs-tab fs-tab--active" href="#overview">Overview</a>
       <a class="fs-tab" href="#tickets">Tickets</a>
-      <a class="fs-tab" href="#boats">Boats</a>
       <a class="fs-tab" href="#seasons">Seasons</a>
       <a class="fs-tab" href="#rules">Rules</a>
       <a class="fs-tab" href="#getting-there">Getting there</a>
@@ -230,8 +232,6 @@
     <ul class="fs-stats">
       <li><span class="fs-stats__num">27</span><span class="fs-stats__label">Waters</span></li>
       <li><span class="fs-stats__num">3</span><span class="fs-stats__label">Species</span></li>
-      <li><span class="fs-stats__num">2</span><span class="fs-stats__label">Boats for hire</span></li>
-      <li><span class="fs-stats__num">£15</span><span class="fs-stats__label">Day tickets from</span></li>
     </ul>
     <div class="fs-prose">
       <p>The club holds fishing rights on a number of lochs in the North West of Sutherland, from the Cape Wrath Parph, down past Oldshoremore and out to Rhiconich. Club permits also extend to unnamed hill lochs beyond those listed.</p>
@@ -243,115 +243,27 @@
   </div>
 </section>
 
-<!-- ════════════════════════ Tickets & Membership (native purchase — invented offers) ════════════════════════ -->
+<!-- ════════════════════════ Permission & Tickets (NON-SELLING — real free-text card,
+     rendered in place of the native offer grid; simple_format of one text field) ════════════════════════ -->
 <section class="fs-section fs-section--shaded" id="tickets">
   <div class="container">
-    <h2 class="fs-section__heading">Tickets &amp; Membership</h2>
-    <div class="fs-offer-grid">
-
-      <article class="fs-offer">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Adult Day Ticket</h3>
-          <p class="fs-offer__price">£15 <small>/ day</small></p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-fish"></i> All club waters, one rod</li>
-            <li><i class="fa fa-clock"></i> Sunrise to sunset</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy day ticket</a>
-        </div>
-      </article>
-
-      <article class="fs-offer">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Junior Day Ticket</h3>
-          <p class="fs-offer__price">Free</p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-child"></i> Under 16s</li>
-            <li><i class="fa fa-user-group"></i> Fishing with a permit-holding adult</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Get junior ticket</a>
-        </div>
-      </article>
-
-      <article class="fs-offer">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Week Permit</h3>
-          <p class="fs-offer__price">£50 <small>/ 7 days</small></p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-fish"></i> All club waters, one rod</li>
-            <li><i class="fa fa-calendar-days"></i> Seven consecutive days</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy week permit</a>
-        </div>
-      </article>
-
-      <article class="fs-offer">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Season Membership</h3>
-          <p class="fs-offer__price">£90 <small>/ season</small></p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-fish"></i> Full season, all club waters</li>
-            <li><i class="fa fa-sailboat"></i> Priority boat booking</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-id-card"></i> Join the club</a>
-        </div>
-      </article>
-
-    </div>
-    <!-- permission info lives with the tickets it explains, not in a far-away rules section -->
-    <p class="fs-note">Visitor permits are available for anglers who wish to fish the club's waters without full membership. Day tickets can be purchased online here on Let's Fish, or in person at Oldshoremore Retreats &amp; Crafts, 152 Oldshoremore, IV27 4RS.</p>
-  </div>
-</section>
-
-<!-- ════════════════════════ Boat hire (native booking — invented boats) ════════════════════════ -->
-<section class="fs-section" id="boats">
-  <div class="container">
-    <h2 class="fs-section__heading">Boat hire</h2>
-    <div class="fs-offer-grid fs-offer-grid--boats">
-
-      <article class="fs-offer">
-        <img class="fs-offer__img" alt="Loch Aisir Mór"
-             src="https://letsfish.imgix.net/images/images/000/001/170/original/geograph-821567.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Boat on Loch Aisir Mór</h3>
-          <p class="fs-offer__price">£25 <small>/ day</small></p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-sailboat"></i> Rowing boat — oars and lifejackets included</li>
-            <li><i class="fa fa-ticket"></i> Requires a valid day ticket or membership</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-calendar-check"></i> Book this boat</a>
-        </div>
-      </article>
-
-      <article class="fs-offer">
-        <img class="fs-offer__img" alt="Loch Aisir"
-             src="https://letsfish.imgix.net/images/images/000/001/169/original/geograph-3601551.jpg?ar=650%3A380&auto=format%2Ccompress&fit=crop&q=75&w=800">
-        <div class="fs-offer__body">
-          <h3 class="fs-offer__name">Boat on Loch Aisir</h3>
-          <p class="fs-offer__price">£25 <small>/ day</small></p>
-          <ul class="fs-offer__meta">
-            <li><i class="fa fa-sailboat"></i> Rowing boat — oars and lifejackets included</li>
-            <li><i class="fa fa-ticket"></i> Requires a valid day ticket or membership</li>
-          </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-calendar-check"></i> Book this boat</a>
-        </div>
-      </article>
-
-      <!-- boat rules live beside the boats they govern (invented, pending the club's) -->
-      <div class="lf-info-card" style="align-self: start;">
-        <div class="lf-info-card__header">
-          <span class="lf-info-card__title">Boat rules</span>
-          <i class="fa-solid fa-sailboat lf-info-card__icon"></i>
-        </div>
-        <div class="lf-info-card__body">
-          <p>Lifejackets must be worn at all times on the water. Outboard motors are not permitted.</p>
-          <p>Boats must be returned to their mooring, bailed and tied off, by 6pm.</p>
-        </div>
+    <h2 class="fs-section__heading">Permission &amp; Tickets</h2>
+    <div class="lf-info-card" style="max-width: 480px;">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Permission &amp; Tickets</span>
+        <i class="fa-solid fa-ticket lf-info-card__icon"></i>
       </div>
-
+      <div class="lf-info-card__body">
+        <p>Visitor permits are available for anglers who wish to fish the club's waters without full membership. These permits offer access to well-maintained fishing grounds in a quiet, scenic setting and help support the ongoing conservation and management of the fishery.</p>
+        <p>Both experienced anglers and newcomers are welcome. By purchasing a permit, visitors are able to enjoy a day's fishing while contributing to the care and sustainability of the waters.</p>
+        <p>Day tickets can be purchased:</p>
+        <p><a href="#">Online from the club's website</a></p>
+        <p>In person:<br>Oldshoremore Retreats &amp; Crafts<br>152 Oldshoremore, IV27 4RS</p>
+      </div>
     </div>
   </div>
 </section>
+
 
 <!-- ════════════════════════ Seasons (invented dates, pending the club's) ════════════════════════ -->
 <section class="fs-section fs-section--shaded" id="seasons">
@@ -448,6 +360,7 @@
       <details class="fs-disclosure">
         <summary><i class="fa-solid fa-crow"></i> Protected wildlife <i class="fa-solid fa-chevron-down fs-disclosure__chev"></i></summary>
         <div class="fs-disclosure__body">
+          <p><strong>Ground-nesting birds</strong></p>
           <p>North West Sutherland is an important breeding ground for many bird species, and it is a criminal offence to disturb nesting wild birds. Many nest on the ground close to the lochs — take care on the way to and from the water, and avoid disturbance while fishing.</p>
           <p>You may come across red-throated divers on some of the smaller hill lochs. If so, simply move on to another loch: an adult bird kept off the nest leaves its eggs and young exposed to predators.</p>
         </div>
