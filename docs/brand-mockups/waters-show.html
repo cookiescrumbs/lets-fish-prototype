@@ -33,13 +33,14 @@
 .ws-hero__credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
 /* Hero action bar — pinned to the hero's lower edge */
-.ws-hero__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 1.25rem 0 1.5rem; }
-.ws-hero__bar-inner { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
+/* Bar sits at the hero's foot on load, then sticks to the top on scroll (AllTrails pattern). */
+.ws-hero__bar { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.ws-hero__bar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: 0.75rem; }
 .ws-actions--hero { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
 /* Hero buttons — solid white pills, matching the save-heart so the controls read as one set */
-.btn--hero { background: color-mix(in srgb, var(--charcoal) 8%, #fff); border: 1.5px solid transparent; color: var(--forest); box-shadow: var(--shadow-sm); }
-.btn--hero:hover { background: color-mix(in srgb, var(--charcoal) 16%, #fff); color: var(--forest); }
+.btn--hero { background: color-mix(in srgb, var(--charcoal) 14%, #fff); border: 1.5px solid transparent; color: var(--forest); box-shadow: var(--shadow-sm); }
+.btn--hero:hover { background: color-mix(in srgb, var(--charcoal) 24%, #fff); color: var(--forest); }
 .btn--hero-ghost { background: transparent; border-color: transparent; color: #fff; box-shadow: none; }
 .btn--hero-ghost:hover { background: rgba(255,255,255,0.16); color: #fff; }
 
@@ -56,9 +57,14 @@
 
 /* Small screens: collapse visible hero buttons to icon-only (menu items keep text) */
 @media (max-width: 640px) {
+  .ws-hero__bar .lf-subnav__inner { display: none; }
+  .ws-hero__bar-inner { justify-content: flex-end; }
   .ws-actions--hero .btn--hero .ws-btn-label { display: none; }
-  .ws-actions--hero > .btn--hero { padding-left: 0.85rem; padding-right: 0.85rem; }
-  .ws-actions--hero .btn--hero i { font-size: 1.1rem; }
+  .ws-actions--hero .btn--hero, .ws-save-wrap .btn--hero {
+    width: 2.4rem; height: 2.4rem; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .ws-actions--hero .btn--hero i { font-size: 1rem; }
 }
 
 /* ── Title section — name block left, water-identity stats (Type/Species) right ── */
@@ -101,9 +107,23 @@
 .ws-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: start; }
 @media (max-width: 880px) { .ws-layout { grid-template-columns: 1fr; gap: 2rem; } }
 
+/* ── Section subnav links — live in the sticky hero bar (.ws-hero__bar), left of the actions.
+   Same visual as the fishery page's fs-tabs; promote to components.css when built for real. ── */
+.lf-subnav__inner { display: flex; gap: 0.25rem; overflow-x: auto; }
+.lf-subnav__link { padding: 0.95rem 1.1rem; white-space: nowrap; font-size: 0.88rem; font-weight: 700; color: var(--muted); border-bottom: 2.5px solid transparent; transition: color 0.15s ease, border-color 0.15s ease; }
+.lf-subnav__link:hover { color: var(--forest); }
+.lf-subnav__link--active { color: var(--forest); border-bottom-color: var(--sunset); }
+
+.ws-section { scroll-margin-top: 4.75rem; }
 .ws-section + .ws-section { margin-top: 2.5rem; }
 .ws-prose { color: var(--text); line-height: 1.65; }
 .ws-prose p + p { margin-top: 0.9rem; }
+
+/* ── Full-width section bands — Rules & Season drop out of the two-column
+   overview into their own rows (AllTrails pattern), matching the fishery
+   page's alternating shaded/plain bands. Content sits in a .container. ── */
+.ws-band { padding: 2.75rem 0; scroll-margin-top: 4.75rem; }
+.ws-band--shaded { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
 /* Route stats lead into the map (route is drawn on it) — no frame/dividers, just a clean row */
 .ws-stats--route { margin-bottom: 1rem; border: none; }
@@ -121,7 +141,6 @@
    Only THIS water's own rules, in the same collapsible disclosure stack as the
    fishery page (shared partial when built). The full club rulebook is one click
    away via the link card below. A dated rule renders its dates as a pill. ── */
-.ws-section--rules { scroll-margin-top: 1.5rem; }
 .ws-section__heading { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.01em; margin-bottom: 1rem; }
 .ws-rule-list { padding-left: 1.1rem; }
 .ws-rule-list li + li { margin-top: 0.45rem; }
@@ -133,10 +152,28 @@
 .ws-rules-link:hover { color: var(--forest); }
 .ws-rules-link i:last-child { margin-left: auto; }
 
+/* ── Season strips — ported from fishery-show. Open month = solid forest,
+      closed = pale track; lightness carries meaning, not hue (colour-blind-safe). ── */
+.ws-season { max-width: 46rem; }
+.ws-season + .ws-season { margin-top: 1.75rem; }
+.ws-season__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+.ws-season__species { font-size: 0.95rem; font-weight: 800; color: var(--heading); }
+.ws-season__species i { margin-right: 0.45rem; }
+.ws-season__dates { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.ws-season__track { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.ws-season__month {
+  height: 1.9rem; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--muted); background: var(--bg);
+  border: 1px solid var(--border);
+}
+.ws-season__month:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ws-season__month:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ws-season__month--open { background: var(--forest); border-color: var(--forest); color: #fff; }
+
 /* ── Explore nearby — the nearby-waters experience embedded as the onward
    journey. Banner + card grid are shared (.lf-explore-banner / .lf-card-grid
    in components.css). Page-local here: only the section's top divider. ── */
-.ws-nearby { border-top: 1px solid var(--border); }
+.ws-nearby { border-top: 1px solid var(--border); scroll-margin-top: 4.75rem; }
 </style>
 </head>
 <body>
@@ -163,26 +200,31 @@
   <div class="ws-hero__gradient"></div>
 
   <p class="ws-hero__credit">Photo: <a href="#">John Allan</a> · CC BY-SA 2.0</p>
+</section>
 
-  <!-- Action bar on the hero's lower edge: actions left, save-heart right -->
-  <div class="ws-hero__bar">
-    <div class="container ws-hero__bar-inner">
-      <div class="ws-actions ws-actions--hero">
-        <a class="btn btn--hero" href="#"><i class="fa-solid fa-heart-circle-plus"></i> <span class="ws-btn-label">Save</span></a>
-        <a class="btn btn--hero" href="#"><i class="fa-solid fa-diamond-turn-right"></i> <span class="ws-btn-label">Directions</span></a>
-        <a class="btn btn--hero" href="#"><i class="fa-solid fa-cloud-sun"></i> <span class="ws-btn-label">Conditions</span></a>
-        <a class="btn btn--hero" href="#rules"><i class="fa-solid fa-book"></i> <span class="ws-btn-label">Rules</span></a>
-        <button class="btn btn--hero ws-more-btn" popovertarget="ws-more-menu" title="More actions"><i class="fa-solid fa-ellipsis"></i></button>
-        <div id="ws-more-menu" class="ws-more__menu" popover>
-          <a class="ws-more__item" href="#"><i class="fa-solid fa-route"></i> Route</a>
-          <a class="ws-more__item" href="#"><i class="fa-solid fa-download"></i> Download GPX</a>
-          <a class="ws-more__item" href="#"><i class="fa-solid fa-ship"></i> Boats</a>
-          <a class="ws-more__item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit water</a>
-        </div>
+<!-- ════════════════════════ Section subnav + actions — one sticky row at the hero's foot ════════════════════════ -->
+<div class="ws-hero__bar">
+  <div class="container ws-hero__bar-inner">
+    <nav class="lf-subnav__inner">
+      <a class="lf-subnav__link lf-subnav__link--active" href="#overview">Overview</a>
+      <a class="lf-subnav__link" href="#rules">Rules</a>
+      <a class="lf-subnav__link" href="#seasons">Season</a>
+      <a class="lf-subnav__link" href="#nearby">Nearby</a>
+    </nav>
+    <div class="ws-actions ws-actions--hero">
+      <a class="btn btn--hero" href="#"><i class="fa-solid fa-heart-circle-plus"></i> <span class="ws-btn-label">Save</span></a>
+      <a class="btn btn--hero" href="#"><i class="fa-solid fa-diamond-turn-right"></i> <span class="ws-btn-label">Directions</span></a>
+      <a class="btn btn--hero" href="#"><i class="fa-solid fa-cloud-sun"></i> <span class="ws-btn-label">Conditions</span></a>
+      <button class="btn btn--hero ws-more-btn" popovertarget="ws-more-menu" title="More actions"><i class="fa-solid fa-ellipsis"></i></button>
+      <div id="ws-more-menu" class="ws-more__menu" popover>
+        <a class="ws-more__item" href="#"><i class="fa-solid fa-route"></i> Route</a>
+        <a class="ws-more__item" href="#"><i class="fa-solid fa-download"></i> Download GPX</a>
+        <a class="ws-more__item" href="#"><i class="fa-solid fa-ship"></i> Boats</a>
+        <a class="ws-more__item" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit water</a>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- ════════════════════════ Title & quick info ════════════════════════ -->
 <div class="container">
@@ -247,14 +289,14 @@
 
       <!-- ──────────── Left: description, map, gallery ──────────── -->
       <div>
-        <div class="ws-section">
+        <div class="ws-section" id="overview">
           <div class="ws-prose">
             <p>Cradled beneath the Black Cuillin, Loch Coruisk is one of Skye's most dramatic stretches of water — a long, dark freshwater loch reached only on foot or by boat across Loch Scavaig. The walk in rewards you with brown trout in a setting few other waters can match.</p>
             <p>The fish run small but free-rising, and the loch fishes best on an overcast day with a light ripple. Wading is straightforward along the northern shore; the south side is rockier and better covered from the bank.</p>
           </div>
         </div>
 
-        <div class="ws-section">
+        <div class="ws-section" id="getting-there">
           <!-- Route stats — the walk-in to the water, leading into the map that draws the route -->
           <div class="ws-stats ws-stats--route">
             <div class="ws-stat">
@@ -289,56 +331,12 @@
           <div class="lf-map-placeholder lf-map-placeholder--inline"><i class="fa-solid fa-map-location-dot"></i> Map</div>
         </div>
 
-        <div class="ws-section">
+        <div class="ws-section" id="photos">
           <div class="ws-gallery-grid">
             <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480">
             <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480&rot=180">
             <img alt="" src="https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg?auto=format%2Ccompress&fit=crop&w=480&flip=h">
           </div>
-        </div>
-
-        <!-- ──────────── Rules (rules slice 2: nullable water_id) ────────────
-             Only THIS water's own rules, in the same collapsible disclosure stack
-             as the fishery page. A dated rule renders its starts_on/ends_on as a
-             pill. The full club rulebook is one click away via the link card
-             below. Hero "Rules" button jumps here. -->
-        <div class="ws-section ws-section--rules" id="rules">
-          <h2 class="ws-section__heading">Rules for this loch</h2>
-
-          <div class="lf-disclosures">
-            <details class="lf-disclosure" open>
-              <summary><i class="fa-solid fa-circle-check"></i> Permitted methods <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
-              <div class="lf-disclosure__body">
-                <ul class="ws-rule-list">
-                  <li>Fly fishing only — no spinning or bait</li>
-                </ul>
-              </div>
-            </details>
-            <details class="lf-disclosure">
-              <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
-              <div class="lf-disclosure__body">
-                <ul class="ws-rule-list">
-                  <li>Wading is discouraged along the south shore; deep drop-offs close to the bank</li>
-                </ul>
-              </div>
-            </details>
-            <details class="lf-disclosure">
-              <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
-              <div class="lf-disclosure__body">
-                <ul class="ws-rule-list">
-                  <li>No fishing east of the outflow while divers are nesting on the islands</li>
-                </ul>
-                <p class="lf-rule__dates"><i class="fa-solid fa-calendar"></i> Until 31 Aug</p>
-              </div>
-            </details>
-          </div>
-
-          <!-- link to the fishery's full rulebook — club-wide rules live there -->
-          <a class="ws-rules-link" href="fishery-show.html#rules">
-            <i class="fa-solid fa-book"></i>
-            See all Skye &amp; Lochalsh AA rules
-            <i class="fa-solid fa-arrow-right"></i>
-          </a>
         </div>
       </div>
 
@@ -369,8 +367,91 @@
   </div>
 </section>
 
+<!-- ════════════════════════ Rules (own full-width row) ════════════════════════
+     Rules & Season drop out of the two-column overview into their own rows
+     (AllTrails pattern), alternating shaded/plain like the fishery page.
+     Only THIS water's own rules, in the shared disclosure stack; the full club
+     rulebook is one click away. Hero "Rules" button jumps here. -->
+<section class="ws-band ws-band--shaded" id="rules">
+  <div class="container">
+    <h2 class="ws-section__heading">Rules</h2>
+
+    <div class="lf-disclosures">
+      <details class="lf-disclosure" open>
+        <summary><i class="fa-solid fa-circle-check"></i> Permitted methods <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
+          <ul class="ws-rule-list">
+            <li>Fly fishing only — no spinning or bait</li>
+          </ul>
+        </div>
+      </details>
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
+          <ul class="ws-rule-list">
+            <li>Wading is discouraged along the south shore; deep drop-offs close to the bank</li>
+          </ul>
+        </div>
+      </details>
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-triangle-exclamation"></i> Seasonal notices <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body">
+          <ul class="ws-rule-list">
+            <li>No fishing east of the outflow while divers are nesting on the islands</li>
+          </ul>
+          <p class="lf-rule__dates"><i class="fa-solid fa-calendar"></i> Until 31 Aug</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- link to the fishery's full rulebook — club-wide rules live there -->
+    <a class="ws-rules-link" href="fishery-show.html#rules">
+      <i class="fa-solid fa-book"></i>
+      See all fishery rules
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════ Season (own full-width row) ════════════════════════
+     This loch overrides the fishery season; strips mirror fishery-show, link up
+     to the fishery's full seasons matches the Rules pattern above. -->
+<section class="ws-band" id="seasons">
+  <div class="container">
+    <h2 class="ws-section__heading">Season</h2>
+
+    <div class="ws-season">
+      <div class="ws-season__head">
+        <span class="ws-season__species"><i class="fa fa-fish"></i> Brown trout</span>
+        <span class="ws-season__dates">15 Mar – 31 Aug</span>
+      </div>
+      <div class="ws-season__track">
+        <span class="ws-season__month">J</span>
+        <span class="ws-season__month">F</span>
+        <span class="ws-season__month ws-season__month--open">M</span>
+        <span class="ws-season__month ws-season__month--open">A</span>
+        <span class="ws-season__month ws-season__month--open">M</span>
+        <span class="ws-season__month ws-season__month--open">J</span>
+        <span class="ws-season__month ws-season__month--open">J</span>
+        <span class="ws-season__month ws-season__month--open">A</span>
+        <span class="ws-season__month">S</span>
+        <span class="ws-season__month">O</span>
+        <span class="ws-season__month">N</span>
+        <span class="ws-season__month">D</span>
+      </div>
+    </div>
+
+    <!-- link to the fishery's full seasons — club-wide season lives there -->
+    <a class="ws-rules-link" href="fishery-show.html#seasons">
+      <i class="fa-solid fa-calendar-days"></i>
+      See all fishery seasons
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
 <!-- ════════════════════════ Explore nearby ════════════════════════ -->
-<section class="ws-nearby">
+<section class="ws-nearby" id="nearby">
   <!-- Shared contour-wave banner: title, count, search + List/Map toggle -->
   <div class="lf-explore-banner">
     <div class="container">

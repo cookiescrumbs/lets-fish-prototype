@@ -201,9 +201,17 @@
           <label class="field__label" for="rules">Rules</label>
           <textarea class="field__input" id="rules" rows="4" placeholder="Catch limits, allowed methods...">Fly fishing only. Bag limit of 4 fish; please return anything under 8 inches.</textarea>
         </div>
-        <div class="field">
-          <span class="field__label">Season (optional)</span>
-          <div class="alert alert--info"><i class="fa-solid fa-circle-info"></i><div>Only set a season here if this water differs from the fishery default (for example, a closure protecting ground-nesting birds). Leave blank to inherit the fishery season (15 Mar – 6 Oct).</div></div>
+      </div>
+    </div>
+
+    <!-- Season -->
+    <div class="lf-info-card">
+      <div class="lf-info-card__header">
+        <span class="lf-info-card__title">Season</span>
+        <i class="fa-solid fa-calendar-days lf-info-card__icon"></i>
+      </div>
+      <div class="lf-info-card__body">
+        <div class="alert alert--info"><i class="fa-solid fa-circle-info"></i><div>Only set a season here if this water differs from the fishery default (for example, a closure protecting ground-nesting birds). Leave blank to inherit the fishery season (15 Mar – 6 Oct).</div></div>
           <div class="field-row">
             <div class="field">
               <label class="field__label" for="season-start">Season start</label>
@@ -214,7 +222,51 @@
               <input class="field__input" id="season-end" type="date">
             </div>
           </div>
-        </div>
+          <div class="alert alert--info" style="margin-top:0.5rem;"><i class="fa-solid fa-fish"></i><div>Add a species to override its fishery season on this water. Anything you don't add follows the fishery season.</div></div>
+          <div class="rule-cards">
+            <div class="lf-boat">
+              <div class="lf-boat__header">
+                <span><i class="fa fa-fish"></i> Brown trout</span>
+                <button class="lf-x-btn" type="button" aria-label="Remove Brown trout season">&times;</button>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label class="field__label">Season opens</label>
+                  <div style="display:flex;gap:0.5rem;">
+                    <select class="field__input" aria-label="Day">
+                      <option value="">Day</option>
+                      <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                      <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option selected>15</option><option>16</option>
+                      <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                      <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                    </select>
+                    <select class="field__input" aria-label="Month">
+                      <option value="">Month</option>
+                      <option>Jan</option><option>Feb</option><option selected>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                      <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label">Season closes</label>
+                  <div style="display:flex;gap:0.5rem;">
+                    <select class="field__input" aria-label="Day">
+                      <option value="">Day</option>
+                      <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+                      <option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option>
+                      <option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option>
+                      <option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option>
+                    </select>
+                    <select class="field__input" aria-label="Month">
+                      <option value="">Month</option>
+                      <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                      <option>Jul</option><option selected>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
 

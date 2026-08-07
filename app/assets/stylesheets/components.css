@@ -84,6 +84,15 @@ ul { list-style: none; }
 .lf-nav--solid       .lf-nav__btn--primary { background: var(--sunset); color: var(--charcoal); }
 .lf-nav--solid       .lf-nav__btn--primary:hover { background: var(--burnt); }
 
+/* ── Section subnav — horizontal scrollspy tabs (paired with tabs_controller).
+   The sticky bar wrapper is page-owned (.ws-hero__bar, .fs-tabs-bar). The
+   fishery page still uses its own .fs-tab twins; migrate those here when next
+   touched. */
+.lf-subnav__inner { display: flex; gap: 0.25rem; overflow-x: auto; }
+.lf-subnav__link { padding: 0.95rem 1.1rem; white-space: nowrap; font-size: 0.88rem; font-weight: 700; color: var(--muted); border-bottom: 2.5px solid transparent; transition: color 0.15s ease, border-color 0.15s ease; cursor: pointer; }
+.lf-subnav__link:hover { color: var(--forest); }
+.lf-subnav__link--active { color: var(--forest); border-bottom-color: var(--sunset); }
+
 /* ── Signed-in state — avatar pill replacing the Sign in/Sign up buttons.
    Hamburger + avatar (image, or the default circle-user glyph) opening the
    account menu. Menu uses the native Popover API (light-dismiss + Escape,
