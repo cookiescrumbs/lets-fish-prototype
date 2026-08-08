@@ -137,6 +137,22 @@
 /* Sidebar stacks shared .lf-info-card (components.css) */
 .ws-sidebar { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
 
+/* ── Highlighted-rule pills — must-know rules elevated from the Rules section
+   (they stay pinned there too). Same anatomy as the tide / sea-lice info
+   pills (sea_lice.css when built); amber = the semantic warning tokens, so
+   prominence reads by lightness, not hue (colour-blind-safe). The row wraps —
+   multiple highlighted rules sit side by side, rule pills first. ── */
+.water-info-pills { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+.info-pill { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0.85rem;
+  border-radius: 0.5rem; border: 1px solid transparent; min-width: 14rem; line-height: 1.25; }
+.info-pill__label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.7rem;
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; opacity: 0.85; }
+.info-pill__headline { font-size: 1rem; font-weight: 700; }
+.info-pill__detail { font-size: 0.8rem; opacity: 0.85; }
+.info-pill--rule { background: var(--warning-bg); border-color: var(--warning);
+  color: color-mix(in srgb, var(--warning) 72%, #000); }
+a.info-pill--rule:hover .info-pill__detail { text-decoration: underline; }
+
 /* ── Rules section (main column, #rules — the hero "Rules" button jumps here).
    Only THIS water's own rules, in the same collapsible disclosure stack as the
    fishery page (shared partial when built). The full club rulebook is one click
@@ -144,6 +160,16 @@
 .ws-section__heading { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.01em; margin-bottom: 1rem; }
 .ws-rule-list { padding-left: 1.1rem; }
 .ws-rule-list li + li { margin-top: 0.45rem; }
+/* Pinned rules — highlighted rules render open above the disclosure stack, in
+   the same amber as their pills up top. Everything else stays collapsed. */
+.ws-rule-pinned { max-width: 46rem; background: var(--warning-bg); border: 1px solid var(--warning);
+  border-radius: var(--radius-md); padding: 0.9rem 1.1rem; margin-bottom: 1rem;
+  color: color-mix(in srgb, var(--warning) 72%, #000); }
+.ws-rule-pinned__tag { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+.ws-rule-pinned p { font-size: 0.95rem; }
+.ws-rule-pinned p + p { margin-top: 0.5rem; }
+.ws-rule-pinned a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 /* disclosure stack + date note are the shared .lf-disclosure component (components.css) */
 /* Link to the fishery's full rulebook — a quiet call-out card */
 .ws-rules-link { display: flex; align-items: center; gap: 0.75rem; max-width: 46rem; margin-top: 1.25rem;
@@ -267,6 +293,20 @@
     </div>
   </div>
 
+  <!-- ──────────────── Highlighted rules — elevated from the Rules section, wrap as a row ──────────────── -->
+  <div class="water-info-pills">
+    <a class="info-pill info-pill--rule" href="#rules">
+      <span class="info-pill__label"><i class="fa-solid fa-triangle-exclamation"></i> Safety warning</span>
+      <span class="info-pill__headline">Cape Wrath live firing range</span>
+      <span class="info-pill__detail">See Rules</span>
+    </a>
+    <a class="info-pill info-pill--rule" href="#rules">
+      <span class="info-pill__label"><i class="fa-solid fa-circle-check"></i> Permitted methods</span>
+      <span class="info-pill__headline">Fly fishing only</span>
+      <span class="info-pill__detail">See Rules</span>
+    </a>
+  </div>
+
   <!-- ──────────────── Lake data pills ──────────────── -->
   <div class="ws-lakedata">
     <div class="ws-datum" title="High alkalinity indicates a fertile water and can signal larger trout.">
@@ -381,15 +421,20 @@
   <div class="container">
     <h2 class="ws-section__heading">Rules</h2>
 
+    <!-- Highlighted rules render open and pinned above the stack; a category
+         whose only rules are pinned drops its disclosure -->
+    <div class="ws-rule-pinned">
+      <span class="ws-rule-pinned__tag"><i class="fa-solid fa-triangle-exclamation"></i> Safety warning</span>
+      <p><strong>Cape Wrath live firing range.</strong> This loch is within the Cape Wrath MOD live firing range. If red flags or lights are displayed, do not enter the danger area marked on the map, no matter what the published times say. Blanks and pyrotechnics may be used at any hour, so obey all signs.</p>
+      <p>Check <a href="https://www.gov.uk/government/publications/cape-wrath-firing-times">Cape Wrath firing times (GOV.UK)</a> before you go — these show when firing is permitted, not confirmed bookings, so treat only the times outside them as safe.</p>
+      <p>Range Control: 01971 511242 (8am–5pm) · Ops Room: 0131 310 3426 (24hr)</p>
+    </div>
+    <div class="ws-rule-pinned">
+      <span class="ws-rule-pinned__tag"><i class="fa-solid fa-circle-check"></i> Permitted methods</span>
+      <p><strong>Fly fishing only</strong> — no spinning or bait</p>
+    </div>
+
     <div class="lf-disclosures">
-      <details class="lf-disclosure" open>
-        <summary><i class="fa-solid fa-circle-check"></i> Permitted methods <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
-        <div class="lf-disclosure__body">
-          <ul class="ws-rule-list">
-            <li>Fly fishing only — no spinning or bait</li>
-          </ul>
-        </div>
-      </details>
       <details class="lf-disclosure">
         <summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
         <div class="lf-disclosure__body">

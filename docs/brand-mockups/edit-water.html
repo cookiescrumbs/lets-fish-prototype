@@ -62,6 +62,15 @@
 .rule-card__dates .rule-card__dates-shown, .rule-card__dates[open] .rule-card__dates-add { display: none; }
 .rule-card__dates[open] .rule-card__dates-shown { display: inline; }
 .rule-card__dates[open] summary { margin-bottom: 0.6rem; }
+/* Highlight toggle — ticking it elevates the rule to the water page's pill
+   row and pins it open in the Rules section. Ticked = the same amber the
+   rule gets on the water page, so the editor previews the prominence. */
+.rule-card__highlight { display: inline-flex; align-items: center; gap: 0.45rem; align-self: flex-start;
+  font-size: 0.85rem; font-weight: 700; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); color: var(--muted); cursor: pointer; }
+.rule-card__highlight:has(:checked) { background: var(--warning-bg); border-color: var(--warning);
+  color: color-mix(in srgb, var(--warning) 72%, #000); }
+.rule-card__highlight input { accent-color: var(--warning); }
 </style>
 </head>
 <body>
@@ -419,8 +428,38 @@
       </div>
       <div class="lf-info-card__body">
         <div class="field">
-          <div class="alert alert--info"><i class="fa-solid fa-scale-balanced"></i><div>Rules added here apply to this water only. They appear on the water's page alongside your fishery-wide rules, grouped by category.</div></div>
+          <div class="alert alert--info"><i class="fa-solid fa-scale-balanced"></i><div>Rules added here apply to this water only. They appear on the water's page alongside your fishery-wide rules, grouped by category. Highlighted rules also appear at the top of the water's page.</div></div>
           <div class="rule-cards">
+
+            <!-- highlighted safety rule: no category, headline carries the pill text -->
+            <div class="lf-boat">
+              <div class="rule-card__top">
+                <select class="field__input">
+                  <option>No category</option>
+                  <option>Byelaws</option>
+                  <option>Fish limits &amp; sizes</option>
+                  <option>Permitted methods</option>
+                  <option>Protected wildlife</option>
+                  <option>Biosecurity</option>
+                  <option>Seasonal notices</option>
+                  <option selected>Safety warning</option>
+                </select>
+                <input class="field__input" type="text" placeholder="Headline (optional)" value="Cape Wrath live firing range">
+                <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
+              </div>
+              <textarea class="field__input" rows="6" placeholder="Rule text">This loch is within the Cape Wrath MOD live firing range. If red flags or lights are displayed, do not enter the danger area marked on the map, no matter what the published times say. Blanks and pyrotechnics may be used at any hour, so obey all signs.
+
+Check Cape Wrath firing times (GOV.UK) before you go — these show when firing is permitted, not confirmed bookings, so treat only the times outside them as safe.
+
+Range Control: 01971 511242 (8am–5pm) · Ops Room: 0131 310 3426 (24hr)</textarea>
+              <details class="rule-card__dates">
+                <summary><i class="fa-solid fa-calendar-plus"></i> <span class="rule-card__dates-add">Add dates</span><span class="rule-card__dates-shown">Dates</span></summary>
+              </details>
+              <label class="rule-card__highlight">
+                <input type="checkbox" checked>
+                <i class="fa-solid fa-triangle-exclamation"></i> Highlight on water page
+              </label>
+            </div>
 
             <!-- plain rule: category + body, nothing else -->
             <div class="lf-boat">
@@ -433,8 +472,9 @@
                   <option>Protected wildlife</option>
                   <option>Biosecurity</option>
                   <option>Seasonal notices</option>
+                  <option>Safety warning</option>
                 </select>
-                <input class="field__input" type="text" placeholder="Headline (optional)">
+                <input class="field__input" type="text" placeholder="Headline (optional)" value="Fly fishing only">
                 <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
               </div>
               <textarea class="field__input" rows="2" placeholder="Rule text">Fly fishing only — no spinning or bait</textarea>
@@ -477,6 +517,10 @@
                   </div>
                 </div>
               </details>
+              <label class="rule-card__highlight">
+                <input type="checkbox" checked>
+                <i class="fa-solid fa-triangle-exclamation"></i> Highlight on water page
+              </label>
             </div>
 
             <!-- dated rule: details renders [open] when dates are set -->
@@ -490,6 +534,7 @@
                   <option>Protected wildlife</option>
                   <option>Biosecurity</option>
                   <option selected>Seasonal notices</option>
+                  <option>Safety warning</option>
                 </select>
                 <input class="field__input" type="text" placeholder="Headline (optional)">
                 <button class="lf-x-btn" type="button" aria-label="Remove rule">&times;</button>
@@ -534,6 +579,10 @@
                   </div>
                 </div>
               </details>
+              <label class="rule-card__highlight">
+                <input type="checkbox">
+                <i class="fa-solid fa-triangle-exclamation"></i> Highlight on water page
+              </label>
             </div>
 
           </div>
