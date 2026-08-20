@@ -993,3 +993,35 @@ textarea.field__input { resize: vertical; }
 .lf-footer__links a { font-size: 0.82rem; color: rgba(255,255,255,0.65); }
 .lf-footer__links a:hover { color: #fff; }
 .lf-footer__bottom { border-top: 1px solid rgba(255,255,255,0.12); padding: 1.1rem 0; font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+
+/* ==========================================================================
+   Empty state — a prompt card for a list with nothing in it yet
+   ========================================================================== */
+.lf-empty {
+  max-width: 40rem; margin: 0 auto; padding: 3rem 2rem; text-align: center;
+  background: #fff; border: 2px dashed var(--border); border-radius: var(--radius-lg);
+}
+.lf-empty__icon {
+  width: 4rem; height: 4rem; margin: 0 auto 1.25rem;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--bg-alt); color: var(--forest); font-size: 1.6rem;
+}
+.lf-empty__title { font-size: 1.35rem; font-weight: 800; color: var(--heading); margin-bottom: 0.5rem; }
+.lf-empty__text { color: var(--muted); line-height: 1.6; max-width: 34ch; margin: 0 auto 1.5rem; }
+
+/* Numbered next-steps strip — sits outside the card. */
+.lf-empty__steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  max-width: 52rem; margin: 2.5rem auto 0; text-align: left;
+}
+.lf-empty__step {
+  display: flex; gap: 0.85rem; align-items: flex-start;
+  font-size: 0.9rem; line-height: 1.5; color: var(--muted);
+}
+.lf-empty__step b { display: block; color: var(--heading); font-weight: 700; }
+.lf-empty__num {
+  flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--forest); color: #fff; font-weight: 800; font-size: 0.8rem;
+}
+@media (max-width: 640px) { .lf-empty__steps { grid-template-columns: 1fr; } }

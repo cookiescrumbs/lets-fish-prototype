@@ -53,9 +53,11 @@
 
    Page-local CSS: the .fs-offer block is copied from fishery-show-manager
    (it lives in fishery_show_page.css, not components.css), plus the manager
-   action row, the £ prefix, and the panel chrome. Faithful
-   omissions (conditional states): the empty index ("No tickets yet." fs-note)
-   and the validation-error alert (alerts are catalogued).
+   action row, the £ prefix, and the panel chrome. Panel 1b mocks
+   the empty index (the ERB's bare "No tickets yet." fs-note) as a dashed
+   .lf-empty card with a single CTA — the banner's Add button is dropped so
+   there is one obvious thing to do — plus a three-step strip. Faithful
+   omission: the validation-error alert (alerts are catalogued).
    ========================================================================== -->
 
 <style>
@@ -98,6 +100,7 @@
 .pt-price::before { content: "£"; position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%);
   font-weight: 700; color: var(--muted); pointer-events: none; }
 .pt-price .field__input { padding-left: 1.9rem; }
+
 </style>
 </head>
 <body>
@@ -236,6 +239,49 @@
             </div>
           </article>
 
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════ Panel 1b — Tickets index, EMPTY ════════════════ -->
+  <div class="pt-spec" id="empty">
+    <div class="pt-spec__label">permit_types#index — manager · empty state · Andy's first visit, before any ticket exists</div>
+    <div class="pt-spec__page">
+
+      <div class="lf-explore-banner">
+        <div class="container">
+          <nav class="lf-breadcrumb">
+            <a href="homepage.html">Home</a>
+            <span class="lf-breadcrumb__sep">/</span>
+            <a href="fisheries.html">Fisheries</a>
+            <span class="lf-breadcrumb__sep">/</span>
+            <a href="fishery-show-manager.html">Durness and Kinlochbervie Angling Club</a>
+            <span class="lf-breadcrumb__sep">/</span>
+            <span class="lf-breadcrumb__current">Tickets</span>
+          </nav>
+          <div class="lf-explore-banner__row">
+            <div>
+              <h1 class="lf-explore-banner__title">Tickets</h1>
+              <p class="lf-explore-banner__count"><i class="fa-solid fa-ticket"></i> Durness and Kinlochbervie Angling Club</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" style="margin-top: 2rem;">
+        <div class="lf-empty">
+          <div class="lf-empty__icon"><i class="fa-solid fa-ticket"></i></div>
+          <h2 class="lf-empty__title">Sell your first ticket</h2>
+          <p class="lf-empty__text">A ticket is a price, a duration and the waters it covers. Anglers buy it on your fishery page and get a permit by email.</p>
+          <a class="btn btn--accent" href="#"><i class="fa-solid fa-plus"></i> Add a ticket</a>
+        </div>
+
+        <div class="lf-empty__steps">
+          <div class="lf-empty__step"><span class="lf-empty__num">1</span><span><b>Name and price it</b>Adult Day Ticket, £15 a day. £0 sells as Free.</span></div>
+          <div class="lf-empty__step"><span class="lf-empty__num">2</span><span><b>Tick the waters</b>All of them by default, or just the lochs this ticket covers.</span></div>
+          <div class="lf-empty__step"><span class="lf-empty__num">3</span><span><b>It goes live</b>The ticket shows on your fishery page the moment you save.</span></div>
         </div>
       </div>
 
