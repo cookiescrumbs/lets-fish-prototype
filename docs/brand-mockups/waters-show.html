@@ -178,6 +178,11 @@ a.info-pill--rule:hover .info-pill__detail { text-decoration: underline; }
 .ws-rules-link:hover { color: var(--forest); }
 .ws-rules-link i:last-child { margin-left: auto; }
 
+/* Divider introducing the fishery-wide rules below this water's own stack. */
+.ws-rules-divider { display: flex; align-items: center; gap: 0.9rem; max-width: 46rem; margin: 1.75rem 0 1rem; color: var(--muted); }
+.ws-rules-divider::before, .ws-rules-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.ws-rules-divider span { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+
 /* ── Season strips — ported from fishery-show. Open month = solid forest,
       closed = pale track; lightness carries meaning, not hue (colour-blind-safe). ── */
 .ws-season { max-width: 46rem; }
@@ -454,12 +459,18 @@ a.info-pill--rule:hover .info-pill__detail { text-decoration: underline; }
       </details>
     </div>
 
-    <!-- link to the fishery's full rulebook — club-wide rules live there -->
-    <a class="ws-rules-link" href="fishery-show.html#rules">
-      <i class="fa-solid fa-book"></i>
-      See all fishery rules
-      <i class="fa-solid fa-arrow-right"></i>
-    </a>
+    <!-- fishery-wide rules render inline below the water's own, split by a labelled divider -->
+    <div class="ws-rules-divider"><span>Fishery-wide rules</span></div>
+    <div class="lf-disclosures">
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body"><ul class="ws-rule-list"><li>Return all fish under 25cm across the fishery</li></ul></div>
+      </details>
+      <details class="lf-disclosure">
+        <summary><i class="fa-solid fa-dove"></i> Protected wildlife <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary>
+        <div class="lf-disclosure__body"><ul class="ws-rule-list"><li>Avoid nesting birds when wading the shore</li></ul></div>
+      </details>
+    </div>
   </div>
 </section>
 

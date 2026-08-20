@@ -164,6 +164,8 @@ textarea.field__input { resize: vertical; }
 .field--error .field__input  { border-color: var(--error);   background: var(--error-bg); }
 .field--success .field__input{ border-color: var(--success); background: var(--success-bg); }
 .field__input:disabled, .field--disabled .field__input { background: var(--bg-alt); color: var(--muted); cursor: not-allowed; }
+.field__input[readonly] { background: var(--bg-alt); color: var(--muted); cursor: default; }
+.field__input[readonly]:focus { border-color: var(--border); box-shadow: none; }
 .field__msg { font-size: 0.74rem; display: flex; align-items: center; gap: 0.35rem; }
 .field--error .field__msg   { color: color-mix(in srgb, var(--error) 78%, #000); }
 .field--success .field__msg { color: color-mix(in srgb, var(--success) 72%, #000); }
@@ -512,6 +514,10 @@ textarea.field__input { resize: vertical; }
 .lf-disclosure__body { padding: 0 1.1rem 1.1rem; font-size: 0.9rem; line-height: 1.6; color: var(--text); max-width: 70ch; }
 .lf-disclosure__body p + p { margin-top: 0.75rem; }
 .lf-rule__dates { color: var(--muted); font-size: 0.85rem; margin-top: 0.35rem; }
+/* Bulleted rule bodies: marker in the gutter, wrapped lines indent under it. */
+.lf-rule-list { margin: 0; padding-left: 1.25rem; list-style: disc; }
+.lf-rule-list li + li { margin-top: 0.4rem; }
+.lf-rule-list + p, p + .lf-rule-list, .lf-rule-list + .lf-rule-list { margin-top: 0.75rem; }
 
 /* ==========================================================================
    Form page — single centred column of .lf-info-cards, each body a stack of
@@ -547,15 +553,16 @@ textarea.field__input { resize: vertical; }
    the slider hint. Tap-to-reveal via the native Popover API (light-dismiss
    + Escape, no JS — the nav-menu precedent), NOT hover: the copy is
    load-bearing on mobile where hover doesn't exist. Plain title attributes
-   remain the free desktop nicety. Placement: lf-popover-anchor.js (pages
-   <script src> it next to this file; once in the layout on port) positions
-   every .lf-tooltip popover — clamped inside the viewport (a bubble centred
-   on an edge-hugging ⓘ would hang off-screen on phones, which CSS anchor
-   positioning can't simply prevent) with the arrow offset to keep pointing
-   at the trigger. No per-instance wiring beyond popovertarget. The nav menu
-   still uses CSS anchor positioning, with the same script as its
-   Safari/Firefox fallback. Product nudges reuse this bubble; their
-   show/dismiss timing stays app JS. overflow: visible beats the UA popover
+   remain the free desktop nicety. Placement: lf_popover_anchor.js positions
+   every .lf-tooltip popover with Floating UI (computePosition, placement top,
+   strategy fixed) — shift() clamps it inside the viewport (a bubble centred on
+   an edge-hugging ⓘ would hang off-screen on phones) and --lf-tooltip-arrow-x
+   keeps the caret over the trigger. So the rule's position: absolute below is
+   overridden to fixed inline; the arrow ::after stays CSS. No per-instance
+   wiring beyond popovertarget. The nav menu still uses CSS anchor positioning,
+   with the same script as its Safari/Firefox fallback. Product nudges reuse
+   this bubble; their show/dismiss timing stays app JS. See
+   docs/popover-positioning-floating-ui.md. overflow: visible beats the UA popover
    default (overflow: auto), which otherwise clips the arrow; white-space:
    normal beats nowrap inherited from hosts like the conditions readouts row.
    ========================================================================== */
@@ -569,6 +576,9 @@ textarea.field__input { resize: vertical; }
    when the bubble has been clamped away from centre; 50% otherwise */
 .lf-tooltip::after { content: ''; position: absolute; top: 100%; left: var(--lf-tooltip-arrow-x, 50%);
   transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--footer-bg); }
+/* flipped below the trigger (no room above) — arrow moves to the top, points up */
+.lf-tooltip[data-placement="bottom"]::after { top: auto; bottom: 100%;
+  border-top-color: transparent; border-bottom-color: var(--footer-bg); }
 
 /* ==========================================================================
    Legal page — the pages# template (terms, privacy — credits turned out NOT
@@ -707,6 +717,13 @@ textarea.field__input { resize: vertical; }
   font-size: 0.85rem; font-weight: 600; color: var(--heading); }
 .lf-annotation-entry + .lf-annotation-entry { margin-top: 0.5rem; }
 
+/* Editable title — sits flush in the row, reveals it's editable on focus */
+.lf-annotation-title { flex: 1; min-width: 0; border: none; background: transparent;
+  font: inherit; color: inherit; padding: 0.15rem 0.25rem; border-radius: var(--radius-sm);
+  cursor: text; }
+.lf-annotation-title:hover { background: var(--bg); }
+.lf-annotation-title:focus { outline: none; background: var(--bg); box-shadow: inset 0 0 0 1.5px var(--border); }
+
 /* × button — instant JS removal (annotations, JS-added boats), not a
    deferred remove-on-save checkbox */
 .lf-x-btn { flex-shrink: 0; width: 1.75rem; height: 1.75rem; display: inline-flex; align-items: center;
@@ -739,6 +756,10 @@ textarea.field__input { resize: vertical; }
 .lf-choice:has(:checked) { border-color: var(--forest); background: var(--forest-tint); }
 .lf-choice input { accent-color: var(--forest); }
 
+/* Master tick above a .lf-choice-grid ("All waters" on the manage-ticket form) */
+.lf-master-tick { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0 0.75rem; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border); font-weight: 700; }
+.lf-master-tick input { accent-color: var(--forest); width: 1.1rem; height: 1.1rem; }
+.lf-master-tick small { font-weight: 400; color: var(--muted, #666); margin-left: auto; }
 .lf-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 @media (max-width: 640px) { .lf-option-grid { grid-template-columns: 1fr; } }
 .lf-option { cursor: pointer; }

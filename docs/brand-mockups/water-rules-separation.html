@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — Water vs fishery rules separation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+<style>
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito Sans', sans-serif; margin: 0; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  .opt-label { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--forest); background: var(--forest-tint); display: inline-block; padding: 0.3rem 0.7rem; border-radius: var(--radius-pill); margin: 2.5rem 0 0.5rem; }
+  .opt-note { font-size: 0.85rem; color: var(--muted); margin: 0 0 1.25rem; }
+  .band { background: color-mix(in srgb, var(--stone) 12%, var(--bg)); border-radius: var(--radius-md); padding: 1.5rem; }
+  .ws-section__heading { font-size: 1.5rem; color: var(--forest); margin: 0 0 1.25rem; }
+
+  /* Shared: eyebrow group label (Options A & C) */
+  .rules-group__label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.75rem; }
+  .rules-group + .rules-group { margin-top: 1.75rem; }
+
+  /* Option B: divider with centred label */
+  .rules-divider { display: flex; align-items: center; gap: 0.9rem; margin: 1.75rem 0 1rem; color: var(--muted); }
+  .rules-divider::before, .rules-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  .rules-divider span { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+
+  /* Option C: per-row "Fishery-wide" tag inside the summary */
+  .fishery-tag { margin-left: auto; margin-right: 0.75rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--forest); background: var(--forest-tint); padding: 0.2rem 0.55rem; border-radius: var(--radius-pill); }
+  .fishery-tag + .lf-disclosure__chev { margin-left: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="opt-label" style="background:none;color:var(--muted);padding-left:0">Three ways to separate</p>
+  <p class="opt-note">Same rules on each: this water has <em>Club rules</em> + <em>Fish limits &amp; sizes</em>; the fishery repeats <em>Fish limits &amp; sizes</em> (the collision) plus <em>Byelaws</em> and <em>Protected wildlife</em>.</p>
+
+  <!-- ══════════ OPTION A — grouped under eyebrow labels ══════════ -->
+  <p class="opt-label">Option A · Grouped, labelled</p>
+  <p class="opt-note">Two labelled groups. Cleanest; grouping does the work, no per-row noise.</p>
+  <section class="band">
+    <h2 class="ws-section__heading">Rules</h2>
+
+    <div class="rules-group">
+      <p class="rules-group__label"><i class="fa-solid fa-location-dot"></i> This water</p>
+      <div class="lf-disclosures">
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-people-group"></i> Club rules <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Fly fishing only on this loch.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Two-fish limit per day on this water.</p></div></details>
+      </div>
+    </div>
+
+    <div class="rules-group">
+      <p class="rules-group__label"><i class="fa-solid fa-book"></i> Across the whole fishery</p>
+      <div class="lf-disclosures">
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Return all fish under 25cm across the fishery.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>SEPA byelaws apply.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-dove"></i> Protected wildlife <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Avoid nesting birds when wading.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ OPTION B — divider between the two stacks ══════════ -->
+  <p class="opt-label">Option B · Centred divider</p>
+  <p class="opt-note">Water rules stay unlabelled under the heading; a divider introduces the fishery block. Lightest touch.</p>
+  <section class="band">
+    <h2 class="ws-section__heading">Rules</h2>
+    <div class="lf-disclosures">
+      <details class="lf-disclosure"><summary><i class="fa-solid fa-people-group"></i> Club rules <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Fly fishing only on this loch.</p></div></details>
+      <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Two-fish limit per day on this water.</p></div></details>
+    </div>
+
+    <div class="rules-divider"><span>Fishery-wide rules</span></div>
+
+    <div class="lf-disclosures">
+      <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Return all fish under 25cm across the fishery.</p></div></details>
+      <details class="lf-disclosure"><summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>SEPA byelaws apply.</p></div></details>
+      <details class="lf-disclosure"><summary><i class="fa-solid fa-dove"></i> Protected wildlife <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Avoid nesting birds when wading.</p></div></details>
+    </div>
+  </section>
+
+  <!-- ══════════ OPTION C — grouped + per-row tag ══════════ -->
+  <p class="opt-label">Option C · Grouped + per-row tag</p>
+  <p class="opt-note">Option A plus a "Fishery-wide" pill on each fishery row — the duplicate <em>Fish limits &amp; sizes</em> stays distinguishable even when scanning one collapsed row. Most robust, slightly busier.</p>
+  <section class="band">
+    <h2 class="ws-section__heading">Rules</h2>
+
+    <div class="rules-group">
+      <p class="rules-group__label"><i class="fa-solid fa-location-dot"></i> This water</p>
+      <div class="lf-disclosures">
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-people-group"></i> Club rules <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Fly fishing only on this loch.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Two-fish limit per day on this water.</p></div></details>
+      </div>
+    </div>
+
+    <div class="rules-group">
+      <p class="rules-group__label"><i class="fa-solid fa-book"></i> Across the whole fishery</p>
+      <div class="lf-disclosures">
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-ruler"></i> Fish limits &amp; sizes <span class="fishery-tag">Fishery-wide</span><i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Return all fish under 25cm across the fishery.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-scale-balanced"></i> Byelaws <span class="fishery-tag">Fishery-wide</span><i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>SEPA byelaws apply.</p></div></details>
+        <details class="lf-disclosure"><summary><i class="fa-solid fa-dove"></i> Protected wildlife <span class="fishery-tag">Fishery-wide</span><i class="fa-solid fa-chevron-down lf-disclosure__chev"></i></summary><div class="lf-disclosure__body"><p>Avoid nesting birds when wading.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
