@@ -100,6 +100,11 @@
 .fs-offer__meta li + li { margin-top: 0.35rem; }
 .fs-offer__meta i { width: 1rem; text-align: center; color: var(--forest-60); }
 .fs-offer .btn { margin-top: auto; justify-content: center; }
+/* Manager card footer — Edit/Remove row, pinned to the card base so a 4-up row stays level */
+.fs-offer__actions { margin-top: auto; display: flex; gap: 0.5rem; }
+/* Section heading row with an inline action (Add a ticket) */
+.fs-section__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.fs-section__head .fs-section__heading { margin-bottom: 0; }
 
 /* Section fine print (in-person outlet, Sunday rule) */
 .fs-note { font-size: 0.85rem; line-height: 1.6; color: var(--muted); margin-top: 1.25rem; max-width: 70ch; }
@@ -246,7 +251,10 @@
 <!-- ════════════════════════ Tickets & Membership (native purchase — invented offers) ════════════════════════ -->
 <section class="fs-section fs-section--shaded" id="tickets">
   <div class="container">
-    <h2 class="fs-section__heading">Tickets &amp; Membership</h2>
+    <div class="fs-section__head">
+      <h2 class="fs-section__heading">Tickets</h2>
+      <a class="btn btn--accent" href="#"><i class="fa-solid fa-plus"></i> Add a ticket</a>
+    </div>
     <div class="fs-offer-grid">
 
       <article class="fs-offer">
@@ -257,7 +265,10 @@
             <li><i class="fa fa-fish"></i> All club waters, one rod</li>
             <li><i class="fa fa-clock"></i> Sunrise to sunset</li>
           </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy day ticket</a>
+          <div class="fs-offer__actions">
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+          </div>
         </div>
       </article>
 
@@ -269,7 +280,10 @@
             <li><i class="fa fa-child"></i> Under 16s</li>
             <li><i class="fa fa-user-group"></i> Fishing with a permit-holding adult</li>
           </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Get junior ticket</a>
+          <div class="fs-offer__actions">
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+          </div>
         </div>
       </article>
 
@@ -281,7 +295,10 @@
             <li><i class="fa fa-fish"></i> All club waters, one rod</li>
             <li><i class="fa fa-calendar-days"></i> Seven consecutive days</li>
           </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy week permit</a>
+          <div class="fs-offer__actions">
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+          </div>
         </div>
       </article>
 
@@ -293,13 +310,41 @@
             <li><i class="fa fa-fish"></i> Full season, all club waters</li>
             <li><i class="fa fa-sailboat"></i> Priority boat booking</li>
           </ul>
-          <a class="btn btn--accent" href="#"><i class="fa-solid fa-id-card"></i> Join the club</a>
+          <div class="fs-offer__actions">
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+          </div>
         </div>
       </article>
 
     </div>
-    <!-- permission info lives with the tickets it explains, not in a far-away rules section -->
-    <p class="fs-note">Visitor permits are available for anglers who wish to fish the club's waters without full membership. Day tickets can be purchased online here on Let's Fish, or in person at Oldshoremore Retreats &amp; Crafts, 152 Oldshoremore, IV27 4RS.</p>
+    <!-- the free-text "Permission & Tickets" card is hidden from sellers now they
+         sell natively; the public still sees it (see fishery-show / -permit) -->
+  </div>
+</section>
+
+<!-- ════════════════════════ Tickets — EMPTY / onboarding state ════════════════════════
+     Mockup note: the SAME Tickets section as above, shown as it renders on a
+     fishery with no tickets yet. Only one of these two states is ever on the
+     page for real — a manager sees the populated section once a ticket exists,
+     the onboarding block before that. Both are shown here so the empty state
+     is visible in page context. ════════════════════════ -->
+<section class="fs-section fs-section--shaded" id="tickets-empty">
+  <div class="container">
+    <div class="fs-section__head">
+      <h2 class="fs-section__heading">Tickets</h2>
+    </div>
+    <div class="lf-empty">
+      <div class="lf-empty__icon"><i class="fa-solid fa-ticket"></i></div>
+      <h2 class="lf-empty__title">Sell your first ticket</h2>
+      <p class="lf-empty__text">Every ticket is a price, a duration and the waters it covers. Anglers buy it on your fishery page and get a permit by email.</p>
+      <a class="btn btn--accent" href="#"><i class="fa-solid fa-plus"></i> Add a ticket</a>
+    </div>
+    <div class="lf-empty__steps">
+      <div class="lf-empty__step"><span class="lf-empty__num">1</span><span><b>Name and price it</b>Adult Day Ticket, £15 a day. £0 sells as Free.</span></div>
+      <div class="lf-empty__step"><span class="lf-empty__num">2</span><span><b>Tick the waters</b>All of them by default, or just the lochs this ticket covers.</span></div>
+      <div class="lf-empty__step"><span class="lf-empty__num">3</span><span><b>It goes live</b>The ticket shows on your fishery page the moment you save.</span></div>
+    </div>
   </div>
 </section>
 
