@@ -100,8 +100,13 @@
 .fs-offer__meta li + li { margin-top: 0.35rem; }
 .fs-offer__meta i { width: 1rem; text-align: center; color: var(--forest-60); }
 .fs-offer .btn { margin-top: auto; justify-content: center; }
-/* Manager card footer — Edit/Remove row, pinned to the card base so a 4-up row stays level */
-.fs-offer__actions { margin-top: auto; display: flex; gap: 0.5rem; }
+/* Manager card footer — pinned to the card base so a 4-up row stays level. Buy
+   keeps the full-width block; Edit/Remove are a quiet ghost row under a hairline. */
+.fs-offer__actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+.fs-offer__actions > .btn { width: 100%; justify-content: center; margin-top: 0; }
+.fs-offer__admin { display: flex; gap: 0.25rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+.fs-offer__admin form { display: contents; }
+.fs-offer__admin .btn { margin-top: 0; }
 /* Section heading row with an inline action (Add a ticket) */
 .fs-section__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
 .fs-section__head .fs-section__heading { margin-bottom: 0; }
@@ -266,8 +271,11 @@
             <li><i class="fa fa-clock"></i> Sunrise to sunset</li>
           </ul>
           <div class="fs-offer__actions">
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy</a>
+            <div class="fs-offer__admin">
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            </div>
           </div>
         </div>
       </article>
@@ -281,8 +289,11 @@
             <li><i class="fa fa-user-group"></i> Fishing with a permit-holding adult</li>
           </ul>
           <div class="fs-offer__actions">
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy</a>
+            <div class="fs-offer__admin">
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            </div>
           </div>
         </div>
       </article>
@@ -296,8 +307,11 @@
             <li><i class="fa fa-calendar-days"></i> Seven consecutive days</li>
           </ul>
           <div class="fs-offer__actions">
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy</a>
+            <div class="fs-offer__admin">
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            </div>
           </div>
         </div>
       </article>
@@ -311,8 +325,11 @@
             <li><i class="fa fa-sailboat"></i> Priority boat booking</li>
           </ul>
           <div class="fs-offer__actions">
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-            <a class="btn btn--secondary" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            <a class="btn btn--accent" href="#"><i class="fa-solid fa-ticket"></i> Buy</a>
+            <div class="fs-offer__admin">
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+              <a class="btn btn--ghost btn--sm" href="#"><i class="fa-solid fa-trash"></i> Remove</a>
+            </div>
           </div>
         </div>
       </article>

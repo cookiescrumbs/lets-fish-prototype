@@ -147,6 +147,10 @@ ul { list-style: none; }
 .btn--ghost.is-pressed { color: color-mix(in srgb, var(--forest) 70%, #000); }
 .btn.is-disabled, .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 .btn--lg { padding: 0.8rem 2rem; font-size: 0.95rem; }  /* wizard CTAs: Get started / final submit */
+/* Quiet management actions that sit on a card next to the card's own CTA —
+   Edit/Remove on a ticket, Edit/Delete on a destination. min-height keeps the
+   tap target usable once the padding shrinks. */
+.btn--sm { padding: 0.4rem 0.85rem; font-size: 0.75rem; min-height: 2.25rem; }
 
 /* ==========================================================================
    Form fields — label-above pattern (chosen over the app's current floating
@@ -176,6 +180,11 @@ textarea.field__input { resize: vertical; }
 /* short field-tied note under a control (single-phrase hints go in the label;
    how-to guidance gets an .alert--info banner instead) */
 .field__hint { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+/* "— optional" tail inside a field label, so the label stays one line */
+.field__optional { font-weight: 600; color: var(--muted); }
+/* price a wizard step is asking the buyer to commit to, sat in .lf-wizard__nav */
+.lf-total__label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.lf-total { font-size: 1.35rem; font-weight: 800; color: var(--heading); line-height: 1.1; }
 /* two-up row of fields — collapses on small screens */
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 @media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
@@ -1025,3 +1034,23 @@ textarea.field__input { resize: vertical; }
   background: var(--forest); color: #fff; font-weight: 800; font-size: 0.8rem;
 }
 @media (max-width: 640px) { .lf-empty__steps { grid-template-columns: 1fr; } }
+
+/* ─── Confirmation step ───────────────────────────────────────────────────
+   The end of a wizard that bought something: success roundel, then the thing
+   itself as .lf-info-card label/value lines. Used by the ticket confirmation;
+   any later "you're all set" step should reuse it. */
+.lf-wizard__progress-bar--done { background: var(--success); }
+.lf-confirm { text-align: center; margin-bottom: 1.3rem; }
+.lf-confirm__icon { width: 3.4rem; height: 3.4rem; border-radius: 50%;
+  background: var(--success-bg); color: var(--success); display: flex;
+  align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 0.9rem; }
+.lf-confirm__title { font-size: 1.3rem; font-weight: 800; color: var(--heading); }
+
+/* label/value rows inside an .lf-info-card — the ticket's terms */
+.lf-ticket-lines { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; }
+.lf-ticket-line { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.lf-ticket-line dt { color: var(--muted); white-space: nowrap; }
+.lf-ticket-line dd { font-weight: 700; text-align: right; }
+
+/* a button that owns its row — stacked actions under a card */
+.lf-fullbtn { width: 100%; justify-content: center; margin-top: 0.6rem; }
