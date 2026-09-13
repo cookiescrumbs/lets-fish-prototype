@@ -112,3 +112,10 @@ body {
   color: var(--text);
   background: var(--bg);
 }
+
+/* An unknown element is display: inline, so a turbo-frame wrapped round a block
+   of page — the Tickets section — would add a stray line box and break margin
+   collapsing. The frame is plumbing; it should take no space of its own. */
+turbo-frame {
+  display: block;
+}

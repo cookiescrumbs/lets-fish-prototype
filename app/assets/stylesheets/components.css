@@ -70,11 +70,24 @@ ul { list-style: none; }
   border-radius: var(--radius-pill); transition: background 0.15s ease, color 0.15s ease;
 }
 /* small screens: drop the Add-your-fishery link (still in the CTA panel +
-   footer) and tighten the buttons — logo + Sign in/Sign up fit a phone */
+   footer) and tighten the buttons — logo + Sign in/Sign up fit a phone.
+   44px min touch height applies on phones only; the desktop pills keep their
+   current proportions. */
 @media (max-width: 560px) {
   .lf-nav__link { display: none; }
   .lf-nav__actions { gap: 0.6rem; }
-  .lf-nav__btn { padding: 0.45rem 1rem; }
+  .lf-nav__btn {
+    padding: 0.45rem 1rem;
+    display: inline-flex; align-items: center; min-height: 44px;
+  }
+}
+/* Narrow phones (320px): the lockup plus both buttons ran past the right edge.
+   Shrink the wordmark and the button padding rather than dropping a button. */
+@media (max-width: 380px) {
+  .lf-nav__brand .roundel  { height: 2.1rem; }
+  .lf-nav__brand .wordmark { height: 1.05rem; }
+  .lf-nav__actions { gap: 0.4rem; }
+  .lf-nav__btn { padding: 0.45rem 0.7rem; font-size: 0.8rem; }
 }
 .lf-nav__btn--outline { color: #fff; border: 1.5px solid rgba(255,255,255,0.6); }
 .lf-nav__btn--outline:hover { border-color: #fff; background: rgba(255,255,255,0.12); }
@@ -324,6 +337,8 @@ textarea.field__input { resize: vertical; }
   transition: background 0.15s ease, color 0.15s ease;
 }
 .lf-toggle__btn--active { background: var(--forest); color: #fff; box-shadow: var(--shadow-sm); }
+/* 44px min touch height on phones — the 33px pill was an awkward thumb target */
+@media (max-width: 560px) { .lf-toggle__btn { min-height: 44px; } }
 
 /* ==========================================================================
    Explore banner — contour-wave header band pairing a heading + result count
@@ -1004,6 +1019,45 @@ textarea.field__input { resize: vertical; }
 .lf-footer__bottom { border-top: 1px solid rgba(255,255,255,0.12); padding: 1.1rem 0; font-size: 0.75rem; color: rgba(255,255,255,0.45); }
 
 /* ==========================================================================
+   Tag — a small standalone label. The water card has its own (.lf-water-card__tag);
+   this is the one for anywhere else.
+   ========================================================================== */
+.lf-tag {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.74rem; font-weight: 700; padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-pill);
+  background: var(--warning-bg); color: color-mix(in srgb, var(--warning) 72%, #000);
+}
+
+/* ==========================================================================
+   Notice — a one-line bar above a populated section: something needs doing
+   before the section fully works. Deliberately quieter than .lf-empty, which
+   fills a section that has nothing in it.
+   ========================================================================== */
+.lf-notice {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6);
+  background: var(--warning-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.lf-notice__icon { flex: none; color: var(--warning); font-size: 1.1rem; }
+.lf-notice__body { flex: 1; min-width: 0; }
+.lf-notice__title { font-weight: 700; color: var(--heading); }
+.lf-notice__text { font-size: 0.88rem; line-height: 1.5;
+  /* --muted is tuned against white cards; on the warning tint it falls below AA.
+     Same colour .alert--warning uses on the same background. */
+  color: color-mix(in srgb, var(--warning) 72%, #000); }
+/* button_to wraps the button in a form, which would otherwise be the flex child
+   the sizing rules land on. Same fix as .lf-auth-card__oauth. */
+.lf-notice form.button_to { display: contents; }
+.lf-notice .btn { flex: none; }
+
+@media (max-width: 640px) {
+  .lf-notice { flex-wrap: wrap; }
+  .lf-notice .btn { width: 100%; justify-content: center; }
+}
+
+/* ==========================================================================
    Empty state — a prompt card for a list with nothing in it yet
    ========================================================================== */
 .lf-empty {
@@ -1035,22 +1089,3 @@ textarea.field__input { resize: vertical; }
 }
 @media (max-width: 640px) { .lf-empty__steps { grid-template-columns: 1fr; } }
 
-/* ─── Confirmation step ───────────────────────────────────────────────────
-   The end of a wizard that bought something: success roundel, then the thing
-   itself as .lf-info-card label/value lines. Used by the ticket confirmation;
-   any later "you're all set" step should reuse it. */
-.lf-wizard__progress-bar--done { background: var(--success); }
-.lf-confirm { text-align: center; margin-bottom: 1.3rem; }
-.lf-confirm__icon { width: 3.4rem; height: 3.4rem; border-radius: 50%;
-  background: var(--success-bg); color: var(--success); display: flex;
-  align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 0.9rem; }
-.lf-confirm__title { font-size: 1.3rem; font-weight: 800; color: var(--heading); }
-
-/* label/value rows inside an .lf-info-card — the ticket's terms */
-.lf-ticket-lines { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; }
-.lf-ticket-line { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-.lf-ticket-line dt { color: var(--muted); white-space: nowrap; }
-.lf-ticket-line dd { font-weight: 700; text-align: right; }
-
-/* a button that owns its row — stacked actions under a card */
-.lf-fullbtn { width: 100%; justify-content: center; margin-top: 0.6rem; }

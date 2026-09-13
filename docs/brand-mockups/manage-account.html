@@ -31,7 +31,9 @@
 .ma-avatar__upload { flex: 1; min-width: 0; }
 .ma-avatar__hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.35rem; }
 
-@media (max-width: 640px) { .ma-avatar { flex-direction: column; align-items: flex-start; } }
+/* stretch, not flex-start: shrink-to-fit floors the upload block at the file
+   input's min-content (332px), which spilled it out of the card */
+@media (max-width: 640px) { .ma-avatar { flex-direction: column; align-items: stretch; } }
 
 /* Preferences — checkbox with a title + description label */
 .ma-toggle { display: flex; align-items: flex-start; gap: 0.65rem; cursor: pointer; }

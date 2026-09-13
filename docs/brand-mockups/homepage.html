@@ -131,6 +131,16 @@ body.concept .hp-hero__title {
   padding: 1rem 1.15rem;
 }
 @media (max-width: 767px) { .hp-quicklinks__card { grid-template-columns: repeat(2, 1fr); } }
+/* Phones under ~400px (a 349px Android is real traffic): "Destinations" beside
+   its icon wants 171px per tile and the column can only give 129px, so a 1fr
+   track — floored at its content — pushed the card 41px off the right edge.
+   Stacking the icon over the label drops the tile to its label width and keeps
+   the compact 2×2 straddling the hero. */
+@media (max-width: 479px) {
+  .hp-quicklink { flex-direction: column; gap: 0.4rem; padding: 0.6rem 0.35rem; text-align: center; }
+  .hp-quicklink__body { align-items: center; }
+  .hp-quicklink__link { justify-content: center; }
+}
 .hp-quicklink {
   display: flex; align-items: center; gap: 0.8rem;
   padding: 0.55rem 0.75rem;
