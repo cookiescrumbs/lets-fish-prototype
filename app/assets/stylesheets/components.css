@@ -938,6 +938,48 @@ textarea.field__input { resize: vertical; }
 .lf-wizard__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding-top: 1.5rem; margin-top: 1.75rem; border-top: 1px solid var(--border); }
 .lf-wizard__nav-right { display: flex; align-items: center; gap: 0.75rem; }
+/* The confirmation step stacks its actions full-width instead of pairing them
+   left and right — there is no Back from a bought ticket. */
+.lf-wizard__nav--stacked { flex-direction: column; align-items: stretch; gap: 0.6rem; }
+
+/* ==========================================================================
+   Buy-flow payment step — the chrome around Stripe's card fields.
+   Stripe mounts an iframe inside .field__input, which has no intrinsic height
+   of its own once it holds a frame rather than an <input>, so it is given one.
+   Catalogued in the Wizard section of components.html.
+   ========================================================================== */
+/* MUST stay a block. Stripe ships its card iframe with
+   `width: 1px !important; min-width: 100% !important` — the min-width is what
+   stretches it to the container, and that only resolves while the container is
+   a block box. Making this a flex container leaves the iframe 1px wide: it
+   renders, it looks right at a glance because the box around it is full width,
+   and nobody can type a card number into it. Measured 1px vs 298px on the same
+   element with the only difference being `display: flex`. */
+.field__input:has(iframe) { min-height: 2.75rem; }
+/* Stripe's own words for a decline or an expired card. Empty until there is
+   something to say, so it takes no space on arrival. */
+.field__error { color: color-mix(in srgb, var(--error) 80%, #000); font-size: 0.82rem; margin-top: 0.5rem; }
+.field__error:empty { display: none; }
+.tk-secure { display: flex; align-items: center; gap: 0.4rem; font-size: 0.74rem;
+  color: var(--muted); margin-top: 0.9rem; }
+
+/* Confirmation step — the success tick and the summary lines under it */
+.lf-success-mark { width: 3.4rem; height: 3.4rem; border-radius: 50%;
+  background: var(--success-bg); color: var(--success); font-size: 1.6rem;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem; }
+/* The same mark when the charge didn't clear. A different icon as well as a
+   different colour — the two states must be told apart without relying on hue. */
+.lf-pending-mark { width: 3.4rem; height: 3.4rem; border-radius: 50%;
+  background: var(--warning-bg); color: color-mix(in srgb, var(--warning) 72%, #000);
+  font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem; }
+.lf-wizard__lead { font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+  margin-top: 0.5rem; }
+.tk-line { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 0.85rem; gap: 1rem; }
+.tk-line + .tk-line { margin-top: 0.5rem; }
+.tk-line__label { color: var(--muted); }
+.tk-line__value { font-weight: 700; text-align: right; }
 
 /* Landing step — lead + icon feature list above the Get-started CTA */
 .lf-wizard-landing__lead { font-size: 1rem; color: var(--text); line-height: 1.65; max-width: 54ch; margin-bottom: 2rem; }
