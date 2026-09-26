@@ -980,6 +980,13 @@ textarea.field__input { resize: vertical; }
 .tk-line + .tk-line { margin-top: 0.5rem; }
 .tk-line__label { color: var(--muted); }
 .tk-line__value { font-weight: 700; text-align: right; }
+/* Payment step — what the Pay button's figure is made of: ticket, booking fee,
+   total. Total is the one bold row, ruled off from the two above it. */
+.tk-price-lines { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.tk-line--total { margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px solid var(--border);
+  font-size: 0.95rem; }
+.tk-line--total .tk-line__label { color: var(--heading); font-weight: 700; }
+.tk-line--total .tk-line__value { color: var(--heading); font-weight: 800; }
 
 /* Landing step — lead + icon feature list above the Get-started CTA */
 .lf-wizard-landing__lead { font-size: 1rem; color: var(--text); line-height: 1.65; max-width: 54ch; margin-bottom: 2rem; }
