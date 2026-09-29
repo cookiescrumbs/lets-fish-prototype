@@ -183,6 +183,23 @@ textarea.field__input { resize: vertical; }
 .field__input:disabled, .field--disabled .field__input { background: var(--bg-alt); color: var(--muted); cursor: not-allowed; }
 .field__input[readonly] { background: var(--bg-alt); color: var(--muted); cursor: default; }
 .field__input[readonly]:focus { border-color: var(--border); box-shadow: none; }
+/* date field — own calendar icon so every browser shows one (desktop Chrome's
+   native indicator is hidden but still clickable underneath ours), and a
+   placeholder for iOS, which draws an empty date input as a blank box. The
+   field is required, so :invalid means "no date picked yet" — unless it is
+   :out-of-range, a past day picked on an iPhone, whose picker ignores min.
+   :has() rather than a sibling selector, because Rails wraps an errored input
+   in .field_with_errors. */
+.field__date { position: relative; display: block; }
+.field__date .field__input { display: block; width: 100%; min-width: 0; -webkit-appearance: none; appearance: none; padding-right: 2.4rem; min-height: 2.6rem; }
+.field__date .field__input::-webkit-calendar-picker-indicator { position: absolute; right: 0; top: 0; width: 2.6rem; height: 100%; opacity: 0; cursor: pointer; }
+.field__date .field__input::-webkit-date-and-time-value { text-align: left; }
+.field__date-icon { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.field__date-placeholder { display: none; position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-ui); font-size: 0.9rem; color: var(--muted); pointer-events: none; }
+@supports (-webkit-touch-callout: none) {
+  .field__date:has(.field__input:invalid:not(:out-of-range)) .field__date-placeholder { display: block; }
+}
 .field__msg { font-size: 0.74rem; display: flex; align-items: center; gap: 0.35rem; }
 .field--error .field__msg   { color: color-mix(in srgb, var(--error) 78%, #000); }
 .field--success .field__msg { color: color-mix(in srgb, var(--success) 72%, #000); }

@@ -866,13 +866,15 @@ section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
   <!-- ───────────────── Alerts ───────────────── -->
   <section>
     <h2 class="cs-section__title">Alerts</h2>
-    <p class="cs-section__sub">Inline banners for feedback and system messages. <code>--info</code> without the bold title doubles as the <strong>form guidance banner</strong> (the app's blue <code>.wizard__ai-hint</code>, brand-toned) — lead a form card or field with it when explaining how to use the thing (map instructions, season-override semantics). Short field-tied notes stay <code>.field__hint</code>.</p>
+    <p class="cs-section__sub">Inline banners for feedback and system messages. <code>--info</code> without the bold title doubles as the <strong>form guidance banner</strong> (the app's blue <code>.wizard__ai-hint</code>, brand-toned) — lead a form card or field with it when explaining how to use the thing (map instructions, season-override semantics). Short field-tied notes stay <code>.field__hint</code>. The last specimen is the <strong>form error summary</strong>: shown above a form only when two or more fields are wrong, each field carrying its own <code>.field--error</code> message (see Fields). See <a href="ticket-validation.html">ticket-validation.html</a>.</p>
     <div class="cs-alerts">
       <div class="alert alert--error"><i class="fa-solid fa-circle-exclamation"></i><div><span class="alert__title">Couldn't save your trip.</span> Check your connection and try again.</div></div>
       <div class="alert alert--success"><i class="fa-solid fa-circle-check"></i><div><span class="alert__title">Trip saved.</span> You'll find it under My Trips.</div></div>
       <div class="alert alert--warning"><i class="fa-solid fa-triangle-exclamation"></i><div><span class="alert__title">Permit required.</span> This water needs a day ticket before you fish.</div></div>
       <div class="alert alert--info"><i class="fa-solid fa-circle-info"></i><div><span class="alert__title">Heads up.</span> Access routes may be boggy after rain.</div></div>
       <div class="alert alert--info"><i class="fa-solid fa-route"></i><div>Click on the map to plot your walking route to the water. Drag markers to adjust. We'll calculate the distance automatically.</div></div>
+      <!-- Form error summary (shared/_field_error_summary): only when 2+ fields are wrong; each field says its own reason via .field--error. -->
+      <div class="alert alert--error"><i class="fa-solid fa-circle-exclamation"></i><div><span class="alert__title">2 things to fix</span> before you can continue.</div></div>
     </div>
   </section>
 
