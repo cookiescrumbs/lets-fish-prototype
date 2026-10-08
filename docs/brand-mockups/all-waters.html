@@ -38,8 +38,9 @@
 /* --------------------------------------------------------------------------
    Page shell — map fills the viewport under the nav; everything else floats.
    -------------------------------------------------------------------------- */
-.aw-page { position: relative; height: calc(100vh - var(--nav-h)); min-height: 560px; overflow: hidden; background: var(--bg-alt); }
-.aw-map  { position: absolute; inset: 0; z-index: 0; }
+.aw-page  { position: relative; display: flex; flex-direction: column; height: calc(100vh - var(--nav-h)); min-height: 560px; overflow: hidden; background: var(--bg-alt); }
+.aw-stage { position: relative; flex: 1; min-height: 0; }   /* the map and everything floating over it */
+.aw-map   { position: absolute; inset: 0; z-index: 0; }
 .aw-map .leaflet-control-attribution { font-family: var(--font-ui); font-size: 0.7rem; color: var(--muted); background: rgba(255,255,255,0.85); }
 .aw-map .leaflet-control-attribution a { color: var(--forest); }
 
@@ -107,13 +108,16 @@
    "All" opens the full filter sheet (not mocked); Water type and Species are
    the only two facets for now.
    -------------------------------------------------------------------------- */
-.aw-filters { position: absolute; z-index: 500; top: 1.25rem; left: calc(380px + 2.5rem); display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.aw-topbar { position: absolute; z-index: 500; top: 1.25rem; left: calc(380px + 2.5rem); right: 1.25rem; pointer-events: none; }
+.aw-topbar > * { pointer-events: auto; }
+.aw-topbar__search { display: none; }   /* mobile only — on desktop the search lives in the panel */
+.aw-filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .aw-filter { position: relative; }
 .aw-filter__btn {
   display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
   min-height: 44px; padding: 0 1.1rem; border-radius: var(--radius-pill);
   background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-  font: inherit; font-size: 0.92rem; font-weight: 600; color: var(--text);
+  font: inherit; font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .aw-filter__btn:hover { border-color: var(--forest); }
@@ -141,12 +145,16 @@
 .aw-filter__option .n { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
 .aw-filter__option--on { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); background: var(--forest-tint); color: var(--forest); }
 
+/* sheet-only chrome — handle, title row, Clear / Apply. Desktop menus hide it. */
+.aw-filter__sheet-head, .aw-filter__sheet-foot, .aw-filter__handle { display: none; }
+.aw-filter__backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }
+
 /* picked options also sit in the bar as removable chips, after the facet pills */
 .aw-chip {
   display: inline-flex; align-items: center; gap: 0.6rem; cursor: pointer;
   min-height: 44px; padding: 0 0.9rem 0 1.1rem; border-radius: var(--radius-pill);
   background: #fff; color: var(--forest); border: 1px solid var(--forest); box-shadow: inset 0 0 0 1px var(--forest), var(--shadow-sm);
-  font: inherit; font-size: 0.92rem; font-weight: 700;
+  font: inherit; font-size: 0.92rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
 }
 .aw-chip i { font-size: 0.85rem; color: var(--muted); }
 .aw-chip:hover i { color: var(--forest); }
@@ -187,28 +195,97 @@
   display: inline-flex; align-items: center; justify-content: center;
 }
 .aw-control:hover { background: var(--forest-tint); }
+.aw-control--quick-layer { display: none; width: 56px; height: 56px; border-radius: var(--radius-md); padding: 0; overflow: hidden; border: 2px solid #fff; }
+.aw-control--quick-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Map / List switch — mobile only. The AllTrails pill: one floating button
+   at the foot of the screen that flips between the two full-screen views. */
+.aw-view-toggle {
+  display: none; position: absolute; z-index: 600; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+  align-items: center; gap: 0.6rem; min-height: 48px; padding: 0 1.4rem; border: none; cursor: pointer;
+  border-radius: var(--radius-pill); background: var(--forest); color: #fff; box-shadow: var(--shadow-lg);
+  font: inherit; font-size: 1rem; font-weight: 700;
+}
+.aw-view-toggle [data-when="list"] { display: none; }
+
+/* Mobile selection card — tap a pin and the water's card docks to the foot of
+   the map (no hover popup on touch). The List pill rides up above it. */
+.aw-mobile-card { display: none; position: absolute; z-index: 550; left: 0.75rem; right: 0.75rem; bottom: 0.75rem; }
+.aw-mobile-card .lf-water-selection-card { width: auto; }
+.aw-mobile-card .lf-water-selection-card__link { padding: 0.75rem; gap: 0.9rem; }
+.aw-mobile-card .lf-water-selection-card__img { width: 96px; height: 96px; }
+.aw-mobile-card .lf-water-selection-card__name { font-size: 1.05rem; white-space: normal; }
+.aw-mobile-card .lf-water-selection-card__loc { font-size: 0.85rem; color: var(--muted); }
+.aw-mobile-card .lf-water-selection-card__type,
+.aw-mobile-card .lf-water-selection-card__species { font-size: 0.82rem; }
+.aw-mobile-card .lf-water-selection-card__close { width: 2rem; height: 2rem; font-size: 0.9rem; top: 0.6rem; right: 0.6rem; }
+.aw-page--list .aw-view-toggle [data-when="map"]  { display: none; }
+.aw-page--list .aw-view-toggle [data-when="list"] { display: inline-flex; align-items: center; gap: 0.6rem; }
 
 /* --------------------------------------------------------------------------
    Leaflet overrides — strip the default popup chrome so the DS selection
    card is the whole popup; drop the default cluster styling.
    -------------------------------------------------------------------------- */
 .aw-pin-wrap, .aw-cluster-wrap { background: none; border: none; }
+.lf-water-selection-card__loc { font-size: 0.74rem; color: var(--muted); }   /* location line — candidate for components.css on port */
 .aw-hover-popup .leaflet-popup-content-wrapper { background: none; box-shadow: none; padding: 0; border-radius: 0; }
 .aw-hover-popup .leaflet-popup-content { margin: 0; line-height: inherit; width: auto !important; }
 .aw-hover-popup .leaflet-popup-tip-container { display: none; }
 .aw-hover-popup .lf-water-selection-card__close { display: none; }  /* hover card: moving away dismisses it */
 
 /* --------------------------------------------------------------------------
-   Mobile — panel becomes a bottom sheet, filters shift to the top-left.
+   Mobile — the AllTrails phone layout. Search and the filter row sit in a
+   static bar under the nav; below it, EITHER the map OR the list fills the
+   screen, and the floating "List" / "Map" pill flips between them. Hover
+   doesn't exist here, so tapping a pin opens the selection card.
    -------------------------------------------------------------------------- */
 @media (max-width: 860px) {
-  .aw-panel { left: 0.75rem; right: 0.75rem; width: auto; top: auto; bottom: 0.75rem; height: 46vh; }
-  .aw-panel--collapsed { height: auto; }
-  .aw-panel--collapsed .aw-panel__collapse i { transform: rotate(0); }
-  .aw-panel:not(.aw-panel--collapsed) .aw-panel__collapse i { transform: rotate(180deg); }
-  .aw-filters { left: 0.75rem; top: 0.75rem; right: 5.5rem; }
-  .aw-layers { display: none; }
+  .aw-page { min-height: 0; }
+  .aw-topbar { position: static; padding: 0.75rem 0 0.6rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .aw-topbar__search { display: block; padding: 0 1rem 0.6rem; }
+  .aw-filters { flex-wrap: nowrap; overflow-x: auto; padding: 0.15rem 1rem; gap: 0.5rem; scrollbar-width: none; }
+  .aw-filters::-webkit-scrollbar { display: none; }
+  .aw-filter { flex-shrink: 0; }
+  .aw-filter__btn { min-height: 42px; box-shadow: none; }
+  .aw-chip { min-height: 42px; box-shadow: none; }
+  /* the tile menu becomes a bottom sheet, clear of the scrolling pill row */
+  .aw-filter__menu { position: fixed; z-index: 1000; top: auto; left: 0; right: 0; bottom: 0; width: auto; max-width: none; max-height: 88vh;
+    display: none; flex-direction: column; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: none;
+    padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
+  .aw-filter--open .aw-filter__menu { display: flex; }
+  .aw-filter--open ~ .aw-filter__backdrop, .aw-filters:has(.aw-filter--open) ~ .aw-filter__backdrop { display: block; }
+  .aw-filter__handle { display: block; width: 44px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 1.5rem; }
+  .aw-filter__sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .aw-filter__sheet-title { font-size: 1.75rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
+  .aw-filter__sheet-close { width: 2.75rem; height: 2.75rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
+  .aw-filter__grid { overflow-y: auto; gap: 0.75rem; }
+  .aw-filter__option { padding: 0.95rem 1.1rem; font-size: 1.05rem; }
+  .aw-filter__option .n { display: none; }
+  .aw-filter__sheet-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+  .aw-filter__clear, .aw-filter__apply { min-height: 52px; border-radius: var(--radius-pill); font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .aw-filter__clear { background: #fff; border: 2px solid var(--border); color: var(--forest); }
+  .aw-filter__clear:disabled { color: var(--muted); border-color: var(--border); opacity: 0.6; cursor: default; }
+  .aw-filter__apply { background: var(--forest); color: #fff; border: none; }
+
+  /* panel is the full-screen list view */
+  .aw-panel { inset: 0; width: auto; border: none; border-radius: 0; box-shadow: none; background: var(--bg); display: none; }
+  .aw-panel__head, .aw-panel__search { display: none; }
+  .aw-panel__count-row { padding: 0.9rem 1rem; }
+  .aw-panel__list { padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom)); }
+  .aw-card__nav { display: none; }   /* swipe on touch; dots stay */
+
+  .aw-page--list .aw-panel { display: flex; }
+  .aw-page--list .aw-map, .aw-page--list .aw-rail { display: none; }
+
+  /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
   .aw-rail { top: 0.75rem; right: 0.75rem; }
+  .aw-layers, #aw-zoom-in, #aw-zoom-out { display: none; }
+  .aw-control--quick-layer { display: block; }
+
+  .aw-view-toggle { display: inline-flex; bottom: 2.25rem; }
+  .aw-page--card .aw-mobile-card { display: block; }
+  .aw-page--card .aw-view-toggle { bottom: calc(0.75rem + 122px + 1rem); }
+  .aw-page--list .aw-mobile-card { display: none; }
 }
 </style>
 </head>
@@ -229,10 +306,78 @@
   </div>
 </nav>
 
-<main class="aw-page">
+<main class="aw-page" id="aw-page">
+
+  <!-- ──────────────── Top bar: filter pills (desktop: floating over the map; mobile: static row + search) ──────────────── -->
+  <div class="aw-topbar">
+    <div class="aw-topbar__search">
+      <div class="lf-search-bar">
+        <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+        <input type="text" class="lf-search-bar__input" data-search placeholder="Search by name, location or species...">
+      </div>
+    </div>
+  <!-- ──────────────── Filter pills ──────────────── -->
+    <div class="aw-filters id="aw-filters">
+    <div class="aw-filter">
+      <button type="button" class="aw-filter__btn"><i class="fa-solid fa-sliders"></i> All</button>
+    </div>
+
+    <div class="aw-filter" data-facet="type">
+      <button type="button" class="aw-filter__btn" data-toggle>Water type <i class="fa-solid fa-chevron-down caret"></i></button>
+      <div class="aw-filter__menu">
+        <div class="aw-filter__handle"></div>
+        <div class="aw-filter__sheet-head">
+          <h2 class="aw-filter__sheet-title">Water type</h2>
+          <button type="button" class="aw-filter__sheet-close" data-close><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="aw-filter__grid">
+        <button type="button" class="aw-filter__option" data-value="Lake"><i class="fa-solid fa-water"></i> Lakes <span class="n" data-n="Lake"></span></button>
+        <button type="button" class="aw-filter__option" data-value="River"><i class="fa-solid fa-stream"></i> Rivers <span class="n" data-n="River"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Coastal"><i class="fa-solid fa-anchor"></i> Coastal <span class="n" data-n="Coastal"></span></button>
+      </div>
+        <div class="aw-filter__sheet-foot">
+          <button type="button" class="aw-filter__clear" data-clear disabled>Clear</button>
+          <button type="button" class="aw-filter__apply" data-close>Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="aw-filter" data-facet="species">
+      <button type="button" class="aw-filter__btn" data-toggle>Species <i class="fa-solid fa-chevron-down caret"></i></button>
+      <div class="aw-filter__menu">
+        <div class="aw-filter__handle"></div>
+        <div class="aw-filter__sheet-head">
+          <h2 class="aw-filter__sheet-title">Species</h2>
+          <button type="button" class="aw-filter__sheet-close" data-close><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="aw-filter__grid">
+        <button type="button" class="aw-filter__option" data-value="Brown trout"><i class="fa-solid fa-fish"></i> Brown trout <span class="n" data-n="Brown trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Salmon"><i class="fa-solid fa-fish"></i> Salmon <span class="n" data-n="Salmon"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Sea trout"><i class="fa-solid fa-fish"></i> Sea trout <span class="n" data-n="Sea trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Rainbow trout"><i class="fa-solid fa-fish"></i> Rainbow trout <span class="n" data-n="Rainbow trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Pike"><i class="fa-solid fa-fish"></i> Pike <span class="n" data-n="Pike"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Perch"><i class="fa-solid fa-fish"></i> Perch <span class="n" data-n="Perch"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Mackerel"><i class="fa-solid fa-fish"></i> Mackerel <span class="n" data-n="Mackerel"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Pollack"><i class="fa-solid fa-fish"></i> Pollack <span class="n" data-n="Pollack"></span></button>
+      </div>
+        <div class="aw-filter__sheet-foot">
+          <button type="button" class="aw-filter__clear" data-clear disabled>Clear</button>
+          <button type="button" class="aw-filter__apply" data-close>Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- picked options, as removable chips -->
+    <div class="aw-chips" id="aw-chips" style="display: contents"></div>
+    </div>
+    <div class="aw-filter__backdrop" data-backdrop></div>
+  </div>
+
+  <div class="aw-stage">
 
   <!-- ──────────────── Map (full-bleed) ──────────────── -->
   <div id="aw-map" class="aw-map"></div>
+
 
   <!-- ──────────────── Explore panel ──────────────── -->
   <aside class="aw-panel" id="aw-panel">
@@ -243,7 +388,7 @@
     <div class="aw-panel__search">
       <div class="lf-search-bar">
         <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
-        <input type="text" class="lf-search-bar__input" id="aw-search" placeholder="Search by name, location or species...">
+        <input type="text" class="lf-search-bar__input" data-search placeholder="Search by name, location or species...">
       </div>
     </div>
     <div class="aw-panel__count-row">
@@ -252,39 +397,6 @@
     </div>
     <div class="aw-panel__list" id="aw-list"></div>
   </aside>
-
-  <!-- ──────────────── Filter pills ──────────────── -->
-  <div class="aw-filters" id="aw-filters">
-    <div class="aw-filter">
-      <button type="button" class="aw-filter__btn"><i class="fa-solid fa-sliders"></i> All</button>
-    </div>
-
-    <div class="aw-filter" data-facet="type">
-      <button type="button" class="aw-filter__btn" data-toggle>Water type <i class="fa-solid fa-chevron-down caret"></i></button>
-      <div class="aw-filter__menu"><div class="aw-filter__grid">
-        <button type="button" class="aw-filter__option" data-value="Lake"><i class="fa-solid fa-water"></i> Lakes <span class="n" data-n="Lake"></span></button>
-        <button type="button" class="aw-filter__option" data-value="River"><i class="fa-solid fa-stream"></i> Rivers <span class="n" data-n="River"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Coastal"><i class="fa-solid fa-anchor"></i> Coastal <span class="n" data-n="Coastal"></span></button>
-      </div></div>
-    </div>
-
-    <div class="aw-filter" data-facet="species">
-      <button type="button" class="aw-filter__btn" data-toggle>Species <i class="fa-solid fa-chevron-down caret"></i></button>
-      <div class="aw-filter__menu"><div class="aw-filter__grid">
-        <button type="button" class="aw-filter__option" data-value="Brown trout"><i class="fa-solid fa-fish"></i> Brown trout <span class="n" data-n="Brown trout"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Salmon"><i class="fa-solid fa-fish"></i> Salmon <span class="n" data-n="Salmon"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Sea trout"><i class="fa-solid fa-fish"></i> Sea trout <span class="n" data-n="Sea trout"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Rainbow trout"><i class="fa-solid fa-fish"></i> Rainbow trout <span class="n" data-n="Rainbow trout"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Pike"><i class="fa-solid fa-fish"></i> Pike <span class="n" data-n="Pike"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Perch"><i class="fa-solid fa-fish"></i> Perch <span class="n" data-n="Perch"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Mackerel"><i class="fa-solid fa-fish"></i> Mackerel <span class="n" data-n="Mackerel"></span></button>
-        <button type="button" class="aw-filter__option" data-value="Pollack"><i class="fa-solid fa-fish"></i> Pollack <span class="n" data-n="Pollack"></span></button>
-      </div></div>
-    </div>
-
-    <!-- picked options, as removable chips -->
-    <div class="aw-chips" id="aw-chips" style="display: contents"></div>
-  </div>
 
   <!-- ──────────────── Right rail: map layers + zoom / locate ──────────────── -->
   <div class="aw-rail">
@@ -311,8 +423,20 @@
     <button type="button" class="aw-control" id="aw-zoom-in" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
     <button type="button" class="aw-control" id="aw-zoom-out" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
     <button type="button" class="aw-control" title="Near me"><i class="fa-solid fa-location-arrow"></i></button>
+    <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Satellite"><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/11/634/1001" alt=""></button>
   </div>
   </div>
+
+  <!-- ──────────────── Docked selection card (mobile) ──────────────── -->
+  <div class="aw-mobile-card" id="aw-mobile-card"></div>
+
+  <!-- ──────────────── Map / List switch (mobile) ──────────────── -->
+  <button type="button" class="aw-view-toggle" id="aw-view-toggle">
+    <span data-when="map"><i class="fa-solid fa-list"></i> List</span>
+    <span data-when="list"><i class="fa-solid fa-map"></i> Map</span>
+  </button>
+
+  </div><!-- /.aw-stage -->
 
 </main>
 
@@ -400,15 +524,19 @@ WATERS.forEach((w, i) => {
   w.id = i
   w.marker = L.marker([w.lat, w.lng], { icon: pinIcon(false) })
   w.marker.on('mouseover', () => select(w))
-  w.marker.on('mouseout',  () => deselect())
+  w.marker.on('mouseout',  () => { if (!isMobile()) deselect() })   // touch: the docked card stays until dismissed
+  w.marker.on('click',     () => select(w))   // touch: tap a pin to open its card
 })
 
+const page = document.getElementById('aw-page')
+const isMobile = () => window.matchMedia('(max-width: 860px)').matches
 const selectionCard = (w) => `
   <div class="lf-water-selection-card">
     <a class="lf-water-selection-card__link" href="waters-show.html">
-      <img class="lf-water-selection-card__img" src="${img(w.id, 112, 112)}" alt="">
+      <img class="lf-water-selection-card__img" src="${img(w.id, 192, 192)}" alt="">
       <div class="lf-water-selection-card__info">
         <span class="lf-water-selection-card__name">${w.name}</span>
+        <span class="lf-water-selection-card__loc">${w.loc}</span>
         <span class="lf-water-selection-card__type"><i class="fa-solid ${TYPE_ICON[w.type]}"></i> ${w.type}</span>
         <span class="lf-water-selection-card__species"><i class="fa fa-fish"></i> ${w.species.join(', ')}</span>
       </div>
@@ -423,6 +551,13 @@ function select(w) {
   deselect()
   selected = w
   w.marker.setIcon(pinIcon(true))
+  if (isMobile()) {
+    const dock = document.getElementById('aw-mobile-card')
+    dock.innerHTML = selectionCard(w)
+    dock.querySelector('.lf-water-selection-card__close').addEventListener('click', deselect)
+    page.classList.add('aw-page--card')
+    return
+  }
   hoverPopup = L.popup({ className: 'aw-hover-popup', closeButton: false, autoPan: false, offset: [0, -22] })
     .setLatLng([w.lat, w.lng]).setContent(selectionCard(w)).openOn(map)
   document.querySelector(`.aw-card[data-id="${w.id}"]`)?.classList.add('aw-card--active')
@@ -432,6 +567,7 @@ function deselect() {
   selected.marker.setIcon(pinIcon(false))
   document.querySelector(`.aw-card[data-id="${selected.id}"]`)?.classList.remove('aw-card--active')
   if (hoverPopup) { map.closePopup(hoverPopup); hoverPopup = null }
+  page.classList.remove('aw-page--card')
   selected = null
 }
 
@@ -460,8 +596,11 @@ document.querySelectorAll('.aw-filter[data-facet]').forEach(el => {
     filters[facet].has(v) ? filters[facet].delete(v) : filters[facet].add(v)
     applyFilters()
   }))
+  el.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeMenus))
+  el.querySelector('[data-clear]').addEventListener('click', () => { filters[facet].clear(); applyFilters() })
   el.querySelector('.aw-filter__menu').addEventListener('click', e => e.stopPropagation())
 })
+document.querySelector('[data-backdrop]').addEventListener('click', closeMenus)
 document.addEventListener('click', closeMenus)
 function closeMenus() { document.querySelectorAll('.aw-filter--open').forEach(el => el.classList.remove('aw-filter--open')) }
 
@@ -488,6 +627,7 @@ function applyFilters() {
     const facet = el.dataset.facet
     el.classList.toggle('aw-filter--active', filters[facet].size > 0)
     el.querySelectorAll('.aw-filter__option').forEach(b => b.classList.toggle('aw-filter__option--on', filters[facet].has(b.dataset.value)))
+    el.querySelector('[data-clear]').disabled = filters[facet].size === 0
     el.querySelectorAll('[data-n]').forEach(n => {
       const v = n.dataset.n
       const pool = WATERS.filter(w => matchesSearch(w) && (facet === 'type' ? matchesSpecies(w) : matchesType(w)))
@@ -498,7 +638,11 @@ function applyFilters() {
   renderList()
 }
 
-document.getElementById('aw-search').addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); applyFilters() })
+document.querySelectorAll('[data-search]').forEach(input => input.addEventListener('input', (e) => {
+  query = e.target.value.trim().toLowerCase()
+  document.querySelectorAll('[data-search]').forEach(o => { if (o !== input) o.value = e.target.value })
+  applyFilters()
+}))
 
 // ---------------------------------------------------------------------------
 // List — what's in view, in the panel. Pan or zoom and it re-renders.
@@ -558,11 +702,20 @@ list.addEventListener('click', (e) => {
 })
 
 map.on('moveend', renderList)
+map.on('click', () => { if (isMobile()) deselect() })
 
 // ---------------------------------------------------------------------------
 // Chrome — collapse, zoom, layers.
 // ---------------------------------------------------------------------------
 document.getElementById('aw-collapse').addEventListener('click', () => document.getElementById('aw-panel').classList.toggle('aw-panel--collapsed'))
+document.getElementById('aw-view-toggle').addEventListener('click', () => {
+  page.classList.toggle('aw-page--list')
+  if (!page.classList.contains('aw-page--list')) map.invalidateSize()
+})
+document.getElementById('aw-quick-layer').addEventListener('click', () => {
+  const next = activeLayer === LAYERS.satellite ? 'topo' : 'satellite'
+  document.querySelector(`.aw-layer[data-layer="${next}"]`).click()
+})
 document.getElementById('aw-zoom-in').addEventListener('click', () => map.zoomIn())
 document.getElementById('aw-zoom-out').addEventListener('click', () => map.zoomOut())
 document.getElementById('aw-layers').addEventListener('click', (e) => {
