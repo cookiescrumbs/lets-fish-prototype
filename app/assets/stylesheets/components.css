@@ -187,9 +187,7 @@ textarea.field__input { resize: vertical; }
    native indicator is hidden but still clickable underneath ours), and a
    placeholder for iOS, which draws an empty date input as a blank box. The
    field is required, so :invalid means "no date picked yet" — unless it is
-   :out-of-range, a past day picked on an iPhone, whose picker ignores min.
-   :has() rather than a sibling selector, because Rails wraps an errored input
-   in .field_with_errors. */
+   :out-of-range, a past day picked on an iPhone, whose picker ignores min. */
 .field__date { position: relative; display: block; }
 .field__date .field__input { display: block; width: 100%; min-width: 0; -webkit-appearance: none; appearance: none; padding-right: 2.4rem; min-height: 2.6rem; }
 .field__date .field__input::-webkit-calendar-picker-indicator { position: absolute; right: 0; top: 0; width: 2.6rem; height: 100%; opacity: 0; cursor: pointer; }
@@ -583,6 +581,10 @@ textarea.field__input { resize: vertical; }
 .alert { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.85rem 1.1rem; border-radius: 0.7rem; border-left: 4px solid; font-size: 0.85rem; line-height: 1.5; }
 .alert i { margin-top: 0.15rem; }
 .alert__title { font-weight: 700; }
+/* .alert's display:flex would otherwise beat the hidden attribute's own
+   display:none, and a controller-filled alert (the card step's decline) is
+   hidden that way until it has something to say. */
+.alert[hidden] { display: none; }
 .alert--error   { background: var(--error-bg);   border-color: var(--error);   color: color-mix(in srgb, var(--error) 80%, #000); }
 .alert--success { background: var(--success-bg); border-color: var(--success); color: color-mix(in srgb, var(--success) 70%, #000); }
 .alert--warning { background: var(--warning-bg); border-color: var(--warning); color: color-mix(in srgb, var(--warning) 72%, #000); }
@@ -977,6 +979,8 @@ textarea.field__input { resize: vertical; }
    something to say, so it takes no space on arrival. */
 .field__error { color: color-mix(in srgb, var(--error) 80%, #000); font-size: 0.82rem; margin-top: 0.5rem; }
 .field__error:empty { display: none; }
+/* The card step's decline box, clear of the card fields above it */
+.lf-wizard__fields + .alert { margin-top: 1rem; }
 .tk-secure { display: flex; align-items: center; gap: 0.4rem; font-size: 0.74rem;
   color: var(--muted); margin-top: 0.9rem; }
 

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Fish — All waters</title>
+
+<link rel="icon" href="../../public/img/brand/lf-icon-white.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/tokens.css">
+<link rel="stylesheet" href="../../app/assets/stylesheets/components.css">
+
+<style>
+/* ==========================================================================
+   All waters mockup — the homepage's "All Waters" quick-link, currently a
+   greyed "Coming soon" tile. Modelled on AllTrails' Explore page: a
+   full-bleed map under the solid forest header, a floating "Explore waters"
+   panel on the left listing every water in view, filter pills over the map
+   (Water type, Species — nothing else for now), and a Map layers switcher
+   top-right.
+
+   The panel and the map are one thing: pan the map and the list re-filters
+   to what's in view; hover a water in the list and its pin goes forest and
+   the compact selection card (.lf-water-selection-card) pops up on the map.
+   No "Planning a trip?" box — that's AllTrails' upsell, not ours.
+
+   Map is live Leaflet + OpenTopoMap (CDN) so the interaction can be felt;
+   pins and clusters use the DS classes (.lf-map-pin, .lf-map-cluster). The
+   water list reuses .lf-water-card with an image carousel bolted on. Only the
+   page shell (.aw-*) is new CSS.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Page shell — map fills the viewport under the nav; everything else floats.
+   -------------------------------------------------------------------------- */
+.aw-page { position: relative; height: calc(100vh - var(--nav-h)); min-height: 560px; overflow: hidden; background: var(--bg-alt); }
+.aw-map  { position: absolute; inset: 0; z-index: 0; }
+.aw-map .leaflet-control-attribution { font-family: var(--font-ui); font-size: 0.7rem; color: var(--muted); background: rgba(255,255,255,0.85); }
+.aw-map .leaflet-control-attribution a { color: var(--forest); }
+
+/* --------------------------------------------------------------------------
+   Explore panel — floating sheet on the left. Header + search + count row are
+   fixed; the water list scrolls.
+   -------------------------------------------------------------------------- */
+.aw-panel {
+  position: absolute; z-index: 500; top: 1.25rem; left: 1.25rem; bottom: 1.25rem;
+  width: 380px; display: flex; flex-direction: column;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); overflow: hidden;
+  transition: height 0.2s ease;
+}
+.aw-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.25rem 0.75rem; }
+.aw-panel__title { font-size: 1.45rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
+.aw-panel__collapse {
+  width: 2.5rem; height: 2.5rem; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--chip-bg); color: var(--forest); font-size: 0.9rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.15s ease;
+}
+.aw-panel__collapse:hover { background: var(--stone); }
+.aw-panel__collapse i { transition: transform 0.2s ease; }
+.aw-panel__search { padding: 0 1.25rem 0.75rem; }
+.aw-panel__count-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1.25rem 0.9rem; border-bottom: 1px solid var(--border); }
+.aw-panel__count { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.aw-panel__sort { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: none; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--forest); }
+.aw-panel__sort i { font-size: 0.7rem; }
+.aw-panel__list { flex: 1; overflow-y: auto; padding: 1rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+.aw-panel__empty { padding: 2rem 1.25rem; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+/* collapsed: just the head row, pinned to the top */
+.aw-panel--collapsed { bottom: auto; }
+.aw-panel--collapsed .aw-panel__search,
+.aw-panel--collapsed .aw-panel__count-row,
+.aw-panel--collapsed .aw-panel__list { display: none; }
+.aw-panel--collapsed .aw-panel__head { padding-bottom: 1.25rem; }
+.aw-panel--collapsed .aw-panel__collapse i { transform: rotate(180deg); }
+
+/* --------------------------------------------------------------------------
+   Water card in the panel — .lf-water-card single-column, with a hover state
+   that mirrors the map (the hovered water's pin goes forest) and a 3-image
+   carousel on the thumbnail.
+   -------------------------------------------------------------------------- */
+.aw-card { flex-shrink: 0; cursor: pointer; }
+.aw-card--active { border-color: var(--forest); box-shadow: 0 0 0 2px var(--forest), var(--shadow-md); }
+.aw-card .lf-water-card__image-wrap { aspect-ratio: 16 / 10; }
+.aw-card__nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 2.2rem; height: 2.2rem; border: none; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,0.9); color: var(--forest); font-size: 0.85rem;
+  display: inline-flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);
+  opacity: 0; transition: opacity 0.15s ease;
+}
+.aw-card:hover .aw-card__nav { opacity: 1; }
+.aw-card__nav--prev { left: 0.6rem; }
+.aw-card__nav--next { right: 0.6rem; }
+.aw-card__dots { position: absolute; bottom: 0.6rem; left: 0; right: 0; z-index: 2; display: flex; justify-content: center; gap: 0.3rem; }
+.aw-card__dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.55); }
+.aw-card__dot--on { background: #fff; }
+
+/* --------------------------------------------------------------------------
+   Filter bar — floating pills over the map, to the right of the panel.
+   "All" opens the full filter sheet (not mocked); Water type and Species are
+   the only two facets for now.
+   -------------------------------------------------------------------------- */
+.aw-filters { position: absolute; z-index: 500; top: 1.25rem; left: calc(380px + 2.5rem); display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.aw-filter { position: relative; }
+.aw-filter__btn {
+  display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  min-height: 44px; padding: 0 1.1rem; border-radius: var(--radius-pill);
+  background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  font: inherit; font-size: 0.92rem; font-weight: 600; color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.aw-filter__btn:hover { border-color: var(--forest); }
+.aw-filter__btn i.caret { font-size: 0.7rem; color: var(--muted); }
+.aw-filter--active .aw-filter__btn,
+.aw-filter--open .aw-filter__btn { border-color: var(--forest); color: var(--forest); }
+.aw-filter--open .aw-filter__btn i.caret { transform: rotate(180deg); }
+
+.aw-filter__menu {
+  display: none; position: absolute; top: calc(100% + 0.6rem); left: 0; width: max-content; max-width: 460px;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); padding: 1rem;
+}
+.aw-filter--open .aw-filter__menu { display: block; }
+/* options are icon + label tiles; a picked tile gets the forest outline */
+.aw-filter__grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.aw-filter__option {
+  display: inline-flex; align-items: center; gap: 0.65rem; cursor: pointer;
+  padding: 0.85rem 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border); background: #fff;
+  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.aw-filter__option:hover { border-color: var(--forest); }
+.aw-filter__option i { font-size: 1.15rem; color: var(--forest); }
+.aw-filter__option .n { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.aw-filter__option--on { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); background: var(--forest-tint); color: var(--forest); }
+
+/* picked options also sit in the bar as removable chips, after the facet pills */
+.aw-chip {
+  display: inline-flex; align-items: center; gap: 0.6rem; cursor: pointer;
+  min-height: 44px; padding: 0 0.9rem 0 1.1rem; border-radius: var(--radius-pill);
+  background: #fff; color: var(--forest); border: 1px solid var(--forest); box-shadow: inset 0 0 0 1px var(--forest), var(--shadow-sm);
+  font: inherit; font-size: 0.92rem; font-weight: 700;
+}
+.aw-chip i { font-size: 0.85rem; color: var(--muted); }
+.aw-chip:hover i { color: var(--forest); }
+
+/* --------------------------------------------------------------------------
+   Map layers — top-right card with three tile-style thumbnails.
+   -------------------------------------------------------------------------- */
+.aw-rail { position: absolute; z-index: 500; top: 1.25rem; right: 1.25rem; display: flex; flex-direction: column; align-items: flex-end; gap: 1rem; }
+.aw-layers {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); padding: 0.75rem 0.85rem;
+}
+.aw-layers__title { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: var(--heading); margin-bottom: 0.6rem; }
+.aw-layers__title i { font-size: 0.7rem; color: var(--muted); }
+.aw-layers__row { display: flex; gap: 0.5rem; }
+.aw-layer {
+  width: 56px; cursor: pointer; border: none; background: none; padding: 0; font: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+}
+.aw-layer__thumb {
+  width: 56px; height: 56px; border-radius: var(--radius-sm); overflow: hidden;
+  border: 2px solid transparent; transition: border-color 0.15s ease;
+}
+.aw-layer__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-layer__label { font-size: 0.68rem; font-weight: 600; color: var(--muted); }
+.aw-layer:hover .aw-layer__thumb { border-color: var(--stone); }
+.aw-layer--active .aw-layer__thumb { border-color: var(--forest); }
+.aw-layer--active .aw-layer__label { color: var(--forest); }
+
+/* --------------------------------------------------------------------------
+   Map controls — zoom / locate stacked under the layers card. Replaces
+   Leaflet's default control so the chrome is on-brand.
+   -------------------------------------------------------------------------- */
+.aw-controls { display: flex; flex-direction: column; gap: 0.5rem; }
+.aw-control {
+  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer;
+  background: #fff; color: var(--forest); font-size: 1rem; box-shadow: var(--shadow-sm);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.aw-control:hover { background: var(--forest-tint); }
+
+/* --------------------------------------------------------------------------
+   Leaflet overrides — strip the default popup chrome so the DS selection
+   card is the whole popup; drop the default cluster styling.
+   -------------------------------------------------------------------------- */
+.aw-pin-wrap, .aw-cluster-wrap { background: none; border: none; }
+.aw-hover-popup .leaflet-popup-content-wrapper { background: none; box-shadow: none; padding: 0; border-radius: 0; }
+.aw-hover-popup .leaflet-popup-content { margin: 0; line-height: inherit; width: auto !important; }
+.aw-hover-popup .leaflet-popup-tip-container { display: none; }
+.aw-hover-popup .lf-water-selection-card__close { display: none; }  /* hover card: moving away dismisses it */
+
+/* --------------------------------------------------------------------------
+   Mobile — panel becomes a bottom sheet, filters shift to the top-left.
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .aw-panel { left: 0.75rem; right: 0.75rem; width: auto; top: auto; bottom: 0.75rem; height: 46vh; }
+  .aw-panel--collapsed { height: auto; }
+  .aw-panel--collapsed .aw-panel__collapse i { transform: rotate(0); }
+  .aw-panel:not(.aw-panel--collapsed) .aw-panel__collapse i { transform: rotate(180deg); }
+  .aw-filters { left: 0.75rem; top: 0.75rem; right: 5.5rem; }
+  .aw-layers { display: none; }
+  .aw-rail { top: 0.75rem; right: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ Solid forest header ════════════════════════ -->
+<nav class="lf-nav lf-nav--solid">
+  <div class="lf-nav__inner">
+    <a class="lf-nav__brand" href="homepage.html">
+      <img class="roundel"  src="../../public/img/brand/lf-icon-white.svg" alt="">
+      <img class="wordmark" src="../../public/img/brand/lf-type-white-landscape.svg" alt="Let's Fish">
+    </a>
+    <div class="lf-nav__actions">
+      <a class="lf-nav__link" href="#">Add your fishery</a>
+      <a class="lf-nav__btn lf-nav__btn--outline" href="#">Sign in</a>
+      <a class="lf-nav__btn lf-nav__btn--primary" href="#">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<main class="aw-page">
+
+  <!-- ──────────────── Map (full-bleed) ──────────────── -->
+  <div id="aw-map" class="aw-map"></div>
+
+  <!-- ──────────────── Explore panel ──────────────── -->
+  <aside class="aw-panel" id="aw-panel">
+    <div class="aw-panel__head">
+      <h1 class="aw-panel__title">Explore waters</h1>
+      <button type="button" class="aw-panel__collapse" id="aw-collapse" title="Collapse"><i class="fa-solid fa-chevron-up"></i></button>
+    </div>
+    <div class="aw-panel__search">
+      <div class="lf-search-bar">
+        <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+        <input type="text" class="lf-search-bar__input" id="aw-search" placeholder="Search by name, location or species...">
+      </div>
+    </div>
+    <div class="aw-panel__count-row">
+      <span class="aw-panel__count" id="aw-count">0 waters</span>
+      <button type="button" class="aw-panel__sort">Most relevant <i class="fa-solid fa-chevron-down"></i></button>
+    </div>
+    <div class="aw-panel__list" id="aw-list"></div>
+  </aside>
+
+  <!-- ──────────────── Filter pills ──────────────── -->
+  <div class="aw-filters" id="aw-filters">
+    <div class="aw-filter">
+      <button type="button" class="aw-filter__btn"><i class="fa-solid fa-sliders"></i> All</button>
+    </div>
+
+    <div class="aw-filter" data-facet="type">
+      <button type="button" class="aw-filter__btn" data-toggle>Water type <i class="fa-solid fa-chevron-down caret"></i></button>
+      <div class="aw-filter__menu"><div class="aw-filter__grid">
+        <button type="button" class="aw-filter__option" data-value="Lake"><i class="fa-solid fa-water"></i> Lakes <span class="n" data-n="Lake"></span></button>
+        <button type="button" class="aw-filter__option" data-value="River"><i class="fa-solid fa-stream"></i> Rivers <span class="n" data-n="River"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Coastal"><i class="fa-solid fa-anchor"></i> Coastal <span class="n" data-n="Coastal"></span></button>
+      </div></div>
+    </div>
+
+    <div class="aw-filter" data-facet="species">
+      <button type="button" class="aw-filter__btn" data-toggle>Species <i class="fa-solid fa-chevron-down caret"></i></button>
+      <div class="aw-filter__menu"><div class="aw-filter__grid">
+        <button type="button" class="aw-filter__option" data-value="Brown trout"><i class="fa-solid fa-fish"></i> Brown trout <span class="n" data-n="Brown trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Salmon"><i class="fa-solid fa-fish"></i> Salmon <span class="n" data-n="Salmon"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Sea trout"><i class="fa-solid fa-fish"></i> Sea trout <span class="n" data-n="Sea trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Rainbow trout"><i class="fa-solid fa-fish"></i> Rainbow trout <span class="n" data-n="Rainbow trout"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Pike"><i class="fa-solid fa-fish"></i> Pike <span class="n" data-n="Pike"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Perch"><i class="fa-solid fa-fish"></i> Perch <span class="n" data-n="Perch"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Mackerel"><i class="fa-solid fa-fish"></i> Mackerel <span class="n" data-n="Mackerel"></span></button>
+        <button type="button" class="aw-filter__option" data-value="Pollack"><i class="fa-solid fa-fish"></i> Pollack <span class="n" data-n="Pollack"></span></button>
+      </div></div>
+    </div>
+
+    <!-- picked options, as removable chips -->
+    <div class="aw-chips" id="aw-chips" style="display: contents"></div>
+  </div>
+
+  <!-- ──────────────── Right rail: map layers + zoom / locate ──────────────── -->
+  <div class="aw-rail">
+  <div class="aw-layers">
+    <div class="aw-layers__title">Map layers <i class="fa-solid fa-chevron-right"></i></div>
+    <div class="aw-layers__row" id="aw-layers">
+      <button type="button" class="aw-layer aw-layer--active" data-layer="topo">
+        <span class="aw-layer__thumb"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></span>
+        <span class="aw-layer__label">Topo</span>
+      </button>
+      <button type="button" class="aw-layer" data-layer="satellite">
+        <span class="aw-layer__thumb"><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/11/634/1001" alt=""></span>
+        <span class="aw-layer__label">Satellite</span>
+      </button>
+      <button type="button" class="aw-layer" data-layer="standard">
+        <span class="aw-layer__thumb"><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/11/634/1001" alt=""></span>
+        <span class="aw-layer__label">Standard</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ──────────────── Zoom / locate ──────────────── -->
+  <div class="aw-controls">
+    <button type="button" class="aw-control" id="aw-zoom-in" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
+    <button type="button" class="aw-control" id="aw-zoom-out" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
+    <button type="button" class="aw-control" title="Near me"><i class="fa-solid fa-location-arrow"></i></button>
+  </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+<script>
+// ---------------------------------------------------------------------------
+// Sample waters — the Trossachs / Loch Lomond corridor, dense enough to cluster
+// at the default zoom, thin out into single pins when you zoom in.
+// ---------------------------------------------------------------------------
+const TYPE_ICON = { Lake: 'fa-water', River: 'fa-stream', Coastal: 'fa-anchor' }
+const IMG = [
+  'https://letsfish.imgix.net/destinations/images/000/000/001/original/Assynt.jpg',
+  'https://letsfish.imgix.net/destinations/images/000/000/006/original/geograph-2972792-by-Rob-Farrow.jpg',
+  'https://letsfish.imgix.net/destinations/images/000/000/034/original/geograph-5088283-by-Peter-Moore.jpg',
+  'https://letsfish.imgix.net/destinations/images/000/000/067/original/geograph-6378477-by-Ian-Hawfinch.jpg',
+  'https://letsfish.imgix.net/images/images/000/001/163/original/geograph-7876468-by-Richard-Webb.jpg',
+  'https://letsfish.imgix.net/images/images/000/000/470/original/Jura_2018_55.jpg',
+  'https://letsfish.imgix.net/destinations/images/000/000/002/original/shetland.jpg',
+  'https://letsfish.imgix.net/destinations/images/000/000/011/original/geograph-7720810-by-Phil-Brandon-Hunter.jpg'
+]
+const img = (i, w, h) => `${IMG[i % IMG.length]}?auto=format%2Ccompress&fit=crop&w=${w}&h=${h}`
+
+const WATERS = [
+  { name: 'River Falloch',          loc: 'Crianlarich, Stirling',    type: 'River',   species: ['Salmon', 'Sea trout'],           lat: 56.33, lng: -4.68, desc: 'A spate river tumbling down Glen Falloch to the head of Loch Lomond — strong runs of salmon and sea trout after rain.' },
+  { name: 'Loch Ard',               loc: 'Aberfoyle, Stirling',      type: 'Lake',    species: ['Brown trout', 'Pike'],           lat: 56.18, lng: -4.45, desc: 'A scenic Trossachs loch under Ben Lomond, well stocked with wild brown trout and pike among its wooded bays.' },
+  { name: 'Loch Chon',              loc: 'Aberfoyle, Stirling',      type: 'Lake',    species: ['Brown trout', 'Pike'],           lat: 56.21, lng: -4.52, desc: 'Quiet hill loch in the Loch Ard forest. Good evening rises of brown trout; pike in the shallows at the north end.' },
+  { name: 'Loch Katrine',           loc: 'Callander, Stirling',      type: 'Lake',    species: ['Brown trout'],                   lat: 56.25, lng: -4.50, desc: 'Glasgow\'s water supply and the loch of Rob Roy. Boat fishing only, with hard-fighting wild browns.' },
+  { name: 'Loch Venachar',          loc: 'Callander, Stirling',      type: 'Lake',    species: ['Brown trout', 'Pike', 'Perch'],  lat: 56.21, lng: -4.30, desc: 'A big, open loch with easy bank access along the south shore. Trout, pike and shoals of perch.' },
+  { name: 'Loch Achray',            loc: 'Brig o\' Turk, Stirling',  type: 'Lake',    species: ['Brown trout', 'Pike'],           lat: 56.23, lng: -4.40, desc: 'Small and sheltered beneath Ben A\'an, fished from the bank or a hired boat.' },
+  { name: 'Lake of Menteith',       loc: 'Port of Menteith, Stirling', type: 'Lake',  species: ['Rainbow trout', 'Brown trout'], lat: 56.17, lng: -4.28, desc: 'Scotland\'s only lake, and one of its best stocked. Big rainbows from the boat, boat-only fishing.' },
+  { name: 'River Teith',            loc: 'Callander, Stirling',      type: 'River',   species: ['Salmon', 'Sea trout', 'Brown trout'], lat: 56.15, lng: -4.10, desc: 'The main Forth tributary — spring salmon from February, sea trout in the summer pools below Callander.' },
+  { name: 'Endrick Water',          loc: 'Drymen, Stirling',         type: 'River',   species: ['Salmon', 'Sea trout', 'Brown trout'], lat: 56.05, lng: -4.42, desc: 'Winds through farmland into the south end of Loch Lomond. Famous autumn salmon and sea trout runs.' },
+  { name: 'Loch Lubnaig',           loc: 'Strathyre, Stirling',      type: 'Lake',    species: ['Brown trout', 'Pike', 'Perch'],  lat: 56.28, lng: -4.28, desc: 'Roadside loch along the A84 with easy parking and a long, fishable east bank.' },
+  { name: 'Loch Earn',              loc: 'Lochearnhead, Perthshire', type: 'Lake',    species: ['Brown trout', 'Rainbow trout'],  lat: 56.38, lng: -4.20, desc: 'Six miles of stocked water with a near-continuous bank path. Permits from the St Fillans and Lochearnhead shops.' },
+  { name: 'River Forth',            loc: 'Gargunnock, Stirling',     type: 'River',   species: ['Salmon', 'Sea trout', 'Pike'],   lat: 56.13, lng: -4.05, desc: 'Slow and deep through the carse. Salmon and sea trout in the lower beats, big pike in the backwaters.' },
+  { name: 'Loch Lomond',            loc: 'Balmaha, Stirling',        type: 'Lake',    species: ['Salmon', 'Sea trout', 'Pike', 'Perch'], lat: 56.08, lng: -4.60, desc: 'The largest inland water in Britain. Trolled salmon and sea trout, legendary pike, and perch off every pier.' },
+  { name: 'Loch Tay',               loc: 'Kenmore, Perthshire',      type: 'Lake',    species: ['Salmon', 'Brown trout'],         lat: 56.52, lng: -4.15, desc: 'Fifteen miles long and famous for its spring salmon, harled from the boat from January 15th.' },
+  { name: 'Loch Awe',               loc: 'Dalmally, Argyll',         type: 'Lake',    species: ['Brown trout', 'Pike', 'Perch'],  lat: 56.30, lng: -5.10, desc: 'The longest freshwater loch in Scotland and holder of the British brown trout record.' },
+  { name: 'Loch Fyne',              loc: 'Inveraray, Argyll',        type: 'Coastal', species: ['Mackerel', 'Pollack'],           lat: 56.10, lng: -5.20, desc: 'A deep sea loch with shore marks around Inveraray pier. Mackerel in summer, pollack over the rough ground.' },
+  { name: 'Loch Leven',             loc: 'Kinross, Perthshire',      type: 'Lake',    species: ['Brown trout', 'Rainbow trout'],  lat: 56.20, lng: -3.38, desc: 'The home of the Loch Leven strain of brown trout. Boat fishing from the Kinross pier.' },
+  { name: 'Carron Valley Reservoir', loc: 'Denny, Stirlingshire',    type: 'Lake',    species: ['Brown trout', 'Pike'],           lat: 56.03, lng: -4.10, desc: 'Fly-only stillwater in the Campsie hills, managed by the Carron Valley Fishery. Day tickets on site.' },
+  { name: 'Firth of Clyde',         loc: 'Largs, Ayrshire',          type: 'Coastal', species: ['Mackerel', 'Pollack'],           lat: 55.79, lng: -4.87, desc: 'Shore and pier marks all along the Largs front. Mackerel feathers in summer; pollack off the rocks.' },
+  { name: 'Loch Doon',              loc: 'Dalmellington, Ayrshire',  type: 'Lake',    species: ['Brown trout'],                   lat: 55.25, lng: -4.40, desc: 'Free-fishing hill loch in the Galloway Forest with wild brown trout and Arctic char.' },
+  { name: 'Loch Ken',               loc: 'Castle Douglas, Galloway', type: 'Lake',    species: ['Pike', 'Perch'],                 lat: 55.00, lng: -4.05, desc: 'Nine miles of pike water. Boat hire at Parton; big fish in the deep water off the viaduct.' },
+  { name: 'River Clyde',            loc: 'Lanark, South Lanarkshire', type: 'River',  species: ['Brown trout', 'Pike'],           lat: 55.65, lng: -3.75, desc: 'The upper Clyde is one of Scotland\'s best brown trout rivers, fished on a UCAPA permit.' },
+  { name: 'River Tay',              loc: 'Dunkeld, Perthshire',      type: 'River',   species: ['Salmon', 'Sea trout', 'Brown trout'], lat: 56.56, lng: -3.58, desc: 'The biggest river in Britain and the home of the record salmon. Beats from Kenmore to Perth.' },
+  { name: 'River Earn',             loc: 'Crieff, Perthshire',       type: 'River',   species: ['Salmon', 'Sea trout', 'Brown trout'], lat: 56.37, lng: -3.85, desc: 'A sea trout river first, with good salmon from August. Association water around Crieff.' },
+  { name: 'Loch Rannoch',           loc: 'Kinloch Rannoch, Perthshire', type: 'Lake', species: ['Brown trout', 'Pike'],           lat: 56.68, lng: -4.32, desc: 'Big, wild and wind-swept, with ferox trout in the deeps and pike along the Rannoch Moor shore.' },
+  { name: 'Loch Eck',               loc: 'Dunoon, Argyll',           type: 'Lake',    species: ['Brown trout', 'Sea trout'],      lat: 56.08, lng: -4.98, desc: 'A narrow Cowal loch with sea trout running through from the Holy Loch.' },
+  { name: 'Gare Loch',              loc: 'Helensburgh, Argyll',      type: 'Coastal', species: ['Mackerel', 'Pollack'],           lat: 56.03, lng: -4.78, desc: 'Sheltered sea loch with easy shore access along the Rhu road. Mackerel from June.' },
+  { name: 'Loch Long',              loc: 'Arrochar, Argyll',         type: 'Coastal', species: ['Mackerel', 'Pollack'],           lat: 56.15, lng: -4.85, desc: 'Deep sea loch at the foot of the Arrochar Alps. Pier and shore marks at the head of the loch.' },
+  { name: 'River Leven',            loc: 'Balloch, West Dunbartonshire', type: 'River', species: ['Salmon', 'Sea trout'],        lat: 55.98, lng: -4.58, desc: 'Short and fast from Loch Lomond to the Clyde, with every Lomond salmon passing through it.' },
+  { name: 'Loch Voil',              loc: 'Balquhidder, Stirling',    type: 'Lake',    species: ['Brown trout', 'Pike'],           lat: 56.35, lng: -4.42, desc: 'Rob Roy\'s glen. A quiet loch fished from the single-track road along the north shore.' }
+]
+
+// ---------------------------------------------------------------------------
+// Map — OpenTopoMap, the DS pins and clusters.
+// ---------------------------------------------------------------------------
+const LAYERS = {
+  topo:      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: 'Map data: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>' }),
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Imagery &copy; Esri' }),
+  standard:  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles &copy; Esri' })
+}
+
+const map = L.map('aw-map', { zoomControl: false, scrollWheelZoom: true }).setView([56.18, -4.42], 10)
+let activeLayer = LAYERS.topo.addTo(map)
+
+const pinIcon = (selected) => L.divIcon({
+  className: 'aw-pin-wrap',
+  html: `<div class="lf-map-pin${selected ? ' lf-map-pin--selected' : ''}"><i class="fa-solid fa-fish"></i></div>`,
+  iconSize: [36, 36], iconAnchor: [18, 18]
+})
+const clusterIcon = (cluster) => {
+  const n = cluster.getChildCount()
+  const size = n >= 50 ? ' lf-map-cluster--lg' : n >= 10 ? ' lf-map-cluster--md' : ''
+  const px = n >= 50 ? 52 : n >= 10 ? 44 : 36
+  return L.divIcon({ className: 'aw-cluster-wrap', html: `<div class="lf-map-cluster${size}">${n}</div>`, iconSize: [px, px], iconAnchor: [px / 2, px / 2] })
+}
+
+const clusterGroup = L.markerClusterGroup({ iconCreateFunction: clusterIcon, showCoverageOnHover: false, maxClusterRadius: 40 })
+map.addLayer(clusterGroup)
+
+WATERS.forEach((w, i) => {
+  w.id = i
+  w.marker = L.marker([w.lat, w.lng], { icon: pinIcon(false) })
+  w.marker.on('mouseover', () => select(w))
+  w.marker.on('mouseout',  () => deselect())
+})
+
+const selectionCard = (w) => `
+  <div class="lf-water-selection-card">
+    <a class="lf-water-selection-card__link" href="waters-show.html">
+      <img class="lf-water-selection-card__img" src="${img(w.id, 112, 112)}" alt="">
+      <div class="lf-water-selection-card__info">
+        <span class="lf-water-selection-card__name">${w.name}</span>
+        <span class="lf-water-selection-card__type"><i class="fa-solid ${TYPE_ICON[w.type]}"></i> ${w.type}</span>
+        <span class="lf-water-selection-card__species"><i class="fa fa-fish"></i> ${w.species.join(', ')}</span>
+      </div>
+    </a>
+    <button class="lf-water-selection-card__close" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>`
+
+let hoverPopup = null
+let selected = null
+function select(w) {
+  if (selected === w) return
+  deselect()
+  selected = w
+  w.marker.setIcon(pinIcon(true))
+  hoverPopup = L.popup({ className: 'aw-hover-popup', closeButton: false, autoPan: false, offset: [0, -22] })
+    .setLatLng([w.lat, w.lng]).setContent(selectionCard(w)).openOn(map)
+  document.querySelector(`.aw-card[data-id="${w.id}"]`)?.classList.add('aw-card--active')
+}
+function deselect() {
+  if (!selected) return
+  selected.marker.setIcon(pinIcon(false))
+  document.querySelector(`.aw-card[data-id="${selected.id}"]`)?.classList.remove('aw-card--active')
+  if (hoverPopup) { map.closePopup(hoverPopup); hoverPopup = null }
+  selected = null
+}
+
+// ---------------------------------------------------------------------------
+// Filters — Water type and Species. Both facets AND together; options within
+// a facet OR. Counts in the menu reflect the other facet + the search box.
+// ---------------------------------------------------------------------------
+const filters = { type: new Set(), species: new Set() }
+let query = ''
+
+const matchesSearch  = (w) => !query || [w.name, w.loc, ...w.species].join(' ').toLowerCase().includes(query)
+const matchesType    = (w) => !filters.type.size || filters.type.has(w.type)
+const matchesSpecies = (w) => !filters.species.size || w.species.some(s => filters.species.has(s))
+const visible = () => WATERS.filter(w => matchesSearch(w) && matchesType(w) && matchesSpecies(w))
+
+document.querySelectorAll('.aw-filter[data-facet]').forEach(el => {
+  const facet = el.dataset.facet
+  el.querySelector('[data-toggle]').addEventListener('click', (e) => {
+    e.stopPropagation()
+    const open = el.classList.contains('aw-filter--open')
+    closeMenus()
+    if (!open) el.classList.add('aw-filter--open')
+  })
+  el.querySelectorAll('.aw-filter__option').forEach(btn => btn.addEventListener('click', () => {
+    const v = btn.dataset.value
+    filters[facet].has(v) ? filters[facet].delete(v) : filters[facet].add(v)
+    applyFilters()
+  }))
+  el.querySelector('.aw-filter__menu').addEventListener('click', e => e.stopPropagation())
+})
+document.addEventListener('click', closeMenus)
+function closeMenus() { document.querySelectorAll('.aw-filter--open').forEach(el => el.classList.remove('aw-filter--open')) }
+
+const FACET_ICON = { type: (v) => TYPE_ICON[v], species: () => 'fa-fish' }
+const LABEL = { Lake: 'Lakes', River: 'Rivers' }
+function renderChips() {
+  const chips = document.getElementById('aw-chips')
+  chips.innerHTML = ['type', 'species'].flatMap(facet => [...filters[facet]].map(v =>
+    `<button type="button" class="aw-chip" data-facet="${facet}" data-value="${v}">${LABEL[v] || v} <i class="fa-solid fa-xmark"></i></button>`
+  )).join('')
+}
+document.getElementById('aw-chips').addEventListener('click', (e) => {
+  const chip = e.target.closest('.aw-chip'); if (!chip) return
+  filters[chip.dataset.facet].delete(chip.dataset.value)
+  applyFilters()
+})
+
+function applyFilters() {
+  deselect()
+  clusterGroup.clearLayers()
+  visible().forEach(w => clusterGroup.addLayer(w.marker))
+
+  document.querySelectorAll('.aw-filter[data-facet]').forEach(el => {
+    const facet = el.dataset.facet
+    el.classList.toggle('aw-filter--active', filters[facet].size > 0)
+    el.querySelectorAll('.aw-filter__option').forEach(b => b.classList.toggle('aw-filter__option--on', filters[facet].has(b.dataset.value)))
+    el.querySelectorAll('[data-n]').forEach(n => {
+      const v = n.dataset.n
+      const pool = WATERS.filter(w => matchesSearch(w) && (facet === 'type' ? matchesSpecies(w) : matchesType(w)))
+      n.textContent = pool.filter(w => facet === 'type' ? w.type === v : w.species.includes(v)).length
+    })
+  })
+  renderChips()
+  renderList()
+}
+
+document.getElementById('aw-search').addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); applyFilters() })
+
+// ---------------------------------------------------------------------------
+// List — what's in view, in the panel. Pan or zoom and it re-renders.
+// ---------------------------------------------------------------------------
+const list = document.getElementById('aw-list')
+const count = document.getElementById('aw-count')
+
+const card = (w, slide = 0) => `
+  <article class="lf-water-card aw-card" data-id="${w.id}" data-slide="${slide}">
+    <div class="lf-water-card__image-wrap">
+      <a class="lf-water-card__link" href="waters-show.html">
+        <img class="lf-water-card__img" alt="${w.name}" src="${img(w.id + slide, 640, 400)}">
+      </a>
+      <button type="button" class="aw-card__nav aw-card__nav--prev" data-step="-1"><i class="fa-solid fa-arrow-left"></i></button>
+      <button type="button" class="aw-card__nav aw-card__nav--next" data-step="1"><i class="fa-solid fa-arrow-right"></i></button>
+      <div class="aw-card__dots">${[0,1,2].map(i => `<span class="aw-card__dot${i === slide ? ' aw-card__dot--on' : ''}"></span>`).join('')}</div>
+      <div class="lf-water-card__hearts">
+        <a class="lf-water-card__heart" href="#" title="Add to fishlist"><i class="fa-solid fa-heart-circle-plus"></i></a>
+      </div>
+    </div>
+    <div class="lf-water-card__body">
+      <a class="lf-water-card__title-link" href="waters-show.html"><h3 class="lf-water-card__title">${w.name}</h3></a>
+      <p class="lf-water-card__location">${w.loc}</p>
+      <p class="lf-water-card__desc">${w.desc}</p>
+      <div class="lf-water-card__meta">
+        <span class="lf-water-card__tag"><i class="fa-solid ${TYPE_ICON[w.type]}"></i> ${w.type}</span>
+        <span class="lf-water-card__tag"><i class="fa fa-fish"></i> ${w.species.slice(0, 2).join(' &amp; ')}</span>
+      </div>
+    </div>
+  </article>`
+
+function renderList() {
+  const bounds = map.getBounds()
+  const inView = visible().filter(w => bounds.contains([w.lat, w.lng]))
+  count.textContent = `${inView.length} ${inView.length === 1 ? 'water' : 'waters'}`
+  list.innerHTML = inView.length
+    ? inView.map(w => card(w)).join('')
+    : '<p class="aw-panel__empty">No waters here yet. Pan the map, or loosen the filters.</p>'
+}
+
+// hover a card → its pin lights up and the selection card pops on the map
+list.addEventListener('mouseover', (e) => {
+  const el = e.target.closest('.aw-card'); if (!el) return
+  select(WATERS[+el.dataset.id])
+})
+list.addEventListener('mouseleave', deselect)
+
+// carousel arrows step the thumbnail; the stretched title link sits beneath them
+list.addEventListener('click', (e) => {
+  const btn = e.target.closest('.aw-card__nav'); if (!btn) return
+  e.preventDefault()
+  const el = btn.closest('.aw-card')
+  const w = WATERS[+el.dataset.id]
+  const slide = (+el.dataset.slide + +btn.dataset.step + 3) % 3
+  el.outerHTML = card(w, slide)
+  document.querySelector(`.aw-card[data-id="${w.id}"]`).classList.add('aw-card--active')
+})
+
+map.on('moveend', renderList)
+
+// ---------------------------------------------------------------------------
+// Chrome — collapse, zoom, layers.
+// ---------------------------------------------------------------------------
+document.getElementById('aw-collapse').addEventListener('click', () => document.getElementById('aw-panel').classList.toggle('aw-panel--collapsed'))
+document.getElementById('aw-zoom-in').addEventListener('click', () => map.zoomIn())
+document.getElementById('aw-zoom-out').addEventListener('click', () => map.zoomOut())
+document.getElementById('aw-layers').addEventListener('click', (e) => {
+  const btn = e.target.closest('.aw-layer'); if (!btn) return
+  document.querySelectorAll('.aw-layer').forEach(b => b.classList.toggle('aw-layer--active', b === btn))
+  map.removeLayer(activeLayer)
+  activeLayer = LAYERS[btn.dataset.layer].addTo(map)
+})
+
+applyFilters()
+</script>
+
+</body>
+</html>
