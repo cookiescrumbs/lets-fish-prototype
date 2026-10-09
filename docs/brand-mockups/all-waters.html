@@ -38,7 +38,7 @@
 /* --------------------------------------------------------------------------
    Page shell — map fills the viewport under the nav; everything else floats.
    -------------------------------------------------------------------------- */
-.aw-page  { position: relative; display: flex; flex-direction: column; height: calc(100vh - var(--nav-h)); min-height: 560px; overflow: hidden; background: var(--bg-alt); }
+.aw-page  { position: relative; display: flex; flex-direction: column; height: calc(100vh - var(--nav-h)); height: calc(100dvh - var(--nav-h)); min-height: 560px; overflow: hidden; background: var(--bg-alt); }
 .aw-stage { position: relative; flex: 1; min-height: 0; }   /* the map and everything floating over it */
 .aw-map   { position: absolute; inset: 0; z-index: 0; }
 .aw-map .leaflet-control-attribution { font-family: var(--font-ui); font-size: 0.7rem; color: var(--muted); background: rgba(255,255,255,0.85); }
@@ -86,7 +86,7 @@
    that mirrors the map (the hovered water's pin goes forest) and a 3-image
    carousel on the thumbnail.
    -------------------------------------------------------------------------- */
-.aw-card { flex-shrink: 0; cursor: pointer; }
+.aw-card { flex-shrink: 0; height: auto; cursor: pointer; }   /* height: 100% is for the grid; here it would stretch to the panel */
 .aw-card--active { border-color: var(--forest); box-shadow: 0 0 0 2px var(--forest), var(--shadow-md); }
 .aw-card .lf-water-card__image-wrap { aspect-ratio: 16 / 10; }
 .aw-card__nav {
@@ -168,6 +168,8 @@
   box-shadow: var(--shadow-md); padding: 0.75rem 0.85rem;
 }
 .aw-layers__title { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: var(--heading); margin-bottom: 0.6rem; }
+.aw-layers__sheet-close { display: none; }
+.aw-layers__backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }
 .aw-layers__title i { font-size: 0.7rem; color: var(--muted); }
 .aw-layers__row { display: flex; gap: 0.5rem; }
 .aw-layer {
@@ -256,11 +258,14 @@
   .aw-filter--open ~ .aw-filter__backdrop, .aw-filters:has(.aw-filter--open) ~ .aw-filter__backdrop { display: block; }
   .aw-filter__handle { display: block; width: 44px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 1.5rem; }
   .aw-filter__sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
-  .aw-filter__sheet-title { font-size: 1.75rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
+  .aw-filter__sheet-title { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
   .aw-filter__sheet-close { width: 2.75rem; height: 2.75rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
   .aw-filter__grid { overflow-y: auto; gap: 0.75rem; }
   .aw-filter__option { padding: 0.95rem 1.1rem; font-size: 1.05rem; }
   .aw-filter__option .n { display: none; }
+  /* three water types: one row, equal widths */
+  .aw-filter[data-facet="type"] .aw-filter__grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .aw-filter[data-facet="type"] .aw-filter__option { justify-content: center; padding: 0.95rem 0.5rem; }
   .aw-filter__sheet-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
   .aw-filter__clear, .aw-filter__apply { min-height: 52px; border-radius: var(--radius-pill); font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
   .aw-filter__clear { background: #fff; border: 2px solid var(--border); color: var(--forest); }
@@ -279,10 +284,31 @@
 
   /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
   .aw-rail { top: 0.75rem; right: 0.75rem; }
-  .aw-layers, #aw-zoom-in, #aw-zoom-out { display: none; }
-  .aw-control--quick-layer { display: block; }
+  #aw-zoom-in, #aw-zoom-out { display: none; }
+  .aw-control--quick-layer { display: block; order: -1; }
+  /* the layers card becomes a bottom sheet, opened from the quick thumb */
+  .aw-layers { display: none; position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; border: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
+  .aw-page--layers .aw-layers { display: block; }
+  .aw-page--layers .aw-layers__backdrop { display: block; }
+  .aw-layers__title { justify-content: space-between; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.015em; margin-bottom: 1.25rem; }
+  .aw-layers__title > i { display: none; }
+  .aw-layers__sheet-close { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
+  .aw-layers__row { gap: 1rem; }
+  .aw-layer { width: 96px; gap: 0.5rem; }
+  .aw-layer__thumb { width: 96px; height: 96px; border-radius: var(--radius-md); }
+  .aw-layer__label { font-size: 0.9rem; }
 
   .aw-view-toggle { display: inline-flex; bottom: 2.25rem; }
+
+  /* while a sheet is open it owns the screen: its container is lifted above
+     everything, and the List pill and rail buttons are hidden underneath */
+  .aw-page:has(.aw-filter--open) .aw-topbar { position: relative; z-index: 1000; }
+  .aw-page:has(.aw-filter--open) .aw-view-toggle,
+  .aw-page:has(.aw-filter--open) .aw-rail,
+  .aw-page--layers .aw-view-toggle,
+  .aw-page--layers .aw-control { display: none; }
+  .aw-page--layers .aw-rail { z-index: 1000; }
   .aw-page--card .aw-mobile-card { display: block; }
   .aw-page--card .aw-view-toggle { bottom: calc(0.75rem + 122px + 1rem); }
   .aw-page--list .aw-mobile-card { display: none; }
@@ -401,7 +427,7 @@
   <!-- ──────────────── Right rail: map layers + zoom / locate ──────────────── -->
   <div class="aw-rail">
   <div class="aw-layers">
-    <div class="aw-layers__title">Map layers <i class="fa-solid fa-chevron-right"></i></div>
+    <div class="aw-layers__title">Map layers <i class="fa-solid fa-chevron-right"></i><button type="button" class="aw-layers__sheet-close" id="aw-layers-close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="aw-layers__row" id="aw-layers">
       <button type="button" class="aw-layer aw-layer--active" data-layer="topo">
         <span class="aw-layer__thumb"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></span>
@@ -423,9 +449,11 @@
     <button type="button" class="aw-control" id="aw-zoom-in" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
     <button type="button" class="aw-control" id="aw-zoom-out" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
     <button type="button" class="aw-control" title="Near me"><i class="fa-solid fa-location-arrow"></i></button>
-    <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Satellite"><img src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/11/634/1001" alt=""></button>
+    <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Map layers"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></button>
   </div>
   </div>
+
+  <div class="aw-layers__backdrop" id="aw-layers-backdrop"></div>
 
   <!-- ──────────────── Docked selection card (mobile) ──────────────── -->
   <div class="aw-mobile-card" id="aw-mobile-card"></div>
@@ -712,10 +740,9 @@ document.getElementById('aw-view-toggle').addEventListener('click', () => {
   page.classList.toggle('aw-page--list')
   if (!page.classList.contains('aw-page--list')) map.invalidateSize()
 })
-document.getElementById('aw-quick-layer').addEventListener('click', () => {
-  const next = activeLayer === LAYERS.satellite ? 'topo' : 'satellite'
-  document.querySelector(`.aw-layer[data-layer="${next}"]`).click()
-})
+document.getElementById('aw-quick-layer').addEventListener('click', () => page.classList.add('aw-page--layers'))
+document.getElementById('aw-layers-close').addEventListener('click', () => page.classList.remove('aw-page--layers'))
+document.getElementById('aw-layers-backdrop').addEventListener('click', () => page.classList.remove('aw-page--layers'))
 document.getElementById('aw-zoom-in').addEventListener('click', () => map.zoomIn())
 document.getElementById('aw-zoom-out').addEventListener('click', () => map.zoomOut())
 document.getElementById('aw-layers').addEventListener('click', (e) => {
@@ -723,6 +750,8 @@ document.getElementById('aw-layers').addEventListener('click', (e) => {
   document.querySelectorAll('.aw-layer').forEach(b => b.classList.toggle('aw-layer--active', b === btn))
   map.removeLayer(activeLayer)
   activeLayer = LAYERS[btn.dataset.layer].addTo(map)
+  document.querySelector('#aw-quick-layer img').src = btn.querySelector('img').src
+  page.classList.remove('aw-page--layers')
 })
 
 applyFilters()
