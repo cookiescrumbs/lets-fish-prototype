@@ -243,21 +243,22 @@
    -------------------------------------------------------------------------- */
 @media (max-width: 860px) {
   .aw-page { min-height: 0; }
-  .aw-topbar { position: static; padding: 0.5rem 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+  /* pills float over the map, no bar behind them; the rail and the list start below them */
+  .aw-topbar { top: 0.75rem; left: 0; right: 0; }
   .aw-filters { flex-wrap: nowrap; overflow-x: auto; padding: 0.1rem 0.75rem; gap: 0.4rem; scrollbar-width: none; }
   .aw-filters::-webkit-scrollbar { display: none; }
   .aw-filter { flex-shrink: 0; }
   /* pills: same 42px tap height, lighter everything else */
-  .aw-filter__btn { min-height: 42px; padding: 0 0.9rem; font-size: 0.85rem; box-shadow: none; }
+  .aw-filter__btn { min-height: 42px; padding: 0 0.9rem; font-size: 0.85rem; }
   .aw-filter__btn i.caret { font-size: 0.6rem; }
-  .aw-chip { min-height: 42px; padding: 0 0.75rem 0 0.9rem; font-size: 0.85rem; box-shadow: none; }
+  .aw-chip { min-height: 42px; padding: 0 0.75rem 0 0.9rem; font-size: 0.85rem; }
   /* search: a round magnifier at the start of the row, opening a sheet */
   .aw-search-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%;
-    border: 1px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; }
+    border: 1px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-sm); }
   .aw-topbar__search { position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; background: #fff;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-page--search .aw-topbar__search { display: block; }
-  .aw-page--search .aw-topbar { position: relative; z-index: 1000; }
+  .aw-page--search .aw-topbar { z-index: 1000; }
   .aw-page--search .aw-topbar > .aw-filter__backdrop { display: block; }
   .aw-page--search .aw-view-toggle, .aw-page--search .aw-rail { display: none; }
   .aw-filter__sheet-foot--one { grid-template-columns: 1fr; }
@@ -286,7 +287,7 @@
   /* panel is the full-screen list view */
   .aw-panel { inset: 0; width: auto; border: none; border-radius: 0; box-shadow: none; background: var(--bg); display: none; }
   .aw-panel__head, .aw-panel__search { display: none; }
-  .aw-panel__count-row { padding: 0.9rem 1rem; }
+  .aw-panel__count-row { padding: calc(0.75rem + 42px + 0.9rem) 1rem 0.9rem; }   /* clears the floating pills */
   .aw-panel__list { padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom)); }
   .aw-card__nav { display: none; }   /* swipe on touch; dots stay */
 
@@ -294,7 +295,7 @@
   .aw-page--list .aw-map, .aw-page--list .aw-rail { display: none; }
 
   /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
-  .aw-rail { top: 0.75rem; right: 0.75rem; }
+  .aw-rail { top: calc(0.75rem + 42px + 0.75rem); right: 0.75rem; }
   #aw-zoom-in, #aw-zoom-out { display: none; }
   .aw-control--quick-layer { display: block; order: -1; width: 44px; height: 44px; border-radius: 50%; }
   /* the layers card becomes a bottom sheet, opened from the quick thumb */
@@ -314,7 +315,7 @@
 
   /* while a sheet is open it owns the screen: its container is lifted above
      everything, and the List pill and rail buttons are hidden underneath */
-  .aw-page:has(.aw-filter--open) .aw-topbar { position: relative; z-index: 1000; }
+  .aw-page:has(.aw-filter--open) .aw-topbar { z-index: 1000; }
   .aw-page:has(.aw-filter--open) .aw-view-toggle,
   .aw-page:has(.aw-filter--open) .aw-rail,
   .aw-page--layers .aw-view-toggle,
@@ -467,7 +468,6 @@
   <div class="aw-controls">
     <button type="button" class="aw-control" id="aw-zoom-in" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
     <button type="button" class="aw-control" id="aw-zoom-out" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
-    <button type="button" class="aw-control" title="Near me"><i class="fa-solid fa-location-arrow"></i></button>
     <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Map layers"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></button>
   </div>
   </div>
@@ -555,14 +555,11 @@ const isMobile = () => window.matchMedia('(max-width: 860px)').matches
 const map = L.map('aw-map', { zoomControl: false, scrollWheelZoom: true }).setView([56.18, -4.42], 10)
 let activeLayer = LAYERS.topo.addTo(map)
 
-const pinIcon = (selected) => {
-  const px = isMobile() ? 28 : 36
-  return L.divIcon({
-    className: 'aw-pin-wrap',
-    html: `<div class="lf-map-pin${selected ? ' lf-map-pin--selected' : ''}" style="width:${px}px;height:${px}px;font-size:${px * 0.44}px"><i class="fa-solid fa-fish"></i></div>`,
-    iconSize: [px, px], iconAnchor: [px / 2, px / 2]
-  })
-}
+const pinIcon = (selected) => L.divIcon({
+  className: 'aw-pin-wrap',
+  html: `<div class="lf-map-pin${selected ? ' lf-map-pin--selected' : ''}"><i class="fa-solid fa-fish"></i></div>`,
+  iconSize: [36, 36], iconAnchor: [18, 18]
+})
 const clusterIcon = (cluster) => {
   const n = cluster.getChildCount()
   const size = n >= 50 ? ' lf-map-cluster--lg' : n >= 10 ? ' lf-map-cluster--md' : ''
