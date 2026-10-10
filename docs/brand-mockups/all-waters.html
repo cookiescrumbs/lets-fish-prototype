@@ -55,10 +55,11 @@
   box-shadow: var(--shadow-lg); overflow: hidden;
   transition: height 0.2s ease;
 }
+.aw-panel__banner, .aw-panel__filters { display: none; }   /* phone list view only */
 .aw-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.25rem 0.75rem; }
 .aw-panel__title { font-size: 1.45rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
 .aw-panel__collapse {
-  width: 2.5rem; height: 2.5rem; border-radius: 50%; border: none; cursor: pointer;
+  width: 2.1rem; height: 2.1rem; border-radius: 50%; border: none; cursor: pointer;
   background: var(--chip-bg); color: var(--forest); font-size: 0.9rem;
   display: inline-flex; align-items: center; justify-content: center;
   transition: background 0.15s ease;
@@ -115,9 +116,9 @@
 .aw-filter { position: relative; }
 .aw-filter__btn {
   display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
-  min-height: 44px; padding: 0 1.1rem; border-radius: var(--radius-pill);
-  background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-  font: inherit; font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap;
+  min-height: 34px; padding: 0 0.9rem; border-radius: var(--radius-pill);
+  background: #fff; border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);
+  font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .aw-filter__btn:hover { border-color: var(--forest); }
@@ -136,25 +137,25 @@
 .aw-filter__grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .aw-filter__option {
   display: inline-flex; align-items: center; gap: 0.65rem; cursor: pointer;
-  padding: 0.85rem 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border); background: #fff;
-  font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--text);
+  padding: 0.6rem 0.9rem; border-radius: var(--radius-md); border: 1px solid var(--border); background: #fff;
+  font: inherit; font-size: 0.88rem; font-weight: 600; color: var(--text);
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .aw-filter__option:hover { border-color: var(--forest); }
-.aw-filter__option i { font-size: 1.15rem; color: var(--forest); }
+.aw-filter__option i { font-size: 1rem; color: var(--forest); }
 .aw-filter__option .n { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
 .aw-filter__option--on { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); background: var(--forest-tint); color: var(--forest); }
 
 /* sheet-only chrome — handle, title row, Clear / Apply. Desktop menus hide it. */
 .aw-filter__sheet-head, .aw-filter__sheet-foot, .aw-filter__handle { display: none; }
-.aw-filter__backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }
+.aw-backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }   /* one dim layer behind any open sheet */
 
 /* picked options also sit in the bar as removable chips, after the facet pills */
 .aw-chip {
   display: inline-flex; align-items: center; gap: 0.6rem; cursor: pointer;
-  min-height: 44px; padding: 0 0.9rem 0 1.1rem; border-radius: var(--radius-pill);
-  background: #fff; color: var(--forest); border: 1px solid var(--forest); box-shadow: inset 0 0 0 1px var(--forest), var(--shadow-sm);
-  font: inherit; font-size: 0.92rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+  min-height: 34px; padding: 0 0.7rem 0 0.9rem; border-radius: var(--radius-pill);
+  background: #fff; color: var(--forest); border: 1.5px solid var(--forest); box-shadow: var(--shadow-sm);
+  font: inherit; font-size: 0.85rem; font-weight: 600; white-space: nowrap; flex-shrink: 0;
 }
 .aw-chip i { font-size: 0.85rem; color: var(--muted); }
 .aw-chip:hover i { color: var(--forest); }
@@ -169,15 +170,14 @@
 }
 .aw-layers__title { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: var(--heading); margin-bottom: 0.6rem; }
 .aw-layers__sheet-close { display: none; }
-.aw-layers__backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }
 .aw-layers__title i { font-size: 0.7rem; color: var(--muted); }
 .aw-layers__row { display: flex; gap: 0.5rem; }
 .aw-layer {
-  width: 56px; cursor: pointer; border: none; background: none; padding: 0; font: inherit;
+  width: 48px; cursor: pointer; border: none; background: none; padding: 0; font: inherit;
   display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
 }
 .aw-layer__thumb {
-  width: 56px; height: 56px; border-radius: var(--radius-sm); overflow: hidden;
+  width: 48px; height: 48px; border-radius: var(--radius-sm); overflow: hidden;
   border: 2px solid transparent; transition: border-color 0.15s ease;
 }
 .aw-layer__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -192,23 +192,18 @@
    -------------------------------------------------------------------------- */
 .aw-controls { display: flex; flex-direction: column; gap: 0.5rem; }
 .aw-control {
-  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer;
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer;
   background: #fff; color: var(--forest); font-size: 1rem; box-shadow: var(--shadow-sm);
   display: inline-flex; align-items: center; justify-content: center;
 }
 .aw-control:hover { background: var(--forest-tint); }
-.aw-control--quick-layer { display: none; width: 56px; height: 56px; border-radius: var(--radius-md); padding: 0; overflow: hidden; border: 2px solid #fff; }
+.aw-control--quick-layer { display: none; width: 48px; height: 48px; border-radius: var(--radius-md); padding: 0; overflow: hidden; border: 2px solid #fff; }
 .aw-control--quick-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Map / List switch — mobile only. The AllTrails pill: one floating button
-   at the foot of the screen that flips between the two full-screen views. */
-.aw-view-toggle {
-  display: none; position: absolute; z-index: 600; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
-  align-items: center; gap: 0.6rem; min-height: 48px; padding: 0 1.4rem; border: none; cursor: pointer;
-  border-radius: var(--radius-pill); background: var(--forest); color: #fff; box-shadow: var(--shadow-lg);
-  font: inherit; font-size: 1rem; font-weight: 700;
-}
-.aw-view-toggle [data-when="list"] { display: none; }
+/* List | Map switch — mobile only. The shared .lf-toggle (nearby-waters'
+   toolbar control), floated at the foot of the screen; it flips between the
+   two full-screen views and shows which one you're on. */
+.aw-view-toggle { display: none; position: absolute; z-index: 600; left: 50%; bottom: 2.25rem; transform: translateX(-50%); background: #fff; box-shadow: var(--shadow-lg); }
 
 /* Mobile selection card — tap a pin and the water's card docks to the foot of
    the map (no hover popup on touch). The List pill rides up above it. */
@@ -221,8 +216,7 @@
 .aw-mobile-card .lf-water-selection-card__type,
 .aw-mobile-card .lf-water-selection-card__species { font-size: 0.82rem; }
 .aw-mobile-card .lf-water-selection-card__close { width: 2rem; height: 2rem; font-size: 0.9rem; top: 0.6rem; right: 0.6rem; }
-.aw-page--list .aw-view-toggle [data-when="map"]  { display: none; }
-.aw-page--list .aw-view-toggle [data-when="list"] { display: inline-flex; align-items: center; gap: 0.6rem; }
+
 
 /* --------------------------------------------------------------------------
    Leaflet overrides — strip the default popup chrome so the DS selection
@@ -249,17 +243,16 @@
   .aw-filters::-webkit-scrollbar { display: none; }
   .aw-filter { flex-shrink: 0; }
   /* pills: same 42px tap height, lighter everything else */
-  .aw-filter__btn { min-height: 42px; padding: 0 0.9rem; font-size: 0.85rem; }
+  .aw-filter__btn { padding: 0 0.8rem; font-size: 0.82rem; }
   .aw-filter__btn i.caret { font-size: 0.6rem; }
-  .aw-chip { min-height: 42px; padding: 0 0.75rem 0 0.9rem; font-size: 0.85rem; }
+  .aw-chip { padding: 0 0.65rem 0 0.8rem; font-size: 0.82rem; }
   /* search: a round magnifier at the start of the row, opening a sheet */
-  .aw-search-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%;
-    border: 1px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-sm); }
+  .aw-search-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-sm); }
   .aw-topbar__search { position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; background: #fff;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-page--search .aw-topbar__search { display: block; }
   .aw-page--search .aw-topbar { z-index: 1000; }
-  .aw-page--search .aw-topbar > .aw-filter__backdrop { display: block; }
   .aw-page--search .aw-view-toggle, .aw-page--search .aw-rail { display: none; }
   .aw-filter__sheet-foot--one { grid-template-columns: 1fr; }
   /* the tile menu becomes a bottom sheet, clear of the scrolling pill row */
@@ -267,19 +260,18 @@
     display: none; flex-direction: column; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: none;
     padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-filter--open .aw-filter__menu { display: flex; }
-  .aw-filter--open ~ .aw-filter__backdrop, .aw-filters:has(.aw-filter--open) ~ .aw-filter__backdrop { display: block; }
   .aw-filter__handle { display: block; width: 44px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 1.5rem; }
   .aw-filter__sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
   .aw-filter__sheet-title { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
-  .aw-filter__sheet-close { width: 2.75rem; height: 2.75rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
+  .aw-filter__sheet-close { width: 2.25rem; height: 2.25rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
   .aw-filter__grid { overflow-y: auto; gap: 0.75rem; }
-  .aw-filter__option { padding: 0.95rem 1.1rem; font-size: 1.05rem; }
+  .aw-filter__option { padding: 0.7rem 0.9rem; font-size: 0.95rem; }
   .aw-filter__option .n { display: none; }
   /* three water types: one row, equal widths */
   .aw-filter[data-facet="type"] .aw-filter__grid { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .aw-filter[data-facet="type"] .aw-filter__option { justify-content: center; padding: 0.95rem 0.5rem; }
+  .aw-filter[data-facet="type"] .aw-filter__option { justify-content: center; padding: 0.7rem 0.5rem; }
   .aw-filter__sheet-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
-  .aw-filter__clear, .aw-filter__apply { min-height: 52px; border-radius: var(--radius-pill); font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .aw-filter__clear, .aw-filter__apply { min-height: 42px; border-radius: var(--radius-pill); font: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
   .aw-filter__clear { background: #fff; border: 2px solid var(--border); color: var(--forest); }
   .aw-filter__clear:disabled { color: var(--muted); border-color: var(--border); opacity: 0.6; cursor: default; }
   .aw-filter__apply { background: var(--forest); color: #fff; border: none; }
@@ -287,42 +279,52 @@
   /* panel is the full-screen list view */
   .aw-panel { inset: 0; width: auto; border: none; border-radius: 0; box-shadow: none; background: var(--bg); display: none; }
   .aw-panel__head, .aw-panel__search { display: none; }
-  .aw-panel__count-row { padding: calc(0.75rem + 42px + 0.9rem) 1rem 0.9rem; }   /* clears the floating pills */
+  .aw-panel__banner { display: block; padding: 1.25rem 0 1rem; }
+  .aw-panel__banner .lf-explore-banner__search { max-width: none; }
+  .aw-panel__filters { display: block; border-bottom: 1px solid var(--border); }
+  .aw-panel__filters .aw-filters { padding: 0.75rem 1rem; }
+  .aw-panel__filters .aw-search-btn { display: none; }   /* the banner has the search bar */
+  .aw-panel__filters .aw-filter__btn, .aw-panel__filters .aw-chip { box-shadow: none; }
+  .aw-panel__count-row { padding: 0.9rem 1rem; }
   .aw-panel__list { padding: 1rem 1rem calc(5rem + env(safe-area-inset-bottom)); }
   .aw-card__nav { display: none; }   /* swipe on touch; dots stay */
 
-  .aw-page--list .aw-panel { display: flex; }
+  .aw-page--list .aw-panel { display: flex; overflow-y: auto; }
+  .aw-page--list .aw-panel > * { flex-shrink: 0; }   /* banner and pills keep their height; the panel scrolls instead */
+  .aw-page--list .aw-panel__list { flex: none; overflow: visible; }   /* the whole panel scrolls, banner included */
+  .aw-page--list:has(.aw-filter--open) .aw-panel { z-index: 1000; }   /* pills live in the panel here: lift it for its sheet */
   .aw-page--list .aw-map, .aw-page--list .aw-rail { display: none; }
 
   /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
-  .aw-rail { top: calc(0.75rem + 42px + 0.75rem); right: 0.75rem; }
+  .aw-rail { top: calc(0.75rem + 34px + 0.75rem); right: 0.75rem; }
   #aw-zoom-in, #aw-zoom-out { display: none; }
-  .aw-control--quick-layer { display: block; order: -1; width: 44px; height: 44px; border-radius: 50%; }
+  .aw-control--quick-layer { display: block; order: -1; width: 36px; height: 36px; border-radius: 50%; }
   /* the layers card becomes a bottom sheet, opened from the quick thumb */
   .aw-layers { display: none; position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; border: none;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-page--layers .aw-layers { display: block; }
-  .aw-page--layers .aw-layers__backdrop { display: block; }
   .aw-layers__title { justify-content: space-between; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.015em; margin-bottom: 1.25rem; }
   .aw-layers__title > i { display: none; }
-  .aw-layers__sheet-close { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
+  .aw-layers__sheet-close { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
   .aw-layers__row { gap: 1rem; }
-  .aw-layer { width: 96px; gap: 0.5rem; }
-  .aw-layer__thumb { width: 96px; height: 96px; border-radius: var(--radius-md); }
+  .aw-layer { width: 80px; gap: 0.4rem; }
+  .aw-layer__thumb { width: 80px; height: 80px; border-radius: var(--radius-md); }
   .aw-layer__label { font-size: 0.9rem; }
 
-  .aw-view-toggle { display: inline-flex; bottom: 2.25rem; }
+  .aw-view-toggle { display: inline-flex; }
+  .aw-view-toggle .lf-toggle__btn { min-height: 0; }
 
   /* while a sheet is open it owns the screen: its container is lifted above
      everything, and the List pill and rail buttons are hidden underneath */
   .aw-page:has(.aw-filter--open) .aw-topbar { z-index: 1000; }
+  .aw-page:has(.aw-filter--open) > .aw-backdrop, .aw-page--search > .aw-backdrop, .aw-page--layers > .aw-backdrop { display: block; }
   .aw-page:has(.aw-filter--open) .aw-view-toggle,
   .aw-page:has(.aw-filter--open) .aw-rail,
   .aw-page--layers .aw-view-toggle,
   .aw-page--layers .aw-control { display: none; }
   .aw-page--layers .aw-rail { z-index: 1000; }
   .aw-page--card .aw-mobile-card { display: block; }
-  .aw-page--card .aw-view-toggle { display: none; }   /* one floating thing at the foot of the map, not two */
+  .aw-page--card .aw-view-toggle { bottom: calc(0.75rem + 122px + 0.75rem); }   /* rides up above the docked card */
   .aw-page--list .aw-mobile-card { display: none; }
 }
 </style>
@@ -362,7 +364,6 @@
         <button type="button" class="aw-filter__apply" data-search-close>Done</button>
       </div>
     </div>
-    <div class="aw-filter__backdrop" data-search-close></div>
   <!-- ──────────────── Filter pills ──────────────── -->
     <div class="aw-filters id="aw-filters">
     <!-- phone only: search lives behind a magnifier that opens a sheet -->
@@ -416,7 +417,6 @@
     <!-- picked options, as removable chips -->
     <div class="aw-chips" id="aw-chips" style="display: contents"></div>
     </div>
-    <div class="aw-filter__backdrop" data-backdrop></div>
   </div>
 
   <div class="aw-stage">
@@ -427,6 +427,22 @@
 
   <!-- ──────────────── Explore panel ──────────────── -->
   <aside class="aw-panel" id="aw-panel">
+    <!-- phone list view only: the shared explore banner (destinations / nearby), then the pills -->
+    <div class="lf-explore-banner aw-panel__banner">
+      <div class="container">
+        <h1 class="lf-explore-banner__title">All waters</h1>
+        <p class="lf-explore-banner__count">Explore wild fishing waters across the UK</p>
+        <div class="lf-explore-banner__toolbar">
+          <div class="lf-explore-banner__search">
+            <div class="lf-search-bar">
+              <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
+              <input type="text" class="lf-search-bar__input" data-search placeholder="Search by name, location or species...">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="aw-panel__filters" id="aw-list-filters"></div>
     <div class="aw-panel__head">
       <h1 class="aw-panel__title">Explore waters</h1>
       <button type="button" class="aw-panel__collapse" id="aw-collapse" title="Collapse"><i class="fa-solid fa-chevron-up"></i></button>
@@ -472,18 +488,18 @@
   </div>
   </div>
 
-  <div class="aw-layers__backdrop" id="aw-layers-backdrop"></div>
-
   <!-- ──────────────── Docked selection card (mobile) ──────────────── -->
   <div class="aw-mobile-card" id="aw-mobile-card"></div>
 
   <!-- ──────────────── Map / List switch (mobile) ──────────────── -->
-  <button type="button" class="aw-view-toggle" id="aw-view-toggle">
-    <span data-when="map"><i class="fa-solid fa-list"></i> List</span>
-    <span data-when="list"><i class="fa-solid fa-map"></i> Map</span>
-  </button>
+  <div class="lf-toggle aw-view-toggle" id="aw-view-toggle">
+    <button type="button" class="lf-toggle__btn" data-view="list"><i class="fa-solid fa-list"></i> List</button>
+    <button type="button" class="lf-toggle__btn lf-toggle__btn--active" data-view="map"><i class="fa-solid fa-map"></i> Map</button>
+  </div>
 
   </div><!-- /.aw-stage -->
+
+  <div class="aw-backdrop" id="aw-backdrop"></div>
 
 </main>
 
@@ -648,7 +664,7 @@ document.querySelectorAll('.aw-filter[data-facet]').forEach(el => {
   el.querySelector('[data-clear]').addEventListener('click', () => { filters[facet].clear(); applyFilters() })
   el.querySelector('.aw-filter__menu').addEventListener('click', e => e.stopPropagation())
 })
-document.querySelector('[data-backdrop]').addEventListener('click', closeMenus)
+document.getElementById('aw-backdrop').addEventListener('click', () => { closeMenus(); page.classList.remove('aw-page--search', 'aw-page--layers') })
 document.addEventListener('click', closeMenus)
 function closeMenus() { document.querySelectorAll('.aw-filter--open').forEach(el => el.classList.remove('aw-filter--open')) }
 
@@ -756,9 +772,17 @@ map.on('click', () => { if (isMobile()) deselect() })
 // Chrome — collapse, zoom, layers.
 // ---------------------------------------------------------------------------
 document.getElementById('aw-collapse').addEventListener('click', () => document.getElementById('aw-panel').classList.toggle('aw-panel--collapsed'))
-document.getElementById('aw-view-toggle').addEventListener('click', () => {
-  page.classList.toggle('aw-page--list')
-  if (!page.classList.contains('aw-page--list')) map.invalidateSize()
+// On the phone the pills float over the map but sit under the banner in the
+// list view, so the one .aw-filters node moves between the two homes.
+const filtersEl = document.getElementById('aw-filters')
+const toggle = document.getElementById('aw-view-toggle')
+toggle.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-view]'); if (!btn) return
+  const list = btn.dataset.view === 'list'
+  page.classList.toggle('aw-page--list', list)
+  toggle.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('lf-toggle__btn--active', b === btn))
+  if (list) document.getElementById('aw-list-filters').appendChild(filtersEl)
+  else { filtersEl.ownerDocument.querySelector('.aw-topbar').appendChild(filtersEl); map.invalidateSize() }
 })
 document.getElementById('aw-quick-layer').addEventListener('click', () => page.classList.add('aw-page--layers'))
 document.getElementById('aw-search-open').addEventListener('click', () => {
@@ -767,7 +791,6 @@ document.getElementById('aw-search-open').addEventListener('click', () => {
 })
 document.querySelectorAll('[data-search-close]').forEach(b => b.addEventListener('click', () => page.classList.remove('aw-page--search')))
 document.getElementById('aw-layers-close').addEventListener('click', () => page.classList.remove('aw-page--layers'))
-document.getElementById('aw-layers-backdrop').addEventListener('click', () => page.classList.remove('aw-page--layers'))
 document.getElementById('aw-zoom-in').addEventListener('click', () => map.zoomIn())
 document.getElementById('aw-zoom-out').addEventListener('click', () => map.zoomOut())
 document.getElementById('aw-layers').addEventListener('click', (e) => {
