@@ -147,8 +147,9 @@
 .aw-filter__option--on { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); background: var(--forest-tint); color: var(--forest); }
 
 /* sheet-only chrome — handle, title row, Clear / Apply. Desktop menus hide it. */
-.aw-filter__sheet-head, .aw-filter__sheet-foot, .aw-filter__handle { display: none; }
-.aw-backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(60, 56, 51, 0.55); }   /* one dim layer behind any open sheet */
+.aw-filter__sheet-head, .aw-filter__sheet-foot, .aw-filter__handle, .aw-sheet-close { display: none; }
+.aw-sheet-close { position: static; }   /* shared .lf-modal__close, sat in the sheet's head row rather than pinned to a corner */
+.aw-backdrop { display: none; position: fixed; inset: 0; z-index: 900; background: rgba(34, 69, 63, 0.55); }   /* the .lf-modal scrim */   /* one dim layer behind any open sheet */
 
 /* picked options also sit in the bar as removable chips, after the facet pills */
 .aw-chip {
@@ -169,7 +170,6 @@
   box-shadow: var(--shadow-md); padding: 0.75rem 0.85rem;
 }
 .aw-layers__title { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 700; color: var(--heading); margin-bottom: 0.6rem; }
-.aw-layers__sheet-close { display: none; }
 .aw-layers__title i { font-size: 0.7rem; color: var(--muted); }
 .aw-layers__row { display: flex; gap: 0.5rem; }
 .aw-layer {
@@ -197,8 +197,7 @@
   display: inline-flex; align-items: center; justify-content: center;
 }
 .aw-control:hover { background: var(--forest-tint); }
-.aw-control--quick-layer { display: none; width: 48px; height: 48px; border-radius: var(--radius-md); padding: 0; overflow: hidden; border: 2px solid #fff; }
-.aw-control--quick-layer img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-control--quick-layer { display: none; }   /* phone: an icon button, same chrome as + / − */
 
 /* List | Map switch — mobile only. The shared .lf-toggle (nearby-waters'
    toolbar control), floated at the foot of the screen; it flips between the
@@ -215,7 +214,11 @@
 .aw-mobile-card .lf-water-selection-card__loc { font-size: 0.85rem; color: var(--muted); }
 .aw-mobile-card .lf-water-selection-card__type,
 .aw-mobile-card .lf-water-selection-card__species { font-size: 0.82rem; }
-.aw-mobile-card .lf-water-selection-card__close { width: 2rem; height: 2rem; font-size: 0.9rem; top: 0.6rem; right: 0.6rem; }
+/* the selection card's own close rules come later in components.css than
+   .lf-modal__close, so restate the modal close here to win the cascade */
+.aw-mobile-card .lf-water-selection-card__close { top: 0.75rem; right: 0.75rem; width: 2.25rem; height: 2.25rem;
+  background: var(--bg); border: 1.5px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+.aw-mobile-card .lf-water-selection-card__close:hover { background: var(--cta-bg); color: var(--forest); }
 
 
 /* --------------------------------------------------------------------------
@@ -249,7 +252,7 @@
   /* search: a round magnifier at the start of the row, opening a sheet */
   .aw-search-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
     border: 1.5px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; box-shadow: var(--shadow-sm); }
-  .aw-topbar__search { position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; background: #fff;
+  .aw-topbar__search { position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; background: var(--bg);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-page--search .aw-topbar__search { display: block; }
   .aw-page--search .aw-topbar { z-index: 1000; }
@@ -257,13 +260,13 @@
   .aw-filter__sheet-foot--one { grid-template-columns: 1fr; }
   /* the tile menu becomes a bottom sheet, clear of the scrolling pill row */
   .aw-filter__menu { position: fixed; z-index: 1000; top: auto; left: 0; right: 0; bottom: 0; width: auto; max-width: none; max-height: 88vh;
-    display: none; flex-direction: column; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: none;
+    display: none; flex-direction: column; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: none; background: var(--bg);
     padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-filter--open .aw-filter__menu { display: flex; }
+  .aw-sheet-close { display: inline-flex; }
   .aw-filter__handle { display: block; width: 44px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 1.5rem; }
   .aw-filter__sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
   .aw-filter__sheet-title { font-size: 1.35rem; font-weight: 800; color: var(--heading); letter-spacing: -0.015em; }
-  .aw-filter__sheet-close { width: 2.25rem; height: 2.25rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
   .aw-filter__grid { overflow-y: auto; gap: 0.75rem; }
   .aw-filter__option { padding: 0.7rem 0.9rem; font-size: 0.95rem; }
   .aw-filter__option .n { display: none; }
@@ -295,17 +298,15 @@
   .aw-page--list:has(.aw-filter--open) .aw-panel { z-index: 1000; }   /* pills live in the panel here: lift it for its sheet */
   .aw-page--list .aw-map, .aw-page--list .aw-rail { display: none; }
 
-  /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
+  /* right rail: layers, then + / −, all the same 36px round button */
   .aw-rail { top: calc(0.75rem + 34px + 0.75rem); right: 0.75rem; }
-  #aw-zoom-in, #aw-zoom-out { display: none; }
-  .aw-control--quick-layer { display: block; order: -1; width: 36px; height: 36px; border-radius: 50%; }
+  .aw-control--quick-layer { display: inline-flex; order: -1; }
   /* the layers card becomes a bottom sheet, opened from the quick thumb */
-  .aw-layers { display: none; position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; border: none;
+  .aw-layers { display: none; position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; border: none; background: var(--bg);
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
   .aw-page--layers .aw-layers { display: block; }
   .aw-layers__title { justify-content: space-between; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.015em; margin-bottom: 1.25rem; }
   .aw-layers__title > i { display: none; }
-  .aw-layers__sheet-close { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: none; background: var(--chip-bg); color: var(--forest); font-size: 1rem; cursor: pointer; }
   .aw-layers__row { gap: 1rem; }
   .aw-layer { width: 80px; gap: 0.4rem; }
   .aw-layer__thumb { width: 80px; height: 80px; border-radius: var(--radius-md); }
@@ -354,7 +355,7 @@
       <div class="aw-filter__handle"></div>
       <div class="aw-filter__sheet-head">
         <h2 class="aw-filter__sheet-title">Search</h2>
-        <button type="button" class="aw-filter__sheet-close" data-search-close><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="lf-modal__close aw-sheet-close" data-search-close aria-label="Close">&#x2715;</button>
       </div>
       <div class="lf-search-bar">
         <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
@@ -375,7 +376,7 @@
         <div class="aw-filter__handle"></div>
         <div class="aw-filter__sheet-head">
           <h2 class="aw-filter__sheet-title">Water type</h2>
-          <button type="button" class="aw-filter__sheet-close" data-close><i class="fa-solid fa-xmark"></i></button>
+          <button type="button" class="lf-modal__close aw-sheet-close" data-close aria-label="Close">&#x2715;</button>
         </div>
         <div class="aw-filter__grid">
         <button type="button" class="aw-filter__option" data-value="Lake"><i class="fa-solid fa-water"></i> Lakes <span class="n" data-n="Lake"></span></button>
@@ -395,7 +396,7 @@
         <div class="aw-filter__handle"></div>
         <div class="aw-filter__sheet-head">
           <h2 class="aw-filter__sheet-title">Species</h2>
-          <button type="button" class="aw-filter__sheet-close" data-close><i class="fa-solid fa-xmark"></i></button>
+          <button type="button" class="lf-modal__close aw-sheet-close" data-close aria-label="Close">&#x2715;</button>
         </div>
         <div class="aw-filter__grid">
         <button type="button" class="aw-filter__option" data-value="Brown trout"><i class="fa-solid fa-fish"></i> Brown trout <span class="n" data-n="Brown trout"></span></button>
@@ -463,7 +464,7 @@
   <!-- ──────────────── Right rail: map layers + zoom / locate ──────────────── -->
   <div class="aw-rail">
   <div class="aw-layers">
-    <div class="aw-layers__title">Map layers <i class="fa-solid fa-chevron-right"></i><button type="button" class="aw-layers__sheet-close" id="aw-layers-close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="aw-layers__title">Map layers <i class="fa-solid fa-chevron-right"></i><button type="button" class="lf-modal__close aw-sheet-close" id="aw-layers-close" aria-label="Close">&#x2715;</button></div>
     <div class="aw-layers__row" id="aw-layers">
       <button type="button" class="aw-layer aw-layer--active" data-layer="topo">
         <span class="aw-layer__thumb"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></span>
@@ -484,7 +485,7 @@
   <div class="aw-controls">
     <button type="button" class="aw-control" id="aw-zoom-in" title="Zoom in"><i class="fa-solid fa-plus"></i></button>
     <button type="button" class="aw-control" id="aw-zoom-out" title="Zoom out"><i class="fa-solid fa-minus"></i></button>
-    <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Map layers"><img src="https://a.tile.opentopomap.org/11/1001/634.png" alt=""></button>
+    <button type="button" class="aw-control aw-control--quick-layer" id="aw-quick-layer" title="Map layers"><i class="fa-solid fa-layer-group"></i></button>
   </div>
   </div>
 
@@ -605,7 +606,7 @@ const selectionCard = (w) => `
         <span class="lf-water-selection-card__species"><i class="fa fa-fish"></i> ${w.species.join(', ')}</span>
       </div>
     </a>
-    <button class="lf-water-selection-card__close" type="button"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lf-water-selection-card__close${isMobile() ? ' lf-modal__close' : ''}" type="button" aria-label="Close">${isMobile() ? '&#x2715;' : '<i class="fa-solid fa-xmark"></i>'}</button>
   </div>`
 
 let hoverPopup = null
@@ -798,7 +799,6 @@ document.getElementById('aw-layers').addEventListener('click', (e) => {
   document.querySelectorAll('.aw-layer').forEach(b => b.classList.toggle('aw-layer--active', b === btn))
   map.removeLayer(activeLayer)
   activeLayer = LAYERS[btn.dataset.layer].addTo(map)
-  document.querySelector('#aw-quick-layer img').src = btn.querySelector('img').src
   page.classList.remove('aw-page--layers')
 })
 
