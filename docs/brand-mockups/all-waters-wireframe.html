@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All waters — wireframes</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   All waters — low-fi wireframes, desktop and phone, after the de-clutter
+   pass agreed in user testing. Grey boxes only; the hi-fi lives in
+   all-waters.html. Numbered callouts match the change list at the top.
+   ========================================================================== */
+:root { --ink: #3C3833; --line: #8a847a; --soft: #e9e6df; --softer: #f4f2ed; --mark: #DD9951; --map: #dfe6dc; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito Sans', system-ui, sans-serif; color: var(--ink); background: #fff; padding: 2.5rem 2rem 4rem; }
+h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.4rem; }
+h2 { font-size: 1.1rem; font-weight: 800; margin: 2.5rem 0 1rem; }
+p.lede { color: #6b655c; max-width: 60ch; margin-bottom: 1rem; }
+ol.changes { max-width: 64ch; margin-bottom: 1rem; padding-left: 1.4rem; line-height: 1.55; }
+ol.changes li { margin-bottom: 0.25rem; }
+.row { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+.caption { font-size: 0.82rem; color: #6b655c; margin-top: 0.6rem; }
+
+/* frame + wire primitives */
+.frame { background: #fff; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; position: relative; }
+.box { border: 1.5px solid var(--line); border-radius: 6px; background: #fff; position: relative; }
+.box--soft { background: var(--soft); }
+.box--dash { border-style: dashed; }
+.pill { display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--line); border-radius: 999px; background: #fff; font-size: 11px; font-weight: 600; padding: 0 10px; height: 26px; white-space: nowrap; }
+.pill--on { border-width: 2px; border-color: var(--ink); }
+.pill--solid { background: var(--ink); color: #fff; border-color: var(--ink); }
+.round { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.label { font-size: 10px; font-weight: 600; color: #6b655c; }
+.title { font-size: 12px; font-weight: 800; }
+.line { height: 6px; border-radius: 3px; background: var(--soft); margin-top: 5px; }
+.line--short { width: 55%; }
+.photo { background: repeating-linear-gradient(135deg, var(--soft) 0 8px, var(--softer) 8px 16px); border: 1.5px solid var(--line); border-radius: 6px; }
+.nav { background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-weight: 800; font-size: 12px; }
+.nav .pill { height: 22px; font-size: 10px; background: transparent; color: #fff; border-color: #fff; }
+.map { background: var(--map); position: relative;
+  background-image: linear-gradient(#cfd8cb 1px, transparent 1px), linear-gradient(90deg, #cfd8cb 1px, transparent 1px); background-size: 40px 40px; }
+.pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--line); }
+.pin--on { background: var(--ink); border-color: var(--ink); }
+.cluster { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+.callout { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: var(--mark); color: var(--ink); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 0 0 2px #fff; }
+
+/* ---------------- desktop ---------------- */
+.desktop { width: 960px; height: 600px; }
+.desktop .nav { height: 44px; }
+.desktop .map { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; }
+.panel { position: absolute; top: 16px; left: 16px; bottom: 16px; width: 280px; background: #fff; border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.panel .head { display: flex; justify-content: space-between; align-items: center; }
+.panel .search { height: 28px; border-radius: 999px; }
+.panel .count { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--soft); }
+.card { border: 1.5px solid var(--line); border-radius: 8px; padding: 8px; }
+.card--on { border-width: 2px; border-color: var(--ink); }
+.card .photo { height: 70px; margin-bottom: 6px; }
+.card .tags { display: flex; gap: 4px; margin-top: 6px; }
+.card .tags span { font-size: 9px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 6px; }
+.filters { position: absolute; top: 16px; left: 312px; display: flex; gap: 6px; }
+.rail { position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.layers { border: 1.5px solid var(--line); border-radius: 8px; background: #fff; padding: 6px 8px; }
+.layers .thumbs { display: flex; gap: 4px; margin-top: 4px; }
+.layers .thumbs div { width: 30px; height: 30px; }
+.popup { position: absolute; width: 170px; background: #fff; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px; display: flex; gap: 6px; }
+.popup .photo { width: 40px; height: 40px; flex-shrink: 0; }
+
+/* ---------------- phone ---------------- */
+.phone { width: 230px; height: 470px; border-radius: 22px; display: flex; flex-direction: column; }
+.phone .nav { height: 36px; padding: 0 10px; font-size: 11px; }
+.phone .bar { display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--soft); overflow: hidden; }
+.phone .bar .pill { height: 24px; font-size: 9.5px; padding: 0 8px; }
+.phone .bar .round { width: 24px; height: 24px; flex-shrink: 0; }
+.phone .stage { position: relative; flex: 1; overflow: hidden; }
+.phone .map { position: absolute; inset: 0; }
+.phone .rail { top: 10px; right: 10px; gap: 6px; }
+.phone .round--thumb { background: repeating-linear-gradient(135deg, var(--soft) 0 4px, var(--softer) 4px 8px); }
+.phone .toggle { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); }
+.phone .dock { position: absolute; left: 8px; right: 8px; bottom: 8px; background: #fff; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px; display: flex; gap: 6px; }
+.phone .dock .photo { width: 46px; height: 46px; flex-shrink: 0; }
+.phone .list { position: absolute; inset: 0; background: #fff; padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.phone .list .count { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; }
+.phone .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border: 1.5px solid var(--line); border-bottom: none; border-radius: 14px 14px 0 0; padding: 10px 12px 12px; }
+.phone .dim { position: absolute; inset: 0; background: rgba(60,56,51,0.35); }
+.phone .sheet .handle { width: 30px; height: 3px; background: var(--soft); border-radius: 2px; margin: 0 auto 8px; }
+.phone .sheet .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.phone .sheet .tiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.phone .sheet .tile { border: 1.5px solid var(--line); border-radius: 6px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 600; }
+.phone .sheet .tile--on { border-width: 2px; border-color: var(--ink); }
+.phone .sheet .foot { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--soft); }
+.phone .sheet .foot .pill { height: 28px; justify-content: center; }
+</style>
+</head>
+<body>
+
+<h1>All waters — wireframes</h1>
+<p class="lede">Desktop and phone after the de-clutter pass. Grey boxes only; the working hi-fi is <a href="all-waters.html">all-waters.html</a>. Orange numbers are the changes:</p>
+<ol class="changes">
+  <li><strong>Search folds into the filter row</strong> on the phone — a round magnifier that opens search as a sheet. Desktop keeps the search bar in the panel.</li>
+  <li><strong>"All" pill dropped</strong> on both. Two facets don't need a master filter.</li>
+  <li><strong>Pills trimmed</strong> on the phone: same 42px tap height, smaller text, tighter padding, thinner border, no shadow.</li>
+  <li><strong>Layers becomes a 44px round button</strong> on the phone, matching Near me, so the rail is one small stack.</li>
+  <li><strong>Fewer, smaller pins</strong> on the phone: bigger cluster radius, 28px pins.</li>
+  <li><strong>List pill hides while a card is docked.</strong> Dismissing the card brings it back.</li>
+</ol>
+
+<!-- ════════════════════════════════ DESKTOP ════════════════════════════════ -->
+<h2>Desktop (≥ 860px)</h2>
+<div class="row">
+  <div>
+    <div class="frame desktop">
+      <div class="nav"><span>let's fish</span><span style="display:flex;gap:6px"><span class="pill">Sign in</span><span class="pill">Sign up</span></span></div>
+      <div class="map">
+        <!-- pins -->
+        <div class="cluster" style="top:90px;left:520px">4</div>
+        <div class="cluster" style="top:300px;left:430px">7</div>
+        <div class="pin" style="top:150px;left:640px"></div>
+        <div class="pin pin--on" style="top:210px;left:580px"></div>
+        <div class="pin" style="top:360px;left:700px"></div>
+        <div class="pin" style="top:420px;left:560px"></div>
+        <div class="pin" style="top:250px;left:760px"></div>
+        <div class="cluster" style="top:440px;left:800px">3</div>
+        <!-- hover popup on the selected pin -->
+        <div class="popup" style="top:148px;left:510px">
+          <div class="photo"></div>
+          <div style="flex:1"><div class="title">Loch Ard</div><div class="line line--short"></div><div class="line"></div></div>
+        </div>
+
+        <!-- explore panel -->
+        <div class="panel">
+          <div class="head"><span class="title" style="font-size:14px">Explore waters</span><span class="round">^</span></div>
+          <div class="box search"><span class="label" style="padding-left:10px;line-height:25px">⌕ Search by name, location or species</span></div>
+          <div class="count"><span>12 waters</span><span>Most relevant ▾</span></div>
+          <div class="card card--on"><div class="photo"></div><div class="title">Loch Ard</div><div class="line line--short"></div><div class="line"></div><div class="line"></div><div class="tags"><span>Lake</span><span>Brown trout &amp; pike</span></div></div>
+          <div class="card"><div class="photo"></div><div class="title">River Teith</div><div class="line line--short"></div><div class="line"></div><div class="tags"><span>River</span><span>Salmon &amp; sea trout</span></div></div>
+          <div class="label" style="text-align:center;margin-top:auto">scrolls ↓</div>
+        </div>
+
+        <!-- filters -->
+        <div class="filters">
+          <span class="pill">Water type ▾</span>
+          <span class="pill">Species ▾</span>
+          <span class="pill pill--on">Brown trout ×</span>
+          <div class="callout" style="position:static">2</div>
+        </div>
+
+        <!-- rail -->
+        <div class="rail">
+          <div class="layers"><div class="label">Map layers ›</div><div class="thumbs"><div class="photo" style="border-color:var(--ink);border-width:2px"></div><div class="photo"></div><div class="photo"></div></div></div>
+          <span class="round">+</span><span class="round">−</span><span class="round">➤</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption">Panel on the left lists what's in view. Hover a card → its pin fills and the popup card opens. Hover a pin → same in reverse.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ PHONE ════════════════════════════════ -->
+<h2>Phone (&lt; 860px)</h2>
+<div class="row">
+
+  <!-- A: map -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span style="display:flex;gap:4px"><span class="pill">Sign in</span><span class="pill">Sign up</span></span></div>
+      <div class="bar">
+        <span class="round">⌕</span>
+        <span class="pill">Water type ▾</span>
+        <span class="pill">Species ▾</span>
+        <span class="pill pill--on">Brown trout ×</span>
+      </div>
+      <div class="stage">
+        <div class="map">
+          <div class="cluster" style="top:60px;left:60px">6</div>
+          <div class="cluster" style="top:150px;left:120px">4</div>
+          <div class="pin" style="top:110px;left:40px;width:14px;height:14px"></div>
+          <div class="pin" style="top:230px;left:160px;width:14px;height:14px"></div>
+          <div class="cluster" style="top:290px;left:70px">3</div>
+          <div class="pin" style="top:330px;left:150px;width:14px;height:14px"></div>
+          <div class="rail"><span class="round round--thumb"></span><span class="round">➤</span></div>
+          <span class="pill pill--solid toggle">☰ List</span>
+        </div>
+        <div class="callout" style="top:-28px;left:2px">1</div>
+        <div class="callout" style="top:-28px;left:98px">2</div>
+        <div class="callout" style="top:-28px;left:196px">3</div>
+        <div class="callout" style="top:2px;right:40px">4</div>
+        <div class="callout" style="top:120px;left:150px">5</div>
+      </div>
+    </div>
+    <p class="caption"><strong>A · Map.</strong> One row of chrome. Map gets ~60% of the screen.</p>
+  </div>
+
+  <!-- B: map with docked card -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span style="display:flex;gap:4px"><span class="pill">Sign in</span><span class="pill">Sign up</span></span></div>
+      <div class="bar">
+        <span class="round">⌕</span>
+        <span class="pill">Water type ▾</span>
+        <span class="pill">Species ▾</span>
+      </div>
+      <div class="stage">
+        <div class="map">
+          <div class="cluster" style="top:60px;left:60px">6</div>
+          <div class="pin pin--on" style="top:150px;left:120px;width:14px;height:14px"></div>
+          <div class="pin" style="top:110px;left:40px;width:14px;height:14px"></div>
+          <div class="pin" style="top:230px;left:160px;width:14px;height:14px"></div>
+          <div class="cluster" style="top:290px;left:70px">3</div>
+          <div class="rail"><span class="round round--thumb"></span><span class="round">➤</span></div>
+          <div class="dock">
+            <div class="photo"></div>
+            <div style="flex:1"><div class="title">Loch Venachar</div><div class="line line--short"></div><div class="line"></div></div>
+            <span class="label">×</span>
+          </div>
+        </div>
+        <div class="callout" style="bottom:70px;left:50%;margin-left:-10px">6</div>
+      </div>
+    </div>
+    <p class="caption"><strong>B · Pin tapped.</strong> Card docks at the foot; the List pill hides until the card is dismissed.</p>
+  </div>
+
+  <!-- C: list -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span style="display:flex;gap:4px"><span class="pill">Sign in</span><span class="pill">Sign up</span></span></div>
+      <div class="bar">
+        <span class="round">⌕</span>
+        <span class="pill">Water type ▾</span>
+        <span class="pill">Species ▾</span>
+      </div>
+      <div class="stage">
+        <div class="list">
+          <div class="count"><span>9 waters</span><span>Most relevant ▾</span></div>
+          <div class="card"><div class="photo" style="height:90px"></div><div class="title">Loch Venachar</div><div class="line line--short"></div><div class="line"></div><div class="tags"><span>Lake</span><span>Brown trout &amp; pike</span></div></div>
+          <div class="card"><div class="photo" style="height:90px"></div><div class="title">Loch Ard</div><div class="line line--short"></div><div class="line"></div><div class="tags"><span>Lake</span><span>Brown trout</span></div></div>
+          <span class="pill pill--solid toggle">▭ Map</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><strong>C · List.</strong> Full-screen cards; the pill flips back to the map.</p>
+  </div>
+
+  <!-- D: filter sheet -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span style="display:flex;gap:4px"><span class="pill">Sign in</span><span class="pill">Sign up</span></span></div>
+      <div class="bar">
+        <span class="round">⌕</span>
+        <span class="pill pill--on">Water type ▴</span>
+        <span class="pill">Species ▾</span>
+      </div>
+      <div class="stage">
+        <div class="map"></div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="handle"></div>
+          <div class="head"><span class="title">Water type</span><span class="round">×</span></div>
+          <div class="tiles"><div class="tile tile--on">Lakes</div><div class="tile">Rivers</div><div class="tile">Coastal</div></div>
+          <div class="foot"><span class="pill">Clear</span><span class="pill pill--solid">Apply</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><strong>D · Filter sheet.</strong> Same shape for Species, Map layers and Search.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

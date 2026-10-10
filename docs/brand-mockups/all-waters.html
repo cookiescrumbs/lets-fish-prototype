@@ -21,7 +21,7 @@
    greyed "Coming soon" tile. Modelled on AllTrails' Explore page: a
    full-bleed map under the solid forest header, a floating "Explore waters"
    panel on the left listing every water in view, filter pills over the map
-   (Water type, Species — nothing else for now), and a Map layers switcher
+   (Water type, Species — nothing else for now, so no "All" master pill), and a Map layers switcher
    top-right.
 
    The panel and the map are one thing: pan the map and the list re-filters
@@ -110,7 +110,7 @@
    -------------------------------------------------------------------------- */
 .aw-topbar { position: absolute; z-index: 500; top: 1.25rem; left: calc(380px + 2.5rem); right: 1.25rem; pointer-events: none; }
 .aw-topbar > * { pointer-events: auto; }
-.aw-topbar__search { display: none; }   /* mobile only — on desktop the search lives in the panel */
+.aw-topbar__search, .aw-search-btn { display: none; }   /* phone only — on desktop the search lives in the panel */
 .aw-filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .aw-filter { position: relative; }
 .aw-filter__btn {
@@ -243,13 +243,24 @@
    -------------------------------------------------------------------------- */
 @media (max-width: 860px) {
   .aw-page { min-height: 0; }
-  .aw-topbar { position: static; padding: 0.75rem 0 0.6rem; background: var(--bg); border-bottom: 1px solid var(--border); }
-  .aw-topbar__search { display: block; padding: 0 1rem 0.6rem; }
-  .aw-filters { flex-wrap: nowrap; overflow-x: auto; padding: 0.15rem 1rem; gap: 0.5rem; scrollbar-width: none; }
+  .aw-topbar { position: static; padding: 0.5rem 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+  .aw-filters { flex-wrap: nowrap; overflow-x: auto; padding: 0.1rem 0.75rem; gap: 0.4rem; scrollbar-width: none; }
   .aw-filters::-webkit-scrollbar { display: none; }
   .aw-filter { flex-shrink: 0; }
-  .aw-filter__btn { min-height: 42px; box-shadow: none; }
-  .aw-chip { min-height: 42px; box-shadow: none; }
+  /* pills: same 42px tap height, lighter everything else */
+  .aw-filter__btn { min-height: 42px; padding: 0 0.9rem; font-size: 0.85rem; box-shadow: none; }
+  .aw-filter__btn i.caret { font-size: 0.6rem; }
+  .aw-chip { min-height: 42px; padding: 0 0.75rem 0 0.9rem; font-size: 0.85rem; box-shadow: none; }
+  /* search: a round magnifier at the start of the row, opening a sheet */
+  .aw-search-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--border); background: #fff; color: var(--forest); font-size: 0.95rem; cursor: pointer; }
+  .aw-topbar__search { position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; background: #fff;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 0.6rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
+  .aw-page--search .aw-topbar__search { display: block; }
+  .aw-page--search .aw-topbar { position: relative; z-index: 1000; }
+  .aw-page--search .aw-topbar > .aw-filter__backdrop { display: block; }
+  .aw-page--search .aw-view-toggle, .aw-page--search .aw-rail { display: none; }
+  .aw-filter__sheet-foot--one { grid-template-columns: 1fr; }
   /* the tile menu becomes a bottom sheet, clear of the scrolling pill row */
   .aw-filter__menu { position: fixed; z-index: 1000; top: auto; left: 0; right: 0; bottom: 0; width: auto; max-width: none; max-height: 88vh;
     display: none; flex-direction: column; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: none;
@@ -285,7 +296,7 @@
   /* right rail: one satellite/topo quick-toggle + locate; pinch to zoom */
   .aw-rail { top: 0.75rem; right: 0.75rem; }
   #aw-zoom-in, #aw-zoom-out { display: none; }
-  .aw-control--quick-layer { display: block; order: -1; }
+  .aw-control--quick-layer { display: block; order: -1; width: 44px; height: 44px; border-radius: 50%; }
   /* the layers card becomes a bottom sheet, opened from the quick thumb */
   .aw-layers { display: none; position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; border: none;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
@@ -310,7 +321,7 @@
   .aw-page--layers .aw-control { display: none; }
   .aw-page--layers .aw-rail { z-index: 1000; }
   .aw-page--card .aw-mobile-card { display: block; }
-  .aw-page--card .aw-view-toggle { bottom: calc(0.75rem + 122px + 1rem); }
+  .aw-page--card .aw-view-toggle { display: none; }   /* one floating thing at the foot of the map, not two */
   .aw-page--list .aw-mobile-card { display: none; }
 }
 </style>
@@ -336,17 +347,25 @@
 
   <!-- ──────────────── Top bar: filter pills (desktop: floating over the map; mobile: static row + search) ──────────────── -->
   <div class="aw-topbar">
-    <div class="aw-topbar__search">
+    <div class="aw-topbar__search" id="aw-search-sheet">
+      <div class="aw-filter__handle"></div>
+      <div class="aw-filter__sheet-head">
+        <h2 class="aw-filter__sheet-title">Search</h2>
+        <button type="button" class="aw-filter__sheet-close" data-search-close><i class="fa-solid fa-xmark"></i></button>
+      </div>
       <div class="lf-search-bar">
         <i class="fa-solid fa-magnifying-glass lf-search-bar__icon"></i>
         <input type="text" class="lf-search-bar__input" data-search placeholder="Search by name, location or species...">
       </div>
+      <div class="aw-filter__sheet-foot aw-filter__sheet-foot--one">
+        <button type="button" class="aw-filter__apply" data-search-close>Done</button>
+      </div>
     </div>
+    <div class="aw-filter__backdrop" data-search-close></div>
   <!-- ──────────────── Filter pills ──────────────── -->
     <div class="aw-filters id="aw-filters">
-    <div class="aw-filter">
-      <button type="button" class="aw-filter__btn"><i class="fa-solid fa-sliders"></i> All</button>
-    </div>
+    <!-- phone only: search lives behind a magnifier that opens a sheet -->
+    <button type="button" class="aw-search-btn" id="aw-search-open" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
 
     <div class="aw-filter" data-facet="type">
       <button type="button" class="aw-filter__btn" data-toggle>Water type <i class="fa-solid fa-chevron-down caret"></i></button>
@@ -530,14 +549,20 @@ const LAYERS = {
   standard:  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18, attribution: 'Tiles &copy; Esri' })
 }
 
+const page = document.getElementById('aw-page')
+const isMobile = () => window.matchMedia('(max-width: 860px)').matches
+
 const map = L.map('aw-map', { zoomControl: false, scrollWheelZoom: true }).setView([56.18, -4.42], 10)
 let activeLayer = LAYERS.topo.addTo(map)
 
-const pinIcon = (selected) => L.divIcon({
-  className: 'aw-pin-wrap',
-  html: `<div class="lf-map-pin${selected ? ' lf-map-pin--selected' : ''}"><i class="fa-solid fa-fish"></i></div>`,
-  iconSize: [36, 36], iconAnchor: [18, 18]
-})
+const pinIcon = (selected) => {
+  const px = isMobile() ? 28 : 36
+  return L.divIcon({
+    className: 'aw-pin-wrap',
+    html: `<div class="lf-map-pin${selected ? ' lf-map-pin--selected' : ''}" style="width:${px}px;height:${px}px;font-size:${px * 0.44}px"><i class="fa-solid fa-fish"></i></div>`,
+    iconSize: [px, px], iconAnchor: [px / 2, px / 2]
+  })
+}
 const clusterIcon = (cluster) => {
   const n = cluster.getChildCount()
   const size = n >= 50 ? ' lf-map-cluster--lg' : n >= 10 ? ' lf-map-cluster--md' : ''
@@ -545,7 +570,7 @@ const clusterIcon = (cluster) => {
   return L.divIcon({ className: 'aw-cluster-wrap', html: `<div class="lf-map-cluster${size}">${n}</div>`, iconSize: [px, px], iconAnchor: [px / 2, px / 2] })
 }
 
-const clusterGroup = L.markerClusterGroup({ iconCreateFunction: clusterIcon, showCoverageOnHover: false, maxClusterRadius: 40 })
+const clusterGroup = L.markerClusterGroup({ iconCreateFunction: clusterIcon, showCoverageOnHover: false, maxClusterRadius: isMobile() ? 70 : 40 })
 map.addLayer(clusterGroup)
 
 WATERS.forEach((w, i) => {
@@ -556,8 +581,6 @@ WATERS.forEach((w, i) => {
   w.marker.on('click',     () => select(w))   // touch: tap a pin to open its card
 })
 
-const page = document.getElementById('aw-page')
-const isMobile = () => window.matchMedia('(max-width: 860px)').matches
 const selectionCard = (w) => `
   <div class="lf-water-selection-card">
     <a class="lf-water-selection-card__link" href="waters-show.html">
@@ -741,6 +764,11 @@ document.getElementById('aw-view-toggle').addEventListener('click', () => {
   if (!page.classList.contains('aw-page--list')) map.invalidateSize()
 })
 document.getElementById('aw-quick-layer').addEventListener('click', () => page.classList.add('aw-page--layers'))
+document.getElementById('aw-search-open').addEventListener('click', () => {
+  page.classList.add('aw-page--search')
+  document.querySelector('#aw-search-sheet [data-search]').focus()
+})
+document.querySelectorAll('[data-search-close]').forEach(b => b.addEventListener('click', () => page.classList.remove('aw-page--search')))
 document.getElementById('aw-layers-close').addEventListener('click', () => page.classList.remove('aw-page--layers'))
 document.getElementById('aw-layers-backdrop').addEventListener('click', () => page.classList.remove('aw-page--layers'))
 document.getElementById('aw-zoom-in').addEventListener('click', () => map.zoomIn())
