@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memberships — wireframes</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Memberships — low-fi wireframes to agree requirements before planning.
+   Andy's ticket form (desktop) and Callum's buy flow (phone). Grey boxes
+   only. A membership is for a season named by its year ("2027 season"),
+   with no dates. Orange numbers are open questions; each frame draws the
+   default.
+   Same primitives as all-waters-wireframe.html.
+   ========================================================================== */
+:root { --ink: #3C3833; --line: #8a847a; --soft: #e9e6df; --softer: #f4f2ed; --mark: #DD9951; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito Sans', system-ui, sans-serif; color: var(--ink); background: #fff; padding: 2.5rem 2rem 4rem; }
+h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.4rem; }
+h2 { font-size: 1.1rem; font-weight: 800; margin: 2.75rem 0 0.4rem; }
+h3 { font-size: 0.95rem; font-weight: 800; margin: 1.2rem 0 0.4rem; }
+p.lede, p.sub { color: #6b655c; max-width: 64ch; margin-bottom: 1rem; }
+ol.changes { max-width: 70ch; margin-bottom: 1rem; padding-left: 1.4rem; line-height: 1.55; }
+ol.changes li { margin-bottom: 0.5rem; }
+ol.changes .default { color: #6b655c; }
+ul.out { max-width: 70ch; padding-left: 1.4rem; line-height: 1.55; color: #6b655c; }
+.row { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; }
+.caption { font-size: 0.82rem; color: #6b655c; margin-top: 0.6rem; max-width: 260px; }
+.caption--wide { max-width: 560px; }
+
+/* frame + wire primitives */
+.frame { background: #fff; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; position: relative; }
+.nav { background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-weight: 800; font-size: 12px; height: 40px; }
+.box { border: 1.5px solid var(--line); border-radius: 6px; background: #fff; position: relative; }
+.btn { display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 700; padding: 0 14px; height: 30px; white-space: nowrap; background: #fff; }
+.btn--solid { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn--sm { height: 24px; font-size: 10px; padding: 0 10px; }
+.label { font-size: 10px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.hint { font-size: 9.5px; color: #6b655c; margin-top: 3px; line-height: 1.35; }
+.input { height: 28px; border: 1.5px solid var(--line); border-radius: 6px; font-size: 11px; display: flex; align-items: center; padding: 0 8px; background: #fff; }
+.input--select::after { content: '▾'; margin-left: auto; font-size: 10px; }
+.input--ghost { border-style: dashed; color: #a39d92; text-decoration: line-through; }
+.readonly { background: var(--softer); border: 1.5px solid var(--soft); border-radius: 6px; padding: 7px 9px; font-size: 11px; font-weight: 700; }
+.field { margin-bottom: 10px; position: relative; }
+.field--gone { opacity: 0.45; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card { border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+.card__head { background: var(--softer); border-bottom: 1px solid var(--soft); padding: 6px 10px; font-size: 11px; font-weight: 800; }
+.card__body { padding: 10px; }
+.tick { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; margin: 0 4px 4px 0; }
+.tick::before { content: '☑'; }
+.line { height: 6px; border-radius: 3px; background: var(--soft); margin-top: 5px; }
+.line--short { width: 55%; }
+.kv { display: flex; justify-content: space-between; font-size: 10px; padding: 4px 0; border-bottom: 1px solid var(--soft); }
+.kv b { font-weight: 800; }
+.callout { position: absolute; width: 20px; height: 20px; border-radius: 50%; background: var(--mark); color: var(--ink); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 0 0 2px #fff; }
+.tag { display: inline-block; font-size: 9px; font-weight: 800; border: 1.5px solid var(--ink); border-radius: 999px; padding: 1px 7px; }
+
+/* desktop form */
+.desktop { width: 620px; }
+.desktop .page { padding: 16px 22px 20px; }
+.desktop .crumb { font-size: 10px; color: #6b655c; margin-bottom: 4px; }
+.desktop .title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* phone */
+.phone { width: 250px; min-height: 500px; border-radius: 22px; display: flex; flex-direction: column; }
+.phone .nav { height: 34px; font-size: 11px; }
+.phone .page { padding: 10px 12px 14px; flex: 1; }
+.progress { height: 4px; background: var(--soft); }
+.progress div { height: 100%; background: var(--ink); }
+.surtitle { font-size: 9.5px; color: #6b655c; font-weight: 600; }
+.wtitle { display: flex; justify-content: space-between; align-items: baseline; margin: 2px 0 10px; }
+.wtitle b { font-size: 15px; font-weight: 800; }
+.wtitle span { font-size: 9.5px; color: #6b655c; }
+.total { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--soft); }
+.total b { font-size: 15px; }
+.offer { border: 1.5px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 10px; position: relative; }
+.offer--off { border-style: dashed; }
+.offer__name { font-size: 12px; font-weight: 800; }
+.offer__price { font-size: 16px; font-weight: 800; margin: 2px 0 4px; }
+.offer__price small { font-size: 10px; font-weight: 600; color: #6b655c; }
+.offer ul { list-style: none; font-size: 10px; margin-bottom: 8px; }
+.offer li { padding: 1px 0; }
+.offer li::before { content: '• '; color: var(--line); }
+.mini { transform: scale(0.82); transform-origin: top left; }
+.center { text-align: center; }
+.check { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); margin: 6px auto; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.decided { max-width: 70ch; border-left: 3px solid var(--ink); padding: 0.4rem 0 0.4rem 0.9rem; margin-bottom: 1.2rem; line-height: 1.55; }
+.decided p { margin-bottom: 0.4rem; }
+.selects { display: grid; grid-template-columns: 0.6fr 1fr; gap: 6px; }
+.menu { position: absolute; top: 34px; right: 8px; width: 150px; background: #fff; border: 1.5px solid var(--line); border-radius: 8px; padding: 4px 0; z-index: 4; }
+.menu div { font-size: 10.5px; padding: 6px 10px; }
+.menu .on { font-weight: 800; background: var(--softer); }
+.menu hr { border: none; border-top: 1px solid var(--soft); margin: 3px 0; }
+.mrow { border: 1.5px solid var(--line); border-radius: 8px; padding: 8px; margin-bottom: 8px; display: flex; gap: 8px; position: relative; }
+.mrow--past { border-style: dashed; opacity: 0.6; }
+.crest { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--softer); flex-shrink: 0; font-size: 8px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.mrow__name { font-size: 11px; font-weight: 800; }
+.mrow__club { font-size: 9.5px; color: #6b655c; }
+.mrow__status { font-size: 10px; font-weight: 700; margin-top: 3px; }
+.mrow__meta { font-size: 9px; color: #6b655c; margin-top: 2px; }
+.mrow__actions { display: flex; gap: 4px; margin-top: 6px; }
+.group { font-size: 11px; font-weight: 800; margin: 10px 0 6px; }
+.group span { font-weight: 600; color: #6b655c; }
+</style>
+</head>
+<body>
+
+<h1>Memberships — wireframes</h1>
+<p class="lede">A membership is a ticket for a club's season. Andy sets up "D&amp;KLB membership" at £90 for the 2027 season, with room for 150 members. Callum buys one in his own name. Grey boxes only. </p>
+
+<div class="decided">
+  <p><strong>Agreed: a season is a year, not a pair of dates.</strong> The membership says "2027 season" and nothing more. When the fishing actually opens and closes is set by the fishery's own seasons and rules, which already show on its page. The membership doesn't repeat them, so each club stays flexible.</p>
+  <p><strong>Agreed: full price whenever you join.</strong> Callum pays £90 for the 2027 season whether he joins in March or August.</p>
+  <p><strong>Agreed: a membership can have a cap on numbers.</strong> Andy sets the most members the club takes in a season. Once it's reached, the card says the season is full.</p>
+  <p><strong>Agreed: one membership per club, in your own name.</strong> Step 1 shows Callum's name from his account rather than asking for an angler. He can hold one membership per club per season. If D&amp;KLB sells an adult and a junior membership, he can have one or the other, not both. Next season goes on sale on 1 January, so he renews then.</p>
+  <p><strong>Agreed: Ewan pays after he's approved.</strong> Nothing is charged when he applies. Approval emails him a link to pay, which opens the usual card step.</p>
+  <p><strong>Agreed: a place is only taken once he's approved and paid.</strong> Applying and being approved don't use one up. If the 30 junior places fill while he's waiting, his pay link says the season is full.</p>
+  <p><strong>Agreed: an approval runs out after 14 days unpaid.</strong> After that he has to apply again.</p>
+  <p><strong>Agreed: the application has a free-text box.</strong> It's labelled "Anything the club should know", for example "Proposed by John Ross". That covers clubs that need a recommendation from an existing member.</p>
+  <p><strong>Agreed: Andy can give a reason when he declines.</strong> It's optional, and it goes in the email Ewan gets: "Unfortunately you've not been successful…"</p>
+  <p><strong>Agreed: Andy gets one email per application.</strong> Each links to the Applications page, a page of its own reached from the account menu and from a notice on his fishery page. If 30 emails a week gets annoying, a daily summary can come later.</p>
+  <p><strong>Agreed: memberships get their own page.</strong> Your Memberships sits under Your Tickets in the account menu for every signed-in angler. Memberships leave Your Tickets completely, which keeps day and week tickets.</p>
+  <p><strong>Agreed: the season changes by itself on 1 January.</strong> From 1 January 2028 the membership sells the 2028 season, with nothing for Andy to do. Someone who joins on 20 November 2027 gets the 2027 season, and the card and step 1 both say "2027 season", so he can see what he's buying. For "Current" and "Past", a season runs 1 January to 31 December. Callum never sees those dates.</p>
+  <p><strong>Agreed: the cap is the total number of members in a season.</strong> It starts again from zero on 1 January. Someone partway through paying keeps their place for a few minutes, as with a day ticket.</p>
+  <p><strong>Agreed: the button depends on how the club admits members.</strong> It says <strong>Buy</strong> for a club that sells to anyone while there's space, and <strong>Apply</strong> for one that vets members. Only Buy works in this round.</p>
+  <p><strong>Agreed: the card shows how many places are left.</strong> It says "12 places left", the way a day ticket says "4 left today".</p>
+  <p><strong>Agreed: a club can sell several kinds of membership.</strong> For example adult, junior, local and visitor. Each is its own ticket with Duration set to Membership, with its own price and waters. One membership per club still applies, so Callum holds a local membership or a visitor one, never both.</p>
+  <p><strong>Agreed: each kind of membership has its own cap.</strong> Andy sets 100 adult places and 30 junior places, and juniors can fill up while adult places are still left.</p>
+  <p><strong>Agreed: a membership can need approving.</strong> Andy ticks "Applicants need approving" on the membership. The button then says <strong>Apply</strong> instead of Buy. Callum sends his details, Andy is told and approves or declines, and Callum pays once he's approved. His date of birth, address and phone are saved to his account, so the next form is already filled in.</p>
+</div>
+
+<p class="sub"><strong>No open questions.</strong> Everything below is agreed.</p>
+
+<!-- ═════════════════════════ ANDY — the ticket form ═════════════════════════ -->
+<h2>Andy sets up the membership (desktop)</h2>
+<p class="sub">It's the existing Add ticket form with one more Duration option. Picking Membership shows Member limit and "Applicants need approving" in place of Daily limit. There is no season to set: the membership always sells the current year.</p>
+<div class="row">
+  <div>
+    <div class="frame desktop">
+      <div class="nav"><span>let's fish</span><span>Andy ▾</span></div>
+      <div class="page">
+        <div class="crumb">Durness &amp; Kinlochbervie Angling Club › Tickets</div>
+        <div class="title">Add ticket</div>
+
+        <div class="card">
+          <div class="card__head">Ticket Details</div>
+          <div class="card__body">
+            <div class="field">
+              <div class="label">Ticket name</div>
+              <div class="input">D&amp;KLB membership</div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <div class="label">Price</div>
+                <div class="input">£ 90.00</div>
+              </div>
+              <div class="field">
+                <div class="label">Duration</div>
+                <div class="input input--select">Membership</div>
+                <div class="hint">Day · Week · <b>Membership</b></div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Member limit</div>
+              <div class="input">150</div>
+              <div class="hint">The most members you take in a season. It starts again on 1 January. Leave blank for no limit.</div>
+            </div>
+
+            <div class="field">
+              <div style="font-size:10.5px;font-weight:700">☑ Applicants need approving</div>
+              <div class="hint">Anglers apply instead of buying. You'll be told about each application, and they pay once you approve it.</div>
+            </div>
+
+            <div class="field field--gone">
+              <div class="label">Daily limit</div>
+              <div class="input input--ghost">No cap</div>
+              <div class="hint">Hidden for a membership.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head">Waters Covered</div>
+          <div class="card__body">
+            <div style="font-size:10px;font-weight:700;margin-bottom:6px">☑ All waters <span style="color:#6b655c;font-weight:600">(12 of 12)</span></div>
+            <span class="tick">Loch Caladail</span><span class="tick">Loch Borralie</span><span class="tick">Loch Croispol</span><span class="tick">…</span>
+          </div>
+        </div>
+
+        <div class="actions"><span class="btn">Cancel</span><span class="btn btn--solid">Save ticket</span></div>
+      </div>
+    </div>
+    <p class="caption caption--wide">Day and Week work the same as today. The ticket name has no year. The season is always the current year, from 1 January.</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════ CALLUM — the buy flow ═════════════════════════ -->
+<h2>Callum buys a membership (phone)</h2>
+<p class="sub">It's the same three steps as a day ticket. Only the offer card and step 1 change.</p>
+
+<div class="row">
+  <!-- offer card -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="page">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px">Tickets &amp; Membership</div>
+        <div class="offer">
+          <div class="offer__name">Adult day ticket</div>
+          <div class="offer__price">£10 <small>/ day</small></div>
+          <ul><li>All club waters</li><li>4 left today</li></ul>
+          <span class="btn btn--solid btn--sm">Buy</span>
+        </div>
+        <div class="offer">
+                    <div class="offer__name">D&amp;KLB membership</div>
+          <div class="offer__price">£90 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li><li>12 places left</li></ul>
+          <span class="btn btn--solid btn--sm">Buy</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>The offer card.</b> It shows "/ season" and this year's season, with no dates. It always shows how many places are left.</p>
+  </div>
+
+  <!-- step 1 -->
+  <div>
+    <div class="frame phone">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="progress"><div style="width:33%"></div></div>
+      <div class="page">
+        <div class="surtitle">D&amp;KLB membership · D&amp;KLB</div>
+        <div class="wtitle"><b>Ticket details</b><span>Step 1 of 3</span></div>
+        <div class="card">
+          <div class="card__head">Your details</div>
+          <div class="card__body">
+            <div class="field">
+              <div class="label">Your membership</div>
+              <div class="readonly">2027 season</div>
+            </div>
+            <div class="field"><div class="label">Member</div><div class="readonly">Callum Mackay</div><div class="hint">Memberships are in your own name, from your account.</div></div>
+            <div class="field"><div class="label">Address</div><div class="input"></div></div>
+            <div class="field"><div class="label">Phone number</div><div class="input"></div></div>
+            <div class="field"><div class="label">Vehicle registration <span style="font-weight:600;color:#6b655c">— optional</span></div><div class="input"></div></div>
+            <div class="total"><div><div class="label">Total</div><b>£90.00</b></div><span class="btn btn--solid">Continue</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Step 1.</b> There's no date to pick. The season and his name are fixed, so he only fills in his address, phone and car.</p>
+  </div>
+
+  <!-- already a member / full -->
+  <div>
+    <div class="frame phone" style="min-height:360px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="page">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px">Tickets &amp; Membership</div>
+        <div class="offer">
+          <div class="offer__name">D&amp;KLB membership</div>
+          <div class="offer__price">£90 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li></ul>
+          <span class="tag">You're a member for 2027</span>
+        </div>
+        <div class="offer">
+          <div class="offer__name">Assynt adult membership</div>
+          <div class="offer__price">£120 <small>/ season</small></div>
+          <ul><li>14 waters</li><li>2027 season</li></ul>
+          <span class="btn btn--solid btn--sm">Apply</span>
+        </div>
+        <div class="offer offer--off">
+          <div class="offer__name">D&amp;KLB junior membership</div>
+          <div class="offer__price">£20 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li></ul>
+          <span class="tag">2027 season full</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Other card states.</b> A membership that needs approving shows Apply. That flow is drawn below. If Callum is already a member for 2027, or the season is full, the card says so instead of a button.</p>
+  </div>
+</div>
+
+<h3>Steps 2 and 3 are unchanged</h3>
+<div class="row">
+  <div>
+    <div class="frame phone" style="min-height:330px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="progress"><div style="width:66%"></div></div>
+      <div class="page">
+        <div class="surtitle">D&amp;KLB membership · 2027 season</div>
+        <div class="wtitle"><b>Payment</b><span>Step 2 of 3</span></div>
+        <div class="card">
+          <div class="card__head">Card details</div>
+          <div class="card__body">
+            <div class="field"><div class="label">Card number</div><div class="input"></div></div>
+            <div class="field-row"><div class="field"><div class="label">Expiry</div><div class="input"></div></div><div class="field"><div class="label">CVC</div><div class="input"></div></div></div>
+            <div class="kv"><span>D&amp;KLB membership</span><span>£90.00</span></div>
+            <div class="kv"><span>Booking fee</span><span>£4.10</span></div>
+            <div class="kv"><b>Total</b><b>£94.10</b></div>
+            <div style="margin-top:8px"><span class="btn btn--solid" style="width:100%">Pay £94.10</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Step 2.</b> The line above the title says "2027 season" in place of a date. The booking fee is 4% + 50p, as on every ticket.</p>
+  </div>
+
+  <div>
+    <div class="frame phone" style="min-height:330px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="progress"><div style="width:100%"></div></div>
+      <div class="page">
+        <div class="center"><div class="check">✓</div><b style="font-size:15px">You're all set</b><p class="hint" style="margin-bottom:8px">We've emailed your membership to callum@…</p></div>
+        <div class="card">
+          <div class="card__head">D&amp;KLB membership</div>
+          <div class="card__body">
+            <div class="kv"><span>Season</span><span>2027 season</span></div>
+            <div class="kv"><span>Member</span><span>Callum Mackay</span></div>
+            <div class="kv"><span>Waters</span><span>All club waters</span></div>
+            <div class="kv"><span>Paid</span><span>£90.00</span></div>
+            <div class="kv"><span>Reference</span><span>LF-7Q2K</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Step 3.</b> These are the ticket's lines, with "Season" and "Member" in place of "Dates" and "Angler". The ticket page, the PDF and the email change the same way.</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════ Several kinds ═════════════════════════ -->
+<h2>A club with several kinds of membership (phone)</h2>
+<p class="sub">D&amp;KLB sells four. Andy sets each one up on the same form as above, as its own ticket.</p>
+<div class="row">
+  <div>
+    <div class="frame phone" style="min-height:560px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="page">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px">Tickets &amp; Membership</div>
+        <div class="offer">
+          <div class="offer__name">Adult membership</div>
+          <div class="offer__price">£90 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li><li>12 places left</li></ul>
+          <span class="btn btn--solid btn--sm">Buy</span>
+        </div>
+        <div class="offer">
+          <div class="offer__name">Junior membership (under 16)</div>
+          <div class="offer__price">£20 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li><li>5 places left</li></ul>
+          <span class="btn btn--solid btn--sm">Apply</span>
+        </div>
+        <div class="offer">
+          <div class="offer__name">Local membership</div>
+          <div class="offer__price">£60 <small>/ season</small></div>
+          <ul><li>All club waters</li><li>2027 season</li><li>8 places left</li></ul>
+          <span class="btn btn--solid btn--sm">Apply</span>
+        </div>
+        <div class="offer offer--off">
+          <div class="offer__name">Visitor membership</div>
+          <div class="offer__price">£150 <small>/ season</small></div>
+          <ul><li>6 waters</li><li>2027 season</li></ul>
+          <span class="tag">2027 season full</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>What Callum sees.</b> Every kind on sale, each with its own price, waters and places left. Junior and local have "Applicants need approving" ticked, so they say Apply. Adult and visitor say Buy. Once he buys one, every D&amp;KLB membership card says "You're a member for 2027".</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════ Applying ═════════════════════════ -->
+<h2>Callum applies for a membership that needs approving</h2>
+<p class="sub">D&amp;KLB's junior membership has "Applicants need approving" ticked. Ewan, aged 14, applies from his own account on 3 March 2027.</p>
+
+<div class="row">
+  <!-- application form -->
+  <div>
+    <div class="frame phone" style="min-height:560px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="progress"><div style="width:50%"></div></div>
+      <div class="page">
+        <div class="surtitle">Junior membership · D&amp;KLB</div>
+        <div class="wtitle"><b>Your application</b><span>Step 1 of 2</span></div>
+        <div class="card">
+          <div class="card__head">Your details</div>
+          <div class="card__body">
+            <div class="field"><div class="label">Membership</div><div class="readonly">2027 season</div></div>
+            <div class="field"><div class="label">Applicant</div><div class="readonly">Ewan Mackay</div><div class="hint">From your account.</div></div>
+            <div class="field"><div class="label">Date of birth</div><div class="input">14 / 06 / 2012</div></div>
+            <div class="field"><div class="label">Address</div><div class="input">12 Balnakeil, Durness</div></div>
+            <div class="field"><div class="label">Phone number</div><div class="input">07700 900123</div></div>
+            <div class="field" style="position:relative">
+              <div class="label">Anything the club should know <span style="font-weight:600;color:#6b655c">— optional</span></div>
+              <div class="input" style="height:40px;align-items:flex-start;padding-top:5px">Proposed by John Ross</div>
+            </div>
+            <div class="hint" style="margin-bottom:8px">Your date of birth, address and phone are saved to your account.</div>
+            <div class="total"><div><div class="label">Price if approved</div><b>£20.00</b></div><span class="btn btn--solid">Send application</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>The application.</b> It looks like step 1, plus date of birth and a free-text box. Anything already on his account is filled in. No card is taken.</p>
+  </div>
+
+  <!-- sent -->
+  <div>
+    <div class="frame phone" style="min-height:330px">
+      <div class="nav"><span>let's fish</span><span>☰</span></div>
+      <div class="progress"><div style="width:100%"></div></div>
+      <div class="page">
+        <div class="center"><div class="check" style="border-style:dashed">⧗</div><b style="font-size:15px">Application sent</b><p class="hint" style="margin:4px 0 10px">D&amp;KLB will look at it and we'll email you their answer. You haven't been charged.</p></div>
+        <div class="card">
+          <div class="card__head">Junior membership</div>
+          <div class="card__body">
+            <div class="kv"><span>Season</span><span>2027 season</span></div>
+            <div class="kv"><span>Applicant</span><span>Ewan Mackay</span></div>
+            <div class="kv"><span>Price if approved</span><span>£20.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Sent.</b> The card on the fishery page now says "Application sent" instead of Apply.</p>
+  </div>
+
+  <!-- Your Memberships pending -->
+  <div>
+    <div class="frame phone" style="min-height:330px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="page">
+        <div class="surtitle">Home / Your Memberships</div>
+        <div style="font-size:15px;font-weight:800;margin:2px 0 6px">Your Memberships</div>
+        <div class="group">Applications</div>
+        <div class="mrow">
+          <div class="crest">D&amp;K</div>
+          <div style="flex:1">
+            <div class="mrow__name">Junior membership</div>
+            <div class="mrow__club">Durness &amp; Kinlochbervie AC</div>
+            <div class="mrow__status">2027 season · waiting for the club</div>
+            <div class="mrow__meta">Sent Wed 3 Mar 2027</div>
+          </div>
+        </div>
+        <div class="mrow">
+          <div class="crest">D&amp;K</div>
+          <div style="flex:1">
+            <div class="mrow__name">Junior membership</div>
+            <div class="mrow__club">Durness &amp; Kinlochbervie AC</div>
+            <div class="mrow__status">2027 season · approved</div>
+            <div class="mrow__meta">Pay by Wed 17 Mar to join</div>
+            <div class="mrow__actions"><span class="btn btn--solid btn--sm">Pay £20 and join</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Your Memberships while he waits.</b> An Applications group sits above Current. Drawn twice: waiting, then approved. Once he pays, it moves to Current.</p>
+  </div>
+</div>
+
+<h3>Andy approves it</h3>
+<p class="sub">Applications is a page of its own. Andy gets there three ways: the email for each application, a notice on his fishery page, and the account menu.</p>
+<div class="row">
+  <div>
+    <div class="frame phone" style="min-height:300px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="menu">
+        <div>Your Tickets</div>
+        <div>Your Memberships</div>
+        <div>Your Fishlists</div>
+        <div>Destinations</div>
+        <div>Manage Account</div>
+        <hr>
+        <div>Your Fishery</div>
+        <div class="on">Applications <span class="tag" style="margin-left:4px">2</span></div>
+        <hr>
+        <div>Sign out</div>
+      </div>
+      <div class="page"><div class="line"></div><div class="line line--short"></div><div class="line"></div></div>
+    </div>
+    <p class="caption"><b>The account menu.</b> Applications sits under Your Fishery, with a count while any are waiting. It only appears for a manager whose club has a membership that needs approving.</p>
+  </div>
+
+  <div>
+    <div class="frame phone" style="min-height:300px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="page">
+        <div style="font-size:13px;font-weight:800;margin-bottom:8px">Tickets &amp; Membership</div>
+        <div class="box" style="padding:8px;margin-bottom:10px;border-width:2px;border-color:var(--ink)">
+          <div style="font-size:11px;font-weight:800">2 applications waiting</div>
+          <div class="hint" style="margin-bottom:6px">Junior and local memberships</div>
+          <span class="btn btn--solid btn--sm">Review</span>
+        </div>
+        <div class="offer">
+          <div class="offer__name">Junior membership (under 16)</div>
+          <div class="offer__price">£20 <small>/ season</small></div>
+          <ul><li>2027 season</li><li>5 places left</li></ul>
+          <span class="btn btn--sm">Edit</span> <span class="btn btn--sm">Delete</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Andy's fishery page.</b> A notice above his ticket cards while any applications are waiting. It disappears once he's dealt with them all.</p>
+  </div>
+</div>
+
+<div class="row" style="margin-top:1.5rem">
+  <div>
+    <div class="frame desktop">
+      <div class="nav"><span>let's fish</span><span>Andy ▾</span></div>
+      <div class="page">
+        <div class="crumb">Durness &amp; Kinlochbervie Angling Club › Applications</div>
+        <div class="title" style="position:relative">Applications <span class="tag">2 waiting</span>
+          </div>
+        <div class="card">
+          <div class="card__body">
+            <div style="display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--soft)">
+              <div>
+                <div class="mrow__name">Ewan Mackay · Junior membership, 2027</div>
+                <div class="mrow__meta">Born 14 Jun 2012 (age 14) · 12 Balnakeil, Durness · 07700 900123</div>
+                <div class="mrow__meta">"Proposed by John Ross" · sent Wed 3 Mar</div>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="btn btn--sm">Decline</span><span class="btn btn--solid btn--sm">Approve</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:12px;padding-top:8px">
+              <div>
+                <div class="mrow__name">Priya Shah · Local membership, 2027</div>
+                <div class="mrow__meta">Born 2 Feb 1988 (age 39) · 4 Culduthel Rd, Inverness · 07700 900456</div>
+                <div class="mrow__meta">sent Tue 2 Mar</div>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center"><span class="btn btn--sm">Decline</span><span class="btn btn--solid btn--sm">Approve</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="hint">Andy gets an email for each new application: "Ewan Mackay has applied for a Junior membership. Review it." The link opens this list. Priya lives in Inverness, outside the club's local area, so Andy declines her local membership and can say why.</div>
+      </div>
+    </div>
+    <p class="caption caption--wide"><b>The Applications page.</b> It's a page of its own, so applicants' personal details never sit on the public fishery page. Approved and declined applications drop off the list. The age is worked out from the date of birth, so he can check a junior at a glance.</p>
+  </div>
+</div>
+
+<!-- ═════════════════════════ Your Memberships ═════════════════════════ -->
+<h2>Your Memberships (phone)</h2>
+<p class="sub">A new page with its own link in the account menu, because Callum can belong to more than one club. It's 20 November 2027. He's a member of D&amp;KLB and of Assynt Angling Group for 2027, and his 2026 D&amp;KLB membership has ended.</p>
+
+<div class="row">
+  <div>
+    <div class="frame phone" style="min-height:300px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="menu">
+        <div>Your Tickets</div>
+        <div class="on">Your Memberships</div>
+        <div>Your Fishlists</div>
+        <div>Destinations</div>
+        <div>Manage Account</div>
+        <hr>
+        <div>Sign out</div>
+      </div>
+      <div class="page"><div class="line"></div><div class="line line--short"></div><div class="line"></div></div>
+    </div>
+    <p class="caption"><b>The account menu.</b> Your Memberships sits under Your Tickets.</p>
+  </div>
+
+  <div>
+    <div class="frame phone" style="min-height:540px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="page">
+        <div class="surtitle">Home / Your Memberships</div>
+        <div style="font-size:15px;font-weight:800;margin:2px 0">Your Memberships</div>
+        <div class="hint" style="margin-bottom:6px">2 current · 1 past</div>
+
+        <div class="group">Current</div>
+        <div class="mrow">
+          <div class="crest">D&amp;K</div>
+          <div style="flex:1">
+            <div class="mrow__name">D&amp;KLB membership</div>
+            <div class="mrow__club">Durness &amp; Kinlochbervie AC</div>
+            <div class="mrow__status">2027 season</div>
+            <div class="mrow__meta">All club waters · LF-7Q2K</div>
+            <div class="mrow__actions"><span class="btn btn--sm">Download PDF</span><span class="btn btn--sm">View</span></div>
+          </div>
+        </div>
+        <div class="mrow">
+          <div class="crest">AAG</div>
+          <div style="flex:1">
+            <div class="mrow__name">Assynt adult membership</div>
+            <div class="mrow__club">Assynt Angling Group</div>
+            <div class="mrow__status">2027 season</div>
+            <div class="mrow__meta">14 waters · LF-3M8D</div>
+            <div class="mrow__actions"><span class="btn btn--sm">Download PDF</span><span class="btn btn--sm">View</span></div>
+          </div>
+        </div>
+
+        <div class="group">Past <span>· kept for your records</span></div>
+        <div class="mrow mrow--past">
+          <div class="crest">D&amp;K</div>
+          <div style="flex:1">
+            <div class="mrow__name">D&amp;KLB membership</div>
+            <div class="mrow__club">Durness &amp; Kinlochbervie AC</div>
+            <div class="mrow__status">2026 season</div>
+            <div class="mrow__actions"><span class="btn btn--sm">PDF</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>The page.</b> One card per membership, led by the club's crest. This season's memberships come first, then past seasons, dimmed.</p>
+  </div>
+
+  <div>
+    <div class="frame phone" style="min-height:300px">
+      <div class="nav"><span>let's fish</span><span>☰ ◯</span></div>
+      <div class="page">
+        <div class="surtitle">Home / Your Memberships</div>
+        <div style="font-size:15px;font-weight:800;margin:2px 0 30px">Your Memberships</div>
+        <div class="center">
+          <div class="check" style="border-style:dashed">◯</div>
+          <b style="font-size:12px">No memberships yet</b>
+          <p class="hint" style="margin:4px 0 10px">When you join a club on Let's Fish, your membership lives here, ready to show on the bank.</p>
+          <span class="btn btn--solid btn--sm">Find a fishery</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption"><b>Before he joins a club.</b> Same empty state as Your Tickets.</p>
+  </div>
+</div>
+
+<h2>Not in this round</h2>
+<ul class="out">
+  <li>The PDF's look for a membership. It uses the same lines, so the content is already right.</li>
+  <li>Renewal reminder emails and one-tap rebuy (<code>docs/ticket-permit-model.md</code>).</li>
+</ul>
+
+</body>
+</html>
